@@ -8,6 +8,7 @@ plugins/*.so~
 *.yaml
 files/groups.json
 files/formats.yaml
+!files/features.yaml
 graphoscope
 upload
 ideas

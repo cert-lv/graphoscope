@@ -155,7 +155,7 @@ Response example for the first query:
 
 # Icons
 
-Possible icons for the node types. Set in `conf/groups.json`.
+Possible icons for the node types. Set in `files/groups.json`.
 For the other styling options check the documentation's section `Administration` &rarr; `Custom graph elements style`.
 
 - **ip**                                            -> light blue circle

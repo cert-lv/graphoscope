@@ -1,0 +1,7 @@
+[
+    "05.11.2021",
+
+    "Use <strong>... OR ...</strong> or <strong>field IN (...)</strong> queries even if data source doesn't support them",
+    "Every account has a <strong>unique ID</strong> to be used in API queries as an auth key. Can be found in a <strong>Profile</strong> - <strong>Account</strong> page",
+    "An option to find selected <strong>nodes common attributes and neighbors</strong>"
+]

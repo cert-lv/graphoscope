@@ -1,0 +1,11 @@
+[Unit]
+Description=Graph project
+
+[Service]
+#User=graphoscope
+Environment=CONFIG=/etc/graphoscope/graphoscope.yaml
+WorkingDirectory=/opt/graphoscope
+ExecStart=/opt/graphoscope/graphoscope
+
+[Install]
+WantedBy=multi-user.target

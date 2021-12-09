@@ -1,0 +1,305 @@
+<!DOCTYPE HTML>
+
+<html>
+
+    <head>
+        <title>Graphoscope</title>
+
+        <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
+
+        <link href="assets/css/semantic-2.8.6.min.css"                rel="stylesheet" type="text/css" />
+        <link href="assets/css/font-awesome.min.css?v={{ .Version }}" rel="stylesheet" type="text/css" />
+        <link href="assets/css/c3.min.css?v={{ .Version }}"           rel="stylesheet" type="text/css" />
+        <link href="assets/css/common.css?v={{ .Version }}"           rel="stylesheet" type="text/css" />
+        <link href="assets/css/index.css?v={{ .Version }}"            rel="stylesheet" type="text/css" />
+
+        <script type="text/javascript" src="assets/js/jquery-3.4.1.min.js"></script>
+        <script type="text/javascript" src="assets/js/semantic-2.8.6.min.js"></script>
+
+        <script type="text/javascript" src="assets/js/d3.v5.min.js?v={{ .Version }}" charset="utf-8"></script>
+        <script type="text/javascript" src="assets/js/c3.min.js?v={{ .Version }}"></script>
+
+        <script type="text/javascript" src="assets/js/vis-network.min-9.0.4.js"></script>
+        <script type="text/javascript" src="assets/js/websocket.js?v={{ .Version }}"></script>
+        <script type="text/javascript" src="assets/js/graph.js?v={{ .Version }}"></script>
+        <script type="text/javascript" src="assets/js/filters.js?v={{ .Version }}"></script>
+        <script type="text/javascript" src="assets/js/dashboards.js?v={{ .Version }}"></script>
+        <script type="text/javascript" src="assets/js/search.js?v={{ .Version }}"></script>
+        <script type="text/javascript" src="assets/js/tags.js?v={{ .Version }}"></script>
+        <script type="text/javascript" src="assets/js/charts.js?v={{ .Version }}"></script>
+        <script type="text/javascript" src="assets/js/modal.js?v={{ .Version }}"></script>
+        <script type="text/javascript" src="assets/js/features.js?v={{ .Version }}"></script>
+        <script type="text/javascript" src="assets/js/notifications.js?v={{ .Version }}"></script>
+        <script type="text/javascript" src="assets/js/index.js?v={{ .Version }}"></script>
+
+        <script>
+            FILTERS =    {{ .Account.Filters }};
+            DASHBOARDS = {{ .Account.Dashboards }};
+            SHARED =     {{ .Shared }};
+            OPTIONS =    {{ .Account.Options }};
+            SETTINGS =   {{ .GraphSettings }};
+            GROUPS =  JSON.parse({{ .Groups }});
+            FORMATS = JSON.parse({{ .Formats }});
+            NOTIFICATIONS = {{ .Account.Notifications }};
+            {{ if .Features }}FEATURES = {{ .Features }};{{ end }}
+        </script>
+    </head>
+
+    <body>
+        <noscript>
+            <div align="center" class="noscript">
+                JavaScript must be enabled!</br>
+            </div>
+        </noscript>
+
+        <!--**********************
+        *   Top window section   *
+        ***********************-->
+        {{ template "topbar" . }}
+
+        <div class="ui grid">
+
+            <!--***********************
+            *   Left window section   *
+            ************************-->
+            <div class="twelve wide column">
+                <!-- Usage info -->
+                <span id="usage-btn">Usage</span>
+
+                <!-- Search bar with action buttons -->
+                <div class="ui action fluid search input">
+                    <input id="search_input" type="text" placeholder="Search..." spellcheck="false" value="">
+
+                    <div class="ui format button" title="Format the request">
+                        <i class="pen alternate icon"></i>
+                    </div>
+
+                    <div class="ui selection source dropdown" title="Data source to query">
+                        <input type="hidden" name="global" value="global">
+                        <i class="dropdown icon"></i>
+                        <div class="default text">
+                            <i class="compress arrows alternate icon"></i> Global
+                        </div>
+
+                        <div class="menu">
+                            <div class="item" data-value="global">
+                                <i class="compress arrows alternate icon"></i> Global
+                            </div>
+
+                            {{ range .Collectors }}
+                                {{ if eq .Source.InGlobal true }}
+                                <div class="item" data-value="{{ .Source.Name }}">
+                                    <i class="{{ .Source.Icon }} icon"></i> {{ .Source.Label }}
+                                </div>
+                                {{ end }}
+                            {{ end }}
+
+                            {{ if .NonGlobalExist }}
+                                <div class="item disabled">Non-global</div>
+
+                                {{ range .Collectors }}
+                                    {{ if eq .Source.InGlobal false }}
+                                    <div class="item" data-value="{{ .Source.Name }}">
+                                        <i class="{{ .Source.Icon }} icon"></i> {{ .Source.Label }}
+                                    </div>
+                                    {{ end }}
+                                {{ end }}
+                            {{ end }}
+                        </div>
+                    </div>
+
+                    <div class="ui search button disabled" title="Search">
+                        <i class="search icon"></i>
+                    </div>
+                    <div class="ui clear button" title="Clear all">
+                        <i class="window close icon"></i>
+                    </div>
+                </div>
+
+                <!-- User filters will be added here -->
+                <div id="filters"></div>
+
+                <!-- Graph canvas with tags & actions -->
+                <div id="count" class="ui labels"></div>
+                <div id="graph"></div>
+
+                <i id="center" class="compress arrows alternate icon" title="Center graph"></i>
+                <i id="image" class="image icon" title="Save as image"></i>
+                <i id="export" class="download icon" title="Export visible elements as file"></i>
+                <i id="fullscreen" class="expand icon" title="Fullscreen"></i>
+
+                <!-- Charts area -->
+                <div id="charts">
+                    <span id="charts-header"></span>
+                    <i id="charts-close" class="times icon"></i>
+                </div>
+            </div>
+
+            <!--************************
+            *   Right window section   *
+            *************************-->
+            <div class="four wide right column">
+                <div class="info">
+                    <div class="ui form calendar">
+                        <div class="two fields">
+                            <div class="field">
+                                <label>Start date</label>
+                                <div class="ui calendar" id="rangestart">
+                                    <div class="ui input left icon">
+                                        <i class="calendar icon"></i>
+                                        <input type="text" placeholder="Start">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label>End date</label>
+                                <div class="ui calendar" id="rangeend">
+                                    <div class="ui input left icon">
+                                        <i class="calendar icon"></i>
+                                        <input type="text" placeholder="End">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="ui selection load dashboard dropdown">
+                      <i class="dropdown icon"></i>
+                      <div class="default text">Load dashboard</div>
+                      <div class="menu">
+                        {{ range $name, $value := .Account.Dashboards }}
+                            <div class="item" data-value="{{ $name }}">{{ $name }}</div>
+                        {{ end }}
+                        <div id="shared-dashboards" class="item disabled">
+                            <i class="tags icon"></i>
+                            Shared dashboards
+                        </div>
+                        {{ range $name, $value := .Shared }}
+                            <div class="item" data-value="{{ $name }}" data-shared="true">{{ $name }}</div>
+                        {{ end }}
+                      </div>
+                    </div>
+
+                    <div class="ui load dashboard button" title="Load dashboard">Load</div>
+                    <div class="ui delete dashboard button" title="Delete dashboard">
+                        <i class="trash icon"></i>
+                    </div>
+
+                    <div class="ui save dashboard input">
+                        <input type="text" placeholder="Unique dashboard name" id="dashboard-name" spellcheck="false">
+                    </div>
+                    <div class="ui shared dashboard checkbox">
+                        <input type="checkbox" name="example">
+                        <label>Share</label>
+                    </div>
+                    <div class="ui save dashboard button" title="Save dashboard">
+                        <i class="save icon"></i>
+                    </div>
+
+                    <!-- Selected elements attributes table -->
+                    <div id="attributes">
+                        <label class="attributes-header">Attributes</label>
+                        <table class="ui celled striped attributes table"></table>
+
+                        <label class="attributes-header">Notes</label>
+                        <textarea id="attributes-notes" spellcheck="false"></textarea>
+                        <div class="ui save notes button" title="Save notes">
+                            <i class="save icon"></i>
+                        </div>
+                    </div>
+
+                    <!-- Selected elements attributes table -->
+                    <div id="common-attributes">
+                        <label class="attributes-header">Common attributes</label>
+                        <table class="ui celled striped common-attributes table"></table>
+
+                        <label class="attributes-header">Common neighbors</label>
+                        <table class="ui celled striped common-neighbors table"></table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--**********************
+        *   Graph context menu   *
+        ***********************-->
+        <div id="context-menu" class="ui vertical menu">
+            <a class="item expand" data-action="global">
+                <i class="compress arrows alternate icon"></i>
+                Search <strong>Global</strong>
+            </a>
+            <a class="item hr"></a>
+
+            {{ range .Collectors }}
+                {{ if eq .Source.InGlobal true }}
+                <a class="item expand" data-action="{{ .Source.Name }}">
+                    <i class="{{ .Source.Icon }} icon"></i>
+                    Search <strong>{{ .Source.Label }}</strong>
+                </a>
+                {{ end }}
+            {{ end }}
+
+            <a class="item expand disabled">Non-global</a>
+
+            {{ range .Collectors }}
+                {{ if eq .Source.InGlobal false }}
+                <a class="item expand" data-action="{{ .Source.Name }}">
+                    <i class="{{ .Source.Icon }} icon"></i>
+                    Search <strong>{{ .Source.Label }}</strong>
+                </a>
+                {{ end }}
+            {{ end }}
+
+            <a class="item hr"></a>
+            <div class="ui dropdown item">
+                <i class="dropdown icon"></i>
+                Group neighbors
+                <div id="context-submenu" class="menu">
+                </div>
+            </div>
+            <div class="item common">
+                <i class="random icon"></i>
+                Find common
+            </div>
+            <a class="item hr"></a>
+            <a class="item delete">
+                <i class="trash icon"></i>
+                Delete Node
+            </a>
+        </div>
+
+        <!--***********************
+        *   Charts context menu   *
+        ************************-->
+        <div id="charts-context-menu" class="ui vertical menu">
+            <a class="item" data-action="=">
+                <i class="angle double down icon"></i>
+                Include
+            </a>
+            <a class="item" data-action="<>">
+                <i class="external alternate icon"></i>
+                Exclude
+            </a>
+        </div>
+
+        <!--************************
+        *   Cluster context menu   *
+        *************************-->
+        <div id="cluster-context-menu" class="ui vertical menu">
+            <a class="item open" data-action="=">
+                <i class="external alternate icon"></i>
+                Open
+            </a>
+            <a class="item delete" data-action="<>">
+                <i class="trash icon"></i>
+                Delete
+            </a>
+        </div>
+
+        <!--*************************
+        *   Dynamic notifications   *
+        **************************-->
+        {{ template "modal" . }}
+    </body>
+
+</html>

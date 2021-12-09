@@ -1,0 +1,114 @@
+/*
+ * Top
+ */
+.ui.grid {
+    width: 33%;
+    min-width: 700px;
+    margin: 20px auto 0 auto;
+}
+
+/*
+ * Content style
+ */
+.ui.two.column.grid .row .column span {
+    font-weight: bold;
+    margin-top: 9px;
+    position: absolute;
+}
+
+.ui.input>input {
+    line-height: 1.3em;
+}
+
+.ui.checkbox {
+    float: right;
+    margin-top: 8px;
+}
+
+.ui.toggle.checkbox input:checked~label:before,
+.ui.toggle.checkbox input:focus:checked~label:before {
+    background-color: #ff5f2d !important;
+}
+
+.ui.grid>.row.username {
+    padding-bottom: 2rem;
+}
+.ui.grid>.row.short {
+    padding-bottom: 0;
+}
+
+.ui.grid.settings>.row>.column:first-child {
+    width: 20%;
+}
+.ui.grid.settings>.row>.column:last-child {
+    width: 80%;
+}
+
+.ui.grid .info.row {
+    padding-bottom: 0;
+}
+
+.ui.grid .ui.message {
+    width: 100%;
+    box-shadow: none;
+    -webkit-box-shadow: none;
+}
+
+.ui[class*="two column"].grid>.row>.column .ui.input {
+    width: 100%;
+}
+
+/*
+ * Users mng
+ */
+.ui.grid.users > .row {
+    align-items: center;
+}
+
+.ui.grid.users > .row.th {
+    font-size: 14px;
+    padding-bottom: 0;
+    margin-bottom: -5px;
+}
+.ui.grid.users>.row.th > .column.username {
+    padding-left: 16px !important;
+}
+.ui.grid.users>.row.th>.column.actions > label:first-child {
+    margin-left: 10px;
+    margin-right: 15px;
+}
+.ui.grid.users>.row.th>.column.actions > label:nth-child(2) {
+    margin-right: 20px;
+}
+
+.ui.grid.users>.row > .column:first-child {
+    width: calc(100% - 360px);
+}
+.ui.grid.users>.row > .column:last-child {
+    width: auto;
+    text-align: right;
+}
+.ui.grid.users>.row > .column.lastactive {
+    width: 140px;
+    margin: 0 15px 1px 15px;
+}
+
+.ui.segment {
+    box-shadow: none;
+    -webkit-box-shadow: none;
+}
+.ui.segment:first-child {
+    margin-top: 1px;
+}
+
+.ui.grid.users>.row>.column .ui.segment {
+    padding: 9px 15px;
+}
+
+.ui.grid.users>.row>.column:last-child > .buttons {
+    margin-right: 12px;
+}
+.ui.grid.users>.row>.column:last-child i.icon {
+    margin-right: 0;
+    pointer-events: none;
+}

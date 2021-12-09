@@ -1,0 +1,131 @@
+/*
+ * Top
+ */
+.ui.grid {
+    width: 40%;
+    min-width: 1015px;
+    margin: 20px auto 0 auto;
+}
+
+.ui.grid h4 {
+    width: 100%;
+    padding: 0 0 .5em 0.7em;
+    margin-bottom: 0;
+    border-bottom: 1px solid #eaecef;
+}
+
+/*
+ * Content style
+ */
+.ui.two.column.grid .row .column span {
+    font-weight: bold;
+    margin-top: 9px;
+    position: absolute;
+}
+
+.ui.grid>.row.username {
+    padding-bottom: 2rem;
+}
+.ui.grid>.row.short {
+    padding-bottom: 0;
+}
+
+.ui.grid>.row>.column:first-child {
+    width: 20%;
+}
+.ui.grid>.row>.column:last-child {
+    width: 80%;
+}
+
+.row .ui.example {
+    background-color: #f6f8fa;
+    width: calc(50% - 5px);
+    margin: 0;
+    border: none;
+    font-family: SFMono-Regular,Consolas,Liberation Mono,Menlo,monospace;
+    font-size: 85%;
+    padding: 16px 16px 12px 16px;
+    -webkit-box-shadow: none;
+            box-shadow: none;
+}
+.row .ui.example:first-child {
+    margin-right: 10px;
+}
+
+.li-list {
+    line-height: 1.8;
+    margin-top: 0;
+}
+
+.ui.grid .ui.message {
+    width: 100%;
+    -webkit-box-shadow: none;
+            box-shadow: none;
+}
+
+.ui.message {
+    margin: 10px 0 0 0;
+}
+.ui.blue.message a {
+    color: #2185d0;
+    font-weight: bold;
+}
+
+.ui[class*="two column"].grid>.row>.column .ui.input {
+    width: 100%;
+}
+
+.ui.uuid {
+    margin-top: -9px;
+    margin-left: 10px;
+    margin-bottom: 5px;
+}
+
+/*
+ * Upload form
+ */
+.five.fields,
+.field .ui.input.left.icon,
+.field .ui.dropdown,
+.field > .ui.input {
+    width: 100%;
+    min-width: 10px;
+}
+.five.fields > .field {
+    float: left;
+    margin-right: 10px;
+    width: 195px;
+}
+.five.fields > .field:last-child {
+    margin-right: 0;
+}
+
+.five.fields > .field > label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+/*
+ * File selection & conversion
+ */
+#file {
+    width: 240px;
+    margin-right: 10px;
+}
+.ui.action.input input[type="text"] {
+    cursor: pointer;
+    border-right: 0;
+    color: #aaaeae;
+}
+.ui.action.input input[type="file"] {
+    display: none;
+}
+
+/*
+ * Queues
+ */
+#queueHeader,
+#downloadsHeader {
+    display: none;
+}

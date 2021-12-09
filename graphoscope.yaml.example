@@ -1,0 +1,140 @@
+# IP address and port to listen to
+host: 0.0.0.0
+port: 443
+
+# HTTPS files
+certFile: /etc/graphoscope/certs/graphoscope.crt
+keyFile:  /etc/graphoscope/certs/graphoscope.key
+
+# Environment.
+# If development - all users have admin rights, useful during the initial setup.
+#
+# Possible values:
+#   dev  -> log events to the stdout only
+#   prod -> log events to the file only
+environment: dev
+
+# Data sources definitions directory
+sources: sources
+
+# Plugins directory
+plugins: plugins
+
+# Limit the amount of returned entries from each data source.
+# Entries beyond this number will be replaced by a statistics info,
+# so user is able to improve the query with additional filters
+limit: 1000
+
+# A way to enable/disable initial graph animations when new nodes are added.
+# During any positive value an engine will calculate the final position of all
+# the elements and display them. With "0" value the engine adds new nodes
+# with physics/animations enabled and relocation happens frame by frame.
+# Users can rewrite their personal value according the personal needs.
+# Measured in milliseconds
+stabilizationTime: 0
+
+
+#
+# Logging
+#
+
+log:
+    # File output in a "prod" environment
+    file: /var/log/graphoscope/graphoscope.log
+
+    # Log level.
+    # Possible values:
+    #   panic - 5
+    #   fatal - 4
+    #   error - 3
+    #   warn  - 2
+    #   info  - 1
+    #   debug - 0
+    level: 1
+
+
+#
+# Uploaded files settings
+#
+
+upload:
+    # Path for uploaded/processed files
+    path: upload/
+    # Max file size in bytes to allow to upload
+    maxSize: 26214400  # 25MB in bytes
+    # Max amount of indicators to process
+    maxIndicators: 1000
+    # Interval between cleaning operations in seconds
+    deleteInterval: 3600
+    # Expiration time of the files with the processing results in seconds
+    deleteExpiration: 604800  # 1 week
+
+
+#
+# Web GUI related settings.
+#
+# Sometimes it's enough to go with API features only,
+# which also don't require a running database.
+#
+# If disabled - other settings below will be ignored
+#
+
+guiEnabled: true
+
+# Graph styling groups definition
+groups: files/groups.json
+
+# Query formatting rules
+formats: files/formats.yaml
+
+# List of the latest service features
+features: files/features.yaml
+
+# Documentation files directory
+docs: docs
+
+
+#
+# Database settings
+#
+
+database:
+    url:  mongodb://localhost:27017
+    name: graphoscope
+
+    user:     graphoscope
+    password: password
+
+    # Collections names.
+    # Not hardcoded to be able to test something like with a fresh installation
+    users:      users
+    dashboards: dashboards
+    notes:      notes
+    sessions:   sessions
+    cache:      cache
+    settings:   settings
+
+    # Requests expiration time in seconds
+    timeout: 10
+    # Cache TTL in seconds.
+    # MongoDB background task that removes expired documents runs every 60 seconds
+    cacheTTL: 600
+
+
+#
+# Session storage
+#
+
+sessions:
+    # TTL in seconds
+    ttl:               3600  # 1 hour
+    # Name of browser's cookie to set
+    cookieName:        sessionID
+    # Authentication key for the secure cookies.
+    # It is recommended to use a key with 32 or 64 bytes.
+    # If changed - browser's cookies must be deleted to access the service again
+    authenticationKey: authentication-key
+    # Encryption key for the secure cookies.
+    # Valid lengths are 16, 24, or 32 bytes to select AES-128, AES-192, or AES-256.
+    # If changed - browser's cookies must be deleted to access the service again
+    encryptionKey:     16-chars-enc-key

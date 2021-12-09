@@ -1,0 +1,24 @@
+package main
+
+import (
+	"database/sql"
+
+	"github.com/cert-lv/graphoscope/pdk"
+)
+
+// Export symbols
+var (
+	Name    = "mysql"
+	Version = "1.0.0"
+	Plugin  plugin
+)
+
+type plugin struct {
+
+	// Inherit default configuration fields
+	source *pdk.Source
+
+	// Custom fields
+	db    *sql.DB
+	limit int
+}

@@ -1,0 +1,49 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Graphoscope</title>
+
+    <link href="assets/css/semantic-2.8.6.min.css"      rel="stylesheet" type="text/css" />
+    <link href="assets/css/common.css?v={{ .Version }}" rel="stylesheet" type="text/css" />
+    <link href="assets/css/signin.css?v={{ .Version }}" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+    <div class="ui middle aligned five column centered grid">
+        <div class="column five wide">
+            <img class="noselect" src="assets/img/logo.svg">
+            <h1 class="ui header noselect">Graphoscope
+                {{ if ne .Environment "prod" }}
+                <sub> dev</sub>
+                {{ end }}
+            </h1>
+
+            </br>
+
+            {{ if ne .Error ""}}
+                <div class="ui negative message">{{ .Error }}</div>
+            {{ end }}
+
+            <form class="ui form" action="/signin" method="POST">
+                <div class="field">
+                    <label>Username</label>
+                    <input type="text" name="username" spellcheck="false">
+                </div>
+                    <div class="field">
+                    <label>Password</label>
+                    <input type="password" name="password">
+                </div>
+                </br>
+
+                <button class="ui orange button" type="submit">Sign In</button>
+                <button class="ui basic button" formaction="/signup">Sign Up</button>
+            </form>
+        </div>
+    </div>
+
+    <!--*******************
+    *   Platform credits  *
+    ********************-->
+    {{ template "credits" . }}
+</body>
+</html>

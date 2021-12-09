@@ -1,0 +1,113 @@
+<!DOCTYPE HTML>
+
+<html>
+
+    <head>
+        <title>Graphoscope</title>
+
+        <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
+
+        <link href="assets/css/semantic-2.8.6.min.css"                rel="stylesheet" type="text/css" />
+        <link href="assets/css/github-markdown.css?v={{ .Version }}"  rel="stylesheet" type="text/css" />
+        <link href="assets/css/common.css?v={{ .Version }}"           rel="stylesheet" type="text/css" />
+        <link href="assets/css/docs.css?v={{ .Version }}"             rel="stylesheet" type="text/css" />
+
+        <script type="text/javascript" src="assets/js/jquery-3.4.1.min.js"></script>
+        <script type="text/javascript" src="assets/js/semantic-2.8.6.min.js"></script>
+        <script type="text/javascript" src="assets/js/markdown-it.min-11.0.0.js"></script>
+        <script type="text/javascript" src="assets/js/markdownItAnchor.umd.js"></script>
+        <script type="text/javascript" src="assets/js/markdownItTocDoneRight.umd.js"></script>
+
+        <script type="text/javascript" src="assets/js/modal.js?v={{ .Version }}"></script>
+        <script type="text/javascript" src="assets/js/notifications.js?v={{ .Version }}"></script>
+        <script type="text/javascript" src="assets/js/docs.js?v={{ .Version }}"></script>
+
+        <script>
+            NOTIFICATIONS = {{ .Account.Notifications }};
+        </script>
+    </head>
+
+    <body>
+        <noscript>
+            <div align="center" class="noscript">
+                JavaScript must be enabled!</br>
+            </div>
+        </noscript>
+
+        <!--**********************
+        *   Top window section   *
+        ***********************-->
+        {{ template "topbar" . }}
+
+        <div class="ui secondary menu">
+            <a class="item active" data-tab="ui">UI</a>
+            <a class="item" data-tab="search">Search</a>
+            <a class="item" data-tab="admin">Administration</a>
+        </div>
+
+        <!--******************
+        *   User interface   *
+        *******************-->
+        <div class="ui tab segment active" data-tab="ui">
+            <div class="ui two column grid">
+                <div class="row">
+                    <h3 class="ui header">
+                        <i class="pager icon"></i>
+                        <div class="content">User interface</div>
+                    </h3>
+                </div>
+
+                <div class="row">
+                    <div class="markdown-body" id="ui-md">{{ index .Docs 0 }}</div>
+                </div>
+            </div>
+        </div>
+
+        <!--**********
+        *   Search   *
+        ***********-->
+        <div class="ui tab segment" data-tab="search">
+            <div class="ui two column grid">
+                <div class="row">
+                    <h3 class="ui header">
+                        <i class="search icon"></i>
+                        <div class="content">Search</div>
+                    </h3>
+                </div>
+
+                <div class="row">
+                    <div class="markdown-body" id="search-md">{{ index .Docs 1 }}</div>
+                </div>
+            </div>
+        </div>
+
+        <!--******************
+        *   Administration   *
+        *******************-->
+        <div class="ui tab segment" data-tab="admin">
+            <div class="ui two column grid">
+                <div class="row">
+                    <h3 class="ui header">
+                        <i class="tools icon"></i>
+                        <div class="content">Administration</div>
+                    </h3>
+                </div>
+
+                <div class="row">
+                    <div class="markdown-body" id="admin-md">{{ index .Docs 2 }}</div>
+                </div>
+            </div>
+        </div>
+
+        <!--*************************
+        *   Dynamic notifications   *
+        **************************-->
+        {{ template "modal" . }}
+
+        <!--*******************
+        *   Platform credits  *
+        ********************-->
+        {{ template "credits" . }}
+    </body>
+
+</html>

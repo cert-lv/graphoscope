@@ -1,0 +1,53 @@
+{{ define "topbar" }}
+
+<div class="top-header">
+    <div class="projectname" onclick="location.href='/'">
+        <img class="noselect" src="/assets/img/logo.svg">
+        <span>Graphoscope
+            {{ if ne .Environment "prod" }}
+            <sub class="grey_fg"> dev</sub>
+            {{ end }}
+        </span>
+    </div>
+
+    <div class="profile">
+        <span id="username">{{ .Account.Username }}</span>
+
+        <div id="notifications-count">
+            {{ if .Account.Notifications }}
+            <div class="ui orange label count noselect">{{ len .Account.Notifications }}</div>
+            {{ end }}
+        </div>
+
+        <div class="ui icon top right pointing dropdown button">
+            <i class="cog icon" title="Options"></i>
+            <div class="menu">
+                <div class="item" onclick="location.href='/profile'">
+                    <i class="user tie icon"></i>
+                    Profile
+                </div>
+
+                {{ if .Account.Admin }}
+                <div class="item" onclick="location.href='/admin'">
+                    <i class="drafting compass icon"></i>
+                    Administration
+                </div>
+                {{ end }}
+
+                <div class="item" onclick="location.href='/docs'">
+                    <i class="file alternate outline icon"></i>
+                    Documentation
+                </div>
+
+                <div class="ui divider"></div>
+
+                <div class="item" onclick="location.href='/signout'">
+                    <i class="power off icon"></i>
+                    Sign out
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{ end }}

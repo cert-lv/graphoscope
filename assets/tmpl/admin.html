@@ -1,0 +1,413 @@
+<!DOCTYPE HTML>
+
+<html>
+
+    <head>
+        <title>Graphoscope</title>
+
+        <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
+
+        <link href="assets/css/semantic-2.8.6.min.css"      rel="stylesheet" type="text/css" />
+        <link href="assets/css/common.css?v={{ .Version }}" rel="stylesheet" type="text/css" />
+        <link href="assets/css/admin.css?v={{ .Version }}"  rel="stylesheet" type="text/css" />
+
+        <script type="text/javascript" src="assets/js/jquery-3.4.1.min.js"></script>
+        <script type="text/javascript" src="assets/js/semantic-2.8.6.min.js"></script>
+
+        <script type="text/javascript" src="assets/js/websocket.js?v={{ .Version }}"></script>
+        <script type="text/javascript" src="assets/js/modal.js?v={{ .Version }}"></script>
+        <script type="text/javascript" src="assets/js/settings.js?v={{ .Version }}"></script>
+        <script type="text/javascript" src="assets/js/users.js?v={{ .Version }}"></script>
+        <script type="text/javascript" src="assets/js/notifications.js?v={{ .Version }}"></script>
+        <script type="text/javascript" src="assets/js/admin.js?v={{ .Version }}"></script>
+
+        <script>
+            MSG = '{{ .Error }}';
+            NOTIFICATIONS = {{ .Account.Notifications }};
+        </script>
+    </head>
+
+    <body>
+        <noscript>
+            <div align="center" class="noscript">
+                JavaScript must be enabled!</br>
+            </div>
+        </noscript>
+
+        <!--**********************
+        *   Top window section   *
+        ***********************-->
+        {{ template "topbar" . }}
+
+        <div class="ui secondary menu">
+            <a class="item active" data-tab="graph">Graph</a>
+            <a class="item" data-tab="users">Users</a>
+        </div>
+
+        <!--*********************
+        *   Graph UI settings   *
+        **********************-->
+        <div class="ui tab segment active" data-tab="graph">
+            <div class="ui two column grid settings">
+                <div class="row">
+                    <h3 class="ui header">
+                        <i class="settings icon"></i>
+                        <div class="content">Graph UI settings</div>
+                    </h3>
+                </div>
+
+
+                <div class="row">
+                    <div class="ui message">
+                        <h3 class="ui header">
+                            <i class="circle outline icon"></i>
+                            <div class="content">Nodes</div>
+                        </h3>
+                    </div>
+                </div>
+
+                <div class="row short">
+                    <p>Initial size. Will increase with new neighbors coming. Set <span class="ui orange text">10</span> to reset.</p>
+                </div>
+
+                <div class="row">
+                    <div class="column">
+                        <span>Size:</span>
+                    </div>
+                    <div class="column">
+                        <div class="ui input">
+                            <input type="text" value="{{ .GraphSettings.NodeSize }}" id="nodesize" spellcheck="false">
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="row short">
+                    <p>Border width. Set <span class="ui orange text">1</span> to reset.</p>
+                </div>
+
+                <div class="row">
+                    <div class="column">
+                        <span>Border width:</span>
+                    </div>
+                    <div class="column">
+                        <div class="ui input">
+                            <input type="text" value="{{ .GraphSettings.BorderWidth }}" id="borderwidth" spellcheck="false">
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="row short">
+                    <p>Background and border color in a Hex format of selected nodes. Set <span class="ui orange text">#f00</span> and <span class="ui orange text">#000</span> to reset.</p>
+                </div>
+
+                <div class="row short">
+                    <div class="column">
+                        <span>Background color:</span>
+                    </div>
+                    <div class="column">
+                        <div class="ui input">
+                            <input type="text" value="{{ .GraphSettings.BGcolor }}" id="bgcolor" spellcheck="false">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="column">
+                        <span>Border color:</span>
+                    </div>
+                    <div class="column">
+                        <div class="ui input">
+                            <input type="text" value="{{ .GraphSettings.BorderColor }}" id="bordercolor" spellcheck="false">
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="row short">
+                    <p>Labels font size. Set <span class="ui orange text">20</span> to reset.</p>
+                </div>
+
+                <div class="row">
+                    <div class="column">
+                        <span>Font size:</span>
+                    </div>
+                    <div class="column">
+                        <div class="ui input">
+                            <input type="text" value="{{ .GraphSettings.NodeFontSize }}" id="nodefontsize" spellcheck="false">
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="row short">
+                    <p>Shadow around node elements. Check to enable.</p>
+                </div>
+
+                <div class="row">
+                    <div class="column">
+                        <span>Shadow enabled:</span>
+                    </div>
+                    <div class="column">
+                        <div class="ui toggle checkbox shadow">
+                            <input type="checkbox" {{ if eq .GraphSettings.Shadow true}}checked{{ end }}>
+                            <label></label>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="row"></div>
+
+
+                <div class="row">
+                    <div class="ui message">
+                        <h3 class="ui header">
+                            <i class="project diagram icon"></i>
+                            <div class="content">Edges</div>
+                        </h3>
+                    </div>
+                </div>
+
+
+                <div class="row short">
+                    <p>Initial width. Set <span class="ui orange text">2</span> to reset.</p>
+                </div>
+
+                <div class="row">
+                    <div class="column">
+                        <span>Width:</span>
+                    </div>
+                    <div class="column">
+                        <div class="ui input">
+                            <input type="text" value="{{ .GraphSettings.EdgeWidth }}" id="edgewidth" spellcheck="false">
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="row short">
+                    <p>Color in a Hex format of selected edges. Set <span class="ui orange text">#f00</span> to reset.</p>
+                </div>
+
+                <div class="row">
+                    <div class="column">
+                        <span>Color:</span>
+                    </div>
+                    <div class="column">
+                        <div class="ui input">
+                            <input type="text" value="{{ .GraphSettings.EdgeColor }}" id="edgecolor" spellcheck="false">
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="row short">
+                    <p>Labels font size and color. Set <span class="ui orange text">16</span> and <span class="ui orange text">#888</span> to reset.</p>
+                </div>
+
+                <div class="row short">
+                    <div class="column">
+                        <span>Font size:</span>
+                    </div>
+                    <div class="column">
+                        <div class="ui input">
+                            <input type="text" value="{{ .GraphSettings.EdgeFontSize }}" id="edgefontsize" spellcheck="false">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="column">
+                        <span>Font color:</span>
+                    </div>
+                    <div class="column">
+                        <div class="ui input">
+                            <input type="text" value="{{ .GraphSettings.EdgeFontColor }}" id="edgefontcolor" spellcheck="false">
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="row short">
+                    <p>Arrow to the end node. Check to enable.</p>
+                </div>
+
+                <div class="row">
+                    <div class="column">
+                        <span>Arrow enabled:</span>
+                    </div>
+                    <div class="column">
+                        <div class="ui toggle checkbox arrow">
+                            <input type="checkbox" {{ if eq .GraphSettings.Arrow true}}checked{{ end }}>
+                            <label></label>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="row short">
+                    <p>Should edges be smooth or straight. Check to enable smooth.</p>
+                </div>
+
+                <div class="row">
+                    <div class="column">
+                        <span>Smooth:</span>
+                    </div>
+                    <div class="column">
+                        <div class="ui toggle checkbox smooth">
+                            <input type="checkbox" {{ if eq .GraphSettings.Smooth true}}checked{{ end }}>
+                            <label></label>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="row"></div>
+
+
+                <div class="row">
+                    <div class="ui message">
+                        <h3 class="ui header">
+                            <i class="hand point up outline icon"></i>
+                            <div class="content">Interaction</div>
+                        </h3>
+                    </div>
+                </div>
+
+
+                <div class="row short">
+                    <p>Elements reaction on mouse hover. Check to enable.</p>
+                </div>
+
+                <div class="row">
+                    <div class="column">
+                        <span>Hover:</span>
+                    </div>
+                    <div class="column">
+                        <div class="ui toggle checkbox hover">
+                            <input type="checkbox" {{ if eq .GraphSettings.Hover true}}checked{{ end }}>
+                            <label></label>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="row short">
+                    <p>Can multiple elements be selected or not. Check to allow.</p>
+                </div>
+
+                <div class="row">
+                    <div class="column">
+                        <span>Multiselect:</span>
+                    </div>
+                    <div class="column">
+                        <div class="ui toggle checkbox multiselect">
+                            <input type="checkbox" {{ if eq .GraphSettings.MultiSelect true}}checked{{ end }}>
+                            <label></label>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="row short">
+                    <p>Hide edges while dragging. Useful to increase performance. Check to enable.</p>
+                </div>
+
+                <div class="row">
+                    <div class="column">
+                        <span>Hide edges on drag:</span>
+                    </div>
+                    <div class="column">
+                        <div class="ui toggle checkbox hideedgesondrag">
+                            <input type="checkbox" {{ if eq .GraphSettings.HideEdgesOnDrag true}}checked{{ end }}>
+                            <label></label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="ui save settings orange button" title="Save settings">
+                        <i class="save icon"></i>
+                        Save
+                    </div>
+                </div>
+
+
+                <div class="row"></div>
+                <div class="row"></div>
+            </div>
+        </div>
+
+        <!--*****************
+        *   Users section   *
+        ******************-->
+        <div class="ui tab segment" data-tab="users">
+            <div class="ui three column grid users">
+                <div class="row">
+                    <div class="column">
+                        <h3 class="ui header">
+                            <i class="users icon"></i>
+                            <div class="content">User management</div>
+                        </h3>
+                    </div>
+                </div>
+
+                <div class="row th grey_fg">
+                    <div class="column username">Username</div>
+                    <div class="column lastactive">Last active</div>
+                    <div class="column actions">
+                        <label>Reset</label>
+                        <label>Delete</label>
+                        <label>Is admin</label>
+                    </div>
+                </div>
+
+
+                {{ range $account := .Accounts }}
+                <div class="row short" id="username-{{ $account.Username }}">
+                    <div class="column">
+                        <div class="ui segment"><p>{{ $account.Username }}</p></div>
+                    </div>
+
+                    <div class="column lastactive">
+                        {{ if not $account.LastActive.IsZero }}{{ $account.LastActive.Format "02.01.2006 15:04 UTC" }}{{ end }}
+                    </div>
+
+
+                    <div class="column">
+                        <div class="ui buttons">
+                            <div class="ui orange button reset" title="Reset password" data-username="{{ $account.Username }}">
+                                <i class="eraser icon"></i>
+                            </div>
+
+                            <div class="ui orange button delete" title="Delete user" data-username="{{ $account.Username }}">
+                                <i class="trash icon"></i>
+                            </div>
+                        </div>
+
+                        <div class="ui toggle checkbox admin">
+                            <input type="checkbox" data-username="{{ $account.Username }}" {{ if $account.Admin }}checked{{ end }}>
+                        </div>
+                    </div>
+                </div>
+                {{ end }}
+
+
+                <div class="row"></div>
+            </div>
+        </div>
+
+        <!--*************************
+        *   Dynamic notifications   *
+        **************************-->
+        {{ template "modal" . }}
+
+        <!--*******************
+        *   Platform credits  *
+        ********************-->
+        {{ template "credits" . }}
+    </body>
+
+</html>

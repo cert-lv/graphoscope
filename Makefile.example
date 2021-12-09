@@ -1,0 +1,186 @@
+# Makefile example.
+# Check the installation manual about the changes needed before using it
+
+# Import Go env variables
+export PATH := $(PATH):$(GOROOT)/bin:$(GOPATH)/bin
+
+IMAGE_NAME  := graphoscope
+REMOTE      := root@localhost
+REMOTE_PATH := /opt/graphoscope
+VERSION     := $(shell cat VERSION)
+
+
+# Build plugins and binary file to deploy
+compile:
+	rm -f build/plugins/* build/$(IMAGE_NAME)
+
+	podman build --target plugins-builder -t $(IMAGE_NAME)-plugins:$(VERSION) -f Dockerfile .
+	podman run --rm --entrypoint sh \
+	           -v $(shell pwd)/build/plugins:/opt/mount:Z \
+	           $(IMAGE_NAME)-plugins:$(VERSION) \
+	           -c "cp /go/plugins/*.so /opt/mount/"
+
+	podman build -t $(IMAGE_NAME):$(VERSION) -f Dockerfile .
+	podman run --rm --entrypoint sh \
+	           -v $(shell pwd)/build:/opt/mount:Z \
+	           $(IMAGE_NAME):$(VERSION) \
+	           -c "cp /go/graphoscope /opt/mount/"
+
+	tar -czvf dist/graphoscope.tar.gz -C build plugins graphoscope
+	podman rmi $(IMAGE_NAME):$(VERSION) $(IMAGE_NAME)-plugins:$(VERSION)
+
+# Run local installation
+install:
+	# Systemd files
+	cp files/graphoscope.service /etc/systemd/system/
+	chmod 644 /etc/systemd/system/graphoscope.service
+	systemctl daemon-reload
+	systemctl stop graphoscope
+
+	# Prepare needed folders
+	mkdir -p /etc/$(IMAGE_NAME)/certs
+	mkdir -p $(REMOTE_PATH)/files $(REMOTE_PATH)/sources $(REMOTE_PATH)/upload
+	mkdir -p /var/log/$(IMAGE_NAME)
+
+	# Copy the content
+	cp graphoscope.yaml.example   /etc/$(IMAGE_NAME)/graphoscope.yaml
+	cp certs/graphoscope.*        /etc/$(IMAGE_NAME)/certs/
+	cp sources/demo.yaml.example  $(REMOTE_PATH)/sources/demo.yaml
+	cp files/groups.json.example  $(REMOTE_PATH)/files/groups.json
+	cp files/formats.yaml.example $(REMOTE_PATH)/files/formats.yaml
+	cp files/demo.csv             $(REMOTE_PATH)/files/
+
+	chmod 600 /etc/$(IMAGE_NAME)/graphoscope.yaml
+	chmod 600 /etc/$(IMAGE_NAME)/certs/*
+
+	# Updatable content, sync with the "update" block
+	tar -xvf dist/graphoscope.tar.gz -C $(REMOTE_PATH)
+	chmod 744 $(REMOTE_PATH)/$(IMAGE_NAME)
+
+	cp -r assets           $(REMOTE_PATH)/
+	cp -r docs             $(REMOTE_PATH)/
+	cp files/features.yaml $(REMOTE_PATH)/files/
+	cp VERSION             $(REMOTE_PATH)/
+
+	chmod 744 $(REMOTE_PATH)/$(IMAGE_NAME)
+
+# Install on the remote server
+install-remote:
+	# Systemd files
+	scp files/graphoscope.service $(REMOTE):/etc/systemd/system/
+	ssh $(REMOTE) chmod 644 /etc/systemd/system/graphoscope.service
+	ssh $(REMOTE) systemctl daemon-reload
+	ssh $(REMOTE) systemctl stop graphoscope
+
+	# Prepare needed folders
+	ssh $(REMOTE) mkdir -p /etc/$(IMAGE_NAME)/certs
+	ssh $(REMOTE) mkdir -p $(REMOTE_PATH)/{files,plugins,sources,upload}
+	ssh $(REMOTE) mkdir -p /var/log/$(IMAGE_NAME)
+
+	# Copy the content
+	scp graphoscope.yaml.example   $(REMOTE):/etc/$(IMAGE_NAME)/graphoscope.yaml
+	scp certs/graphoscope.*        $(REMOTE):/etc/$(IMAGE_NAME)/certs/
+	scp sources/demo.yaml.example  $(REMOTE):$(REMOTE_PATH)/sources/demo.yaml
+	scp files/groups.json.example  $(REMOTE):$(REMOTE_PATH)/files/groups.json
+	scp files/formats.yaml.example $(REMOTE):$(REMOTE_PATH)/files/formats.yaml
+	scp files/demo.csv             $(REMOTE):$(REMOTE_PATH)/files/
+
+	ssh $(REMOTE) chmod 600 /etc/$(IMAGE_NAME)/graphoscope.yaml
+	ssh $(REMOTE) chmod 600 /etc/$(IMAGE_NAME)/certs/*
+
+	# Updatable content, sync with the "update-remote" block
+	scp -r assets           $(REMOTE):$(REMOTE_PATH)/
+	scp -r docs             $(REMOTE):$(REMOTE_PATH)/
+	scp build/plugins/*.so  $(REMOTE):$(REMOTE_PATH)/plugins/
+	scp build/$(IMAGE_NAME) $(REMOTE):$(REMOTE_PATH)/
+	scp files/features.yaml $(REMOTE):$(REMOTE_PATH)/files/
+	scp VERSION             $(REMOTE):$(REMOTE_PATH)/
+
+	ssh $(REMOTE) chmod 744 $(REMOTE_PATH)/$(IMAGE_NAME)
+
+# Update existing local service,
+# sync with the "install" target
+update:
+	systemctl stop graphoscope
+
+	# Clear old data
+	rm -rf $(REMOTE_PATH)/assets $(REMOTE_PATH)/docs $(REMOTE_PATH)/plugins
+
+	# Copy new content
+	tar -xvf dist/graphoscope.tar.gz -C $(REMOTE_PATH)
+	chmod 744 $(REMOTE_PATH)/$(IMAGE_NAME)
+
+	cp -r assets           $(REMOTE_PATH)/
+	cp -r docs             $(REMOTE_PATH)/
+	cp files/features.yaml $(REMOTE_PATH)/files/
+	cp VERSION             $(REMOTE_PATH)/
+
+	chmod 744 $(REMOTE_PATH)/$(IMAGE_NAME)
+	systemctl start graphoscope
+
+# Update existing remote service,
+# sync with the "install-remote" target
+update-remote:
+	ssh $(REMOTE) systemctl stop graphoscope
+
+	# Clear old data
+	ssh $(REMOTE) rm -rf    $(REMOTE_PATH)/{assets,docs,plugins}
+	ssh $(REMOTE) mkdir -p  $(REMOTE_PATH)/plugins
+
+	# Copy new content
+	scp -r assets           $(REMOTE):$(REMOTE_PATH)/
+	scp -r docs             $(REMOTE):$(REMOTE_PATH)/
+	scp build/plugins/*.so  $(REMOTE):$(REMOTE_PATH)/plugins/
+	scp build/$(IMAGE_NAME) $(REMOTE):$(REMOTE_PATH)/
+	scp files/features.yaml $(REMOTE):$(REMOTE_PATH)/files/
+	scp VERSION             $(REMOTE):$(REMOTE_PATH)/
+
+	ssh $(REMOTE) chmod 744 $(REMOTE_PATH)/$(IMAGE_NAME)
+	ssh $(REMOTE) systemctl start graphoscope
+
+# Uninstall the service
+uninstall:
+	systemctl stop graphoscope
+
+	rm -rf $(REMOTE_PATH)
+	rm -rf /var/log/$(IMAGE_NAME)
+	rm -rf /etc/$(IMAGE_NAME)
+	rm -rf /etc/systemd/system/graphoscope.service
+
+uninstall-remote:
+	ssh $(REMOTE) systemctl stop graphoscope
+
+	ssh $(REMOTE) rm -rf $(REMOTE_PATH)
+	ssh $(REMOTE) rm -rf /var/log/$(IMAGE_NAME)
+	ssh $(REMOTE) rm -rf /etc/$(IMAGE_NAME)
+	ssh $(REMOTE) rm -rf /etc/systemd/system/graphoscope.service
+
+# Build plugins locally, mainly for development
+plugins-local:
+	go build -buildmode=plugin -ldflags="-w" -o plugins/elasticsearch.v7.so plugins/src/elasticsearch.v7/*.go
+	go build -buildmode=plugin -ldflags="-w" -o plugins/http.so             plugins/src/http/*.go
+	go build -buildmode=plugin -ldflags="-w" -o plugins/mongodb.so          plugins/src/mongodb/*.go
+	go build -buildmode=plugin -ldflags="-w" -o plugins/pastelyzer.so       plugins/src/pastelyzer/*.go
+	go build -buildmode=plugin -ldflags="-w" -o plugins/postgresql.so       plugins/src/postgresql/*.go
+	go build -buildmode=plugin -ldflags="-w" -o plugins/mysql.so            plugins/src/mysql/*.go
+	go build -buildmode=plugin -ldflags="-w" -o plugins/file-csv.so         plugins/src/file/csv/*.go
+	CGO_CFLAGS="-g -O2 -Wno-return-local-addr" go build -buildmode=plugin -ldflags="-w" -o plugins/sqlite.so plugins/src/sqlite/*.go
+	go build -buildmode=plugin -ldflags="-w" -o plugins/template.so         plugins/src/template/*.go
+
+# Test Go code
+test:
+	go test plugins/src/elasticsearch.v7/*.go
+	go test plugins/src/http/*.go
+	go test plugins/src/mongodb/*.go
+	go test plugins/src/pastelyzer/*.go
+	go test plugins/src/postgresql/*.go
+	go test plugins/src/mysql/*.go
+	go test plugins/src/file/csv/*.go
+	CGO_CFLAGS="-g -O2 -Wno-return-local-addr" go test plugins/src/sqlite/*.go
+
+# Check for Golang errors & inefficient code. Install with:
+# curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh
+# mv bin/golangci-lint "$GOPATH/bin/" && rm -rf bin
+lint:
+	golangci-lint run --enable=golint --enable=gosec --enable=maligned --enable=prealloc --skip-dirs "(ideas)" ./...
+	# golint .

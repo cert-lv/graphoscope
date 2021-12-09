@@ -1,0 +1,336 @@
+<!DOCTYPE HTML>
+
+<html>
+
+    <head>
+        <title>Graphoscope</title>
+
+        <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
+
+        <link href="assets/css/semantic-2.8.6.min.css"                rel="stylesheet" type="text/css" />
+        <link href="assets/css/font-awesome.min.css?v={{ .Version }}" rel="stylesheet" type="text/css" />
+        <link href="assets/css/common.css?v={{ .Version }}"           rel="stylesheet" type="text/css" />
+        <link href="assets/css/profile.css?v={{ .Version }}"          rel="stylesheet" type="text/css" />
+
+        <script type="text/javascript" src="assets/js/jquery-3.4.1.min.js"></script>
+        <script type="text/javascript" src="assets/js/semantic-2.8.6.min.js"></script>
+
+        <script type="text/javascript" src="assets/js/websocket.js?v={{ .Version }}"></script>
+        <script type="text/javascript" src="assets/js/modal.js?v={{ .Version }}"></script>
+        <script type="text/javascript" src="assets/js/options.js?v={{ .Version }}"></script>
+        <script type="text/javascript" src="assets/js/account.js?v={{ .Version }}"></script>
+        <script type="text/javascript" src="assets/js/actions.js?v={{ .Version }}"></script>
+        <script type="text/javascript" src="assets/js/notifications.js?v={{ .Version }}"></script>
+        <script type="text/javascript" src="assets/js/profile.js?v={{ .Version }}"></script>
+
+        <script type="text/javascript">
+            MAXUPLOADSIZE = {{ .Account.Uploads.MaxSize }};
+            NOTIFICATIONS = {{ .Account.Notifications }};
+        </script>
+    </head>
+
+    <body>
+        <noscript>
+            <div align="center" class="noscript">
+                JavaScript must be enabled!</br>
+            </div>
+        </noscript>
+
+        <!--**********************
+        *   Top window section   *
+        ***********************-->
+        {{ template "topbar" . }}
+
+        <div class="ui secondary menu">
+            <a class="item active" data-tab="profile">Profile</a>
+            <a class="item" data-tab="account">Account</a>
+            <a class="item" data-tab="actions">Actions</a>
+        </div>
+
+        <!--*******************
+        *   Profile section   *
+        ********************-->
+        <div class="ui tab segment active" data-tab="profile">
+            <div class="ui two column grid">
+                <div class="row">
+                    <h3 class="ui header">
+                        <i class="settings icon"></i>
+                        <div class="content">Profile settings</div>
+                    </h3>
+                </div>
+
+                <div class="row short">
+                    <p>To skip initial graph animations when new nodes are added - set stabilization time (in <span class="ui orange text">milliseconds</span>), during which the resulting positions will be calculated. Graph fit/center will also be applied. Set <span class="ui orange text">0</span> to disable. <span class="ui orange text">5000</span> could be a value to try.</p>
+                </div>
+
+                <div class="row">
+                    <div class="column">
+                        <span>Stabilization time:</span>
+                    </div>
+                    <div class="column">
+                        <div class="ui input">
+                            <input type="text" value="{{ .Account.Options.StabilizationTime }}" id="stabilization" spellcheck="false">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row short">
+                    <p>Set the individual limit - the amount of entries each data source should return. Will be a part of each SQL query. It will be sent to each data source as a part of the query. If API service's limit is smaller than user's limit - query will be edited according to the API service's limit. Set <span class="ui orange text">0</span> to make unlimited.</p>
+                </div>
+
+                <div class="row short">
+                    <div class="column">
+                        <span>Limit:</span>
+                    </div>
+                    <div class="column">
+                        <div class="ui input">
+                            <input type="text" value="{{ .Account.Options.Limit }}" id="limit" spellcheck="false">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="ui save profile orange button" title="Save settings">
+                        <i class="save icon"></i>
+                        Save
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--*******************
+        *   Account section   *
+        ********************-->
+        <div class="ui tab segment" data-tab="account">
+            <div class="ui two column grid">
+                <div class="row">
+                    <h3 class="ui header">
+                        <i class="id card outline icon"></i>
+                        <div class="content">Authentication UUID</div>
+                    </h3>
+                </div>
+
+                <div class="row">
+                    <p>Should be used in API queries:&nbsp;<span id="uuid" class="ui orange text">{{ .Account.UUID }}</span>
+                        <div class="ui uuid button">
+                            <i class="sync icon"></i>
+                            Regenerate
+                        </div>
+                    </p>
+                </div>
+
+                <div class="row"></div>
+
+                <div class="row">
+                    <h3 class="ui header">
+                        <i class="user outline icon"></i>
+                        <div class="content">Account information and settings</div>
+                    </h3>
+                </div>
+
+                <div class="row short">Change your password, repeat two times:</div>
+
+                <div class="row password short">
+                    <div class="column">
+                        <span>New password:</span>
+                    </div>
+                    <div class="column">
+                        <div class="ui input">
+                            <input type="password" id="newPassword">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row short">
+                    <div class="column">
+                        <span>Repeat password:</span>
+                    </div>
+                    <div class="column">
+                        <div class="ui input">
+                            <input type="password" id="newPasswordRepeat">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="ui save account orange button" title="Save settings">
+                        <i class="save icon"></i>
+                        Save
+                    </div>
+                </div>
+
+                <div class="row"></div>
+
+                <div class="row short">
+                    <div class="ui orange message">
+                        <div class="header">Danger zone</div>
+                        <p>Actions here can't be undone.</p>
+                    </div>
+                </div>
+
+                <div class="row short">Remove an account from the system completely:</div>
+
+                <div class="row">
+                    <div class="ui delete account red button">
+                        <i class="trash icon"></i>
+                        Delete account
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--*******************
+        *   Actions section   *
+        ********************-->
+        <div class="ui tab segment" data-tab="actions">
+            <div class="ui two column grid">
+                <div class="row">
+                    <h3 class="ui header">
+                        <i class="calendar outline icon"></i>
+                        <div class="content">Long term actions</div>
+                    </h3>
+                </div>
+
+                <div class="row short"><p>An option to use API from Web GUI. Useful in cases when you need to check hundreds of indicators. Upload specially formatted file and wait for a notification to download the results. Results will expire after some preconfigured time.</p></div>
+
+                <div class="row short"><p>Expected input file formats. Set a <span class="ui orange text">Field to query</span> if the first one is chosen. Numeric values will not be quoted.</p></div>
+
+                <div class="row">
+                    <div class="ui segment example">
+                        10.10.1.5</br>
+                        10.10.1.28</br>
+                        192.168.3.30</br>
+                        192.168.18.30
+                    </div>
+
+                    <div class="ui segment example">
+                        ip='10.10.1.7'</br>
+                        ip LIKE '192.168.%'</br>
+                        domain='example.com'</br>
+                        custom='value'
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="five fields">
+                        <div class="field">
+                            <label>Data source to query</label>
+                            <div class="ui selection source dropdown">
+                                <input type="hidden" name="global" value="global">
+                                <i class="dropdown icon"></i>
+                                <div class="default text">
+                                    <i class="compress arrows alternate icon"></i> Global
+                                </div>
+
+                                <div class="menu">
+                                    <div class="item" data-value="global">
+                                        <i class="compress arrows alternate icon"></i> Global
+                                    </div>
+
+                                    {{ range .Collectors }}
+                                        {{ if eq .Source.InGlobal true }}
+                                        <div class="item" data-value="{{ .Source.Name }}">
+                                            <i class="{{ .Source.Icon }} icon"></i> {{ .Source.Label }}
+                                        </div>
+                                        {{ end }}
+                                    {{ end }}
+
+                                    {{ if .NonGlobalExist }}
+                                        <div class="item disabled">Non-global</div>
+
+                                        {{ range .Collectors }}
+                                            {{ if eq .Source.InGlobal false }}
+                                            <div class="item" data-value="{{ .Source.Name }}">
+                                                <i class="{{ .Source.Icon }} icon"></i> {{ .Source.Label }}
+                                            </div>
+                                            {{ end }}
+                                        {{ end }}
+                                    {{ end }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label>Start date</label>
+                            <div class="ui calendar" id="rangestart">
+                                <div class="ui input left icon">
+                                    <i class="calendar icon"></i>
+                                    <input type="text" placeholder="Start">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label>End date</label>
+                            <div class="ui calendar" id="rangeend">
+                                <div class="ui input left icon">
+                                    <i class="calendar icon"></i>
+                                    <input type="text" placeholder="End">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label>Output format</label>
+                            <div class="ui selection format dropdown">
+                                <input type="hidden" name="table" value="table">
+                                <i class="dropdown icon"></i>
+                                <div class="default text">
+                                    <i class="compress arrows alternate icon"></i>Table
+                                </div>
+
+                                <div class="menu">
+                                    <div class="item" data-value="table">Table</div>
+                                    <div class="item" data-value="json">JSON</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label>Field to query</label>
+                            <div class="ui input">
+                                <input id="default_field" type="text" spellcheck="false">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row short">Select the indicators list to upload:</div>
+
+                <div class="row">
+                    <div class="ui action input" id="file">
+                        <input type="text" id="inputText" readonly>
+                        <input type="file" id="inputFile">
+                        <div class="ui icon button select">
+                            <i class="attach icon"></i>
+                        </div>
+                    </div>
+
+                    <div class="ui upload orange button">
+                        <i class="upload icon"></i>
+                        Upload indicators
+                    </div>
+                </div>
+
+                <div id="queue" class="row">
+                    <h4 id="queueHeader">Queue:</h4>
+                </div>
+
+                <div id="downloads" class="row">
+                    <h4 id="downloadsHeader">Processed requests:</h4>
+                </div>
+            </div>
+        </div>
+
+        <!--*************************
+        *   Dynamic notifications   *
+        **************************-->
+        {{ template "modal" . }}
+
+        <!--*******************
+        *   Platform credits  *
+        ********************-->
+        {{ template "credits" . }}
+    </body>
+
+</html>

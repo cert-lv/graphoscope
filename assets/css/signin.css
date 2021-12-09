@@ -1,0 +1,19 @@
+.ui.grid {
+    height: 100%;
+}
+
+.column.five.wide img {
+    width: 150px;
+    display: block;
+    margin: 0 auto;
+}
+
+.column.five.wide h1 {
+    text-align: center;
+    margin-top: 10px;
+    font-size: 40px;
+}
+
+.column.five.wide h1 sub {
+    color: #cccfcf;
+}

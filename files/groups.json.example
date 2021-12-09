@@ -1,0 +1,100 @@
+{
+    "ip": {
+        "shape": "dot",
+        "color": {
+            "background": "#ccc",
+            "border": "#aaa"
+        }
+    },
+    "domain": {
+        "shape": "dot",
+        "color": {
+            "background": "#09f",
+            "border": "#07d"
+        },
+        "font": {
+            "color": "#05b"
+        }
+    },
+    "email": {
+        "shape": "icon",
+        "icon": {
+          "face": "Icons",
+          "weight": "bold",
+          "code": "\uf0e0",
+          "size": "30",
+          "color": "#0a6"
+        },
+        "font": {
+            "color": "#062"
+        }
+    },
+    "identifier": {
+        "shape": "diamond",
+        "color": {
+            "background": "#f75",
+            "border": "#b44"
+        },
+        "font": {
+            "color": "#b44"
+        }
+    },
+    "institution": {
+        "shape": "square",
+        "color": {
+            "background": "#c7e",
+            "border": "#95b"
+        },
+        "font": {
+            "color": "#84a"
+        }
+    },
+    "person": {
+        "shape": "dot",
+        "color": {
+            "background": "#0c8",
+            "border": "#084"
+        },
+        "font": {
+            "color": "#084"
+        }
+    },
+    "taxonomy": {
+        "shape": "square",
+        "color": {
+            "background": "#08e",
+            "border": "#05b"
+        },
+        "font": {
+            "color": "#05b"
+        }
+    },
+    "rtir": {
+        "shape": "triangle",
+        "color": {
+            "background": "#fa5",
+            "border": "#c70"
+        },
+        "font": {
+            "color": "#a50"
+        }
+    },
+    "application": {
+        "shape": "hexagon",
+        "color": {
+            "background": "#fc5",
+            "border": "#ca2"
+        }
+    },
+    "cluster": {
+        "shape": "hexagon",
+        "size": 25,
+        "color": {
+            "background": "#777b7b",
+            "border": "#566"
+        },
+        "font": {
+            "color": "#ccc"
+        }
+    }
+}

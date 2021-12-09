@@ -1,0 +1,412 @@
+@font-face {
+    font-family: "roboto-regular";
+    src: url("/assets/fonts/Roboto-Regular.ttf");
+}
+
+@font-face {
+    font-family: "roboto-medium";
+    src: url("/assets/fonts/Roboto-Medium.ttf");
+}
+
+@font-face {
+    font-family: "roboto-bold";
+    src: url("/assets/fonts/Roboto-Bold.ttf");
+}
+
+@font-face {
+    font-family: "roboto-mono-medium";
+    src: url("/assets/fonts/RobotoMono-Medium.ttf");
+}
+
+@font-face {
+    font-family: "roboto-mono-regular";
+    src: url("/assets/fonts/RobotoMono-Regular.ttf");
+}
+
+
+body {
+    padding: 10px;
+}
+
+.noselect {
+    -webkit-touch-callout: none; /* iOS Safari */
+      -webkit-user-select: none; /* Safari */
+       -khtml-user-select: none; /* Konqueror HTML */
+         -moz-user-select: none; /* Old versions of Firefox */
+          -ms-user-select: none; /* Internet Explorer/Edge */
+              user-select: none; /* Non-prefixed version, currently
+                                    supported by Chrome, Edge, Opera and Firefox */
+
+    -webkit-user-drag: none;
+     -khtml-user-drag: none;
+       -moz-user-drag: none;
+         -o-user-drag: none;
+            user-drag: none;
+}
+
+/*
+ * Common colors
+ */
+.green_fg {
+    color: #2b7;
+}
+.red_fg {
+    color: #f66;
+}
+.grey_fg {
+    color: #aaaeae;
+}
+
+/*
+ * Top
+ */
+.header {
+    font-size: 20px;
+    font-family: roboto-bold;
+    margin-bottom: 5px;
+    display: block;
+}
+
+.ui.tab.segment {
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    border-top: 1px solid rgba(34, 36, 38, .15);
+    -webkit-box-shadow: none;
+            box-shadow: none;
+}
+
+.ui.menu {
+    margin: 10px 0;
+}
+
+.ui.text {
+    padding: 3px 5px 1px 5px;
+    margin: 0 1px;
+    border-radius: 3px;
+    font-size: 85%;
+    font-family: SFMono-Regular,Consolas,Liberation Mono,Menlo,monospace;
+}
+span.ui.red.text {
+    background-color: #f9efef;
+}
+span.ui.orange.text {
+    color: #ff5f2d;
+    background-color: #ffecdd;
+}
+
+/*
+ * Global page grid
+ */
+.ui.grid {
+    position: absolute;
+    top: 0;
+    bottom: 10px;
+    left: 0;
+    right: 0;
+    margin: 0;
+}
+.ui.grid .column {
+    padding: 0 !important;
+}
+
+.ui.grid>[class*="twelve wide"].column {
+    width: calc(100% - 400px) !important;
+}
+.four.wide.right.column {
+    width: 400px !important;
+    border-left: 2px solid #eee;
+    background-color: #fff;
+}
+
+/*
+ * Top headerbar
+ */
+.top-header {
+    height: 50px;
+    background-color: #e0e4e4;
+    padding: 10px 0 0 10px;
+    border-radius: 3px;
+}
+
+.projectname {
+    display: inline-block;
+    margin-top: 6px;
+    cursor: pointer;
+}
+.projectname span {
+    color: #333;
+    font-size: 16px;
+    font-family: roboto-bold;
+    margin: 6px 0 0 10px;
+}
+.projectname img {
+    width: 40px;
+    margin-top: -6px;
+    float: left;
+}
+
+#notifications-count {
+    display: inline;
+}
+
+/*
+ * Profile name
+ */
+.profile {
+    color: #555959;
+    float: right;
+    margin: -3px 4px 0 0;
+}
+
+.profile #username {
+    padding: 7px 5px 0 0;
+    float: left;
+}
+
+.ui.icon.pointing.dropdown.button {
+    background-color: #e0e4e4;
+    border: none;
+}
+
+.ui.icon.pointing.dropdown.button:hover {
+    background-color: #d0d4d4;
+}
+
+.ui.top.right.pointing.dropdown > .menu {
+    padding: 5px 0;
+}
+
+/*
+ * Tabs
+ */
+.ui.secondary.menu .active.item,
+.ui.secondary.menu .active.item:hover,
+.ui.secondary.menu a.item:hover {
+    background: rgba(0,30,30,.05);
+}
+
+/*
+ * Buttons
+ */
+.ui.button {
+    padding-top: 11px;
+    padding-bottom: 11px;
+    background-color: #fff;
+    border: 1px solid rgba(34, 36, 38, 0.15);
+}
+.ui.button:hover {
+    background-color: #eee;
+}
+.ui.button:active {
+    background-color: #e8e8e8;
+}
+
+.ui.basic.button {
+    box-shadow: none;
+    border: 1px solid rgba(34, 36, 38, 0.15);
+}
+.ui.basic.button:hover,
+.ui.basic.button:focus {
+    background: #eee;
+    box-shadow: none;
+}
+
+.ui.orange.button,
+.profile .ui.ui.ui.orange.label {
+    background-color: #ff5f2d;
+    border: 1px solid rgba(34, 36, 38, 0.1);
+    cursor: pointer;
+}
+.ui.orange.button:hover,
+.profile .ui.ui.ui.orange.label:hover {
+    background-color: #ef4f1d;
+}
+.ui.orange.button:active,
+.profile .ui.ui.ui.orange.label:active {
+    background-color: #df3f1d;
+}
+
+/*
+ * Input
+ */
+.ui.input>input {
+    line-height: 1.3em;
+}
+.ui.input.focus>input,
+.ui.input>input:focus {
+    border-color: #ddd !important;
+}
+
+/*
+ * Menu dropdown
+ */
+.ui.dropdown .menu>.divider {
+    margin: .4em 8px;
+}
+
+.ui.top.right.pointing.dropdown>.menu:after {
+    top: -.5em;
+}
+
+.ui.pointing.dropdown>.menu:not(.hidden):after {
+    width: 1em;
+    height: 1em;
+}
+
+.ui.top.right.pointing.dropdown>.menu {
+    top: 95%;
+    right: -2px !important;
+}
+
+/*
+ * UI dropdowns
+ */
+.ui.selection.dropdown:hover,
+.ui.selection.active.dropdown,
+.ui.selection.active.dropdown:hover,
+.ui.selection.dropdown:focus,
+.ui.selection.active.dropdown .menu,
+.ui.selection.dropdown:focus .menu {
+    border-color: #ccc !important;
+}
+
+/* This looks bad when because of not enough space a dropdown is opened UP */
+/*
+.ui.selection.active.dropdown .menu,
+.ui.selection.active.dropdown:hover .menu,
+.ui.selection.active.dropdown:hover {
+    box-shadow: 0 2px 3px 0 rgb(34,36,38,.25);
+}
+*/
+.ui.selection.active.dropdown .menu:last-child {
+    padding-bottom: 5px;
+}
+.ui.selection.dropdown .menu>.item {
+    border-top:  0;
+}
+.ui.menu .item:before {
+    background: #e4e8e8; /* Identical to the color above */
+}
+
+.ui.menu .item.disabled,
+.ui.dropdown .menu > .item.disabled {
+    border-bottom: 1px solid #e4e8e8;
+    color: #bbbfbf;
+    opacity: 1;
+}
+
+.ui.menu .item,
+.ui.source.dropdown .menu>.item {
+    border-top: none;
+    padding: 0.85em 1.14em !important;
+}
+.ui.menu .item:hover,
+.ui.source.dropdown .menu>.item:hover {
+    background: rgba(0,0,0,.05);
+}
+
+.ui.dropdown>.text>.icon,
+.ui.source.dropdown .menu > .item i,
+.ui.menu .item i {
+    color: #bbbfbf;
+}
+
+/*
+ * Calendar
+ */
+.ui.popup.calendar {
+    box-shadow: 0 2px 4px 0 rgb(34,36,38,.45);
+}
+.ui.table>thead>tr>th,
+.ui.popup.calendar::before {
+    background: #eee;
+}
+.ui.calendar .ui.table {
+    border: 0;
+    border-top: 1px solid rgba(34,36,38,.15);
+}
+
+.ui.bottom.left.popup:before,
+.ui.bottom.right.popup:before {
+    box-shadow: -1px -1px 0 0 #d2d6d6;
+}
+
+/*
+ * XXX: Fix calendar bug when popup appears in a wrong 'left-center' position instead of 'bottom-right'
+ */
+.ui.left.center.popup,
+#rangeend .ui.bottom.left.popup {
+    top: 38px;
+    left: auto !important;
+    bottom: auto;
+    right: 0px !important;
+    -webkit-transform-origin: right top;
+    transform-origin: right top;
+}
+#rangeend .ui.bottom.left.popup:before {
+    right: 1em;
+    left: auto;
+}
+
+/*
+ * Notifications
+ */
+#notifications-container {
+    position: fixed;
+    right: 10px;
+    bottom: 10px;
+    width: 500px;
+    z-index: 5;
+}
+
+.ui.segment.notification {
+    margin: 10px 0 0 0;
+    box-shadow: 0 2px 3px 0 rgb(34 36 38 / 15%);
+    cursor: pointer;
+}
+
+.ui.segment.notification .icon {
+    font-size: 20px;
+    margin: 3px 10px 0 0;
+}
+.ui.segment.notification .header {
+    display: inline;
+}
+.ui.segment.notification .content,
+.ui.segment.notification .ts {
+    margin-left: 34px;
+}
+
+/*
+ * Modal window
+ */
+.ui.small.basic.modal {
+    border: 2px solid #555959;
+    border-radius: 5px;
+    padding: 10px;
+    background-color: #333;
+}
+
+.ui.modal .content {
+    overflow-wrap: break-word;
+}
+
+.ui.modal .content strong {
+    color: #2ecc40;
+}
+
+/*
+ * Version info
+ */
+.version {
+    position: fixed;
+    right: 15px;
+    bottom: 10px;
+    color: #777b7b;
+    text-align: right;
+}
+
+.version a {
+    color: #ff5f2d;
+}

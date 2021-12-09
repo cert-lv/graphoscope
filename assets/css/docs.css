@@ -1,0 +1,119 @@
+/*
+ * Top headerbar
+ */
+.projectname {
+    cursor: pointer;
+}
+
+.ui.grid {
+    width: 40%;
+    min-width: 1000px;
+    margin: 20px auto 0 auto;
+}
+
+.ui.grid .row:last-child {
+    padding-bottom: 100px;
+}
+
+/*
+ * Markdown fixes
+ */
+.markdown-body {
+    line-height: 0;
+    white-space: pre-wrap;       /* css-3 */
+    white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+    white-space: -pre-wrap;      /* Opera 4-6 */
+    white-space: -o-pre-wrap;    /* Opera 7 */
+    word-wrap: break-word;       /* Internet Explorer 5.5+ */
+    font-size: 14px;
+    font-family: Lato,'Helvetica Neue',Arial,Helvetica,sans-serif;
+    width: 100%;
+}
+
+.markdown-body table {
+    display: table;
+    line-height: initial;
+}
+
+.markdown-body li+li {
+    margin-top: 0;
+}
+.markdown-body > ul > li {
+    line-height: 1.5;
+    margin-top: 3px;
+}
+.markdown-body > ul > li > ul > li {
+    line-height: 0;
+}
+.markdown-body > ul > li > ul > li > ul {
+    line-height: 0.8;
+}
+.markdown-body > ul > li > ul > li > ul:first-child {
+    margin-top: 15px;
+}
+
+.markdown-body ol:not([start]) {
+    margin: 12px 0;
+}
+.markdown-body ol:first-child {
+    margin-bottom: 32px;
+}
+.markdown-body ol li {
+    padding-left: 6px;
+    line-height: 1.5;
+}
+.markdown-body ol li>p {
+    margin-top: -10px;
+    margin-left: 6px;
+    ￼line-height: 1.5;
+}
+
+.markdown-body img {
+    display: block;
+    margin: 0 auto;
+}
+.markdown-body img[src$='#wide'] {
+    width: 100%;
+}
+.markdown-body img[src$='#left'] {
+    margin-left: 0;
+}
+
+.markdown-body table tr,
+.markdown-body table td,
+.markdown-body table th {
+    border: 0;
+    line-height: 1.7;
+}
+.markdown-body table th {
+    border-bottom: 2px solid #dfe2e5;
+    text-align: start;
+}
+.markdown-body table td {
+    border-bottom: 1px solid #dfe2e5;
+}
+.markdown-body table tr:nth-child(odd) > td {
+    background-color: #f6f8fa;
+}
+.markdown-body table tr:nth-child(even) > td {
+    background-color: #fff;
+}
+
+.markdown-body blockquote {
+    border-left: .3em solid #dfe2e5;
+}
+
+.markdown-body code {
+    padding: 3px 5px 1px 5px;
+    margin: 0 1px;
+    color: #ff5f2d;
+    background-color: #ffecdd;
+}
+.markdown-body pre code {
+    color: #24292e;
+    background-color: initial;
+}
+
+.markdown-body a {
+    color: #06d;
+}

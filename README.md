@@ -136,10 +136,44 @@ curl -XGET 'https://localhost:443/api?uuid=09e545f2-3986-493c-983a-e39d310f695a&
 
 Response example for the first query:
 ```json
-{"data":[{"from":{"id":"Monica","params":{"age":35},"search":"name","group":"name"},"edge":{"label":"lives in"},"to":{"id":"Canada","search":"country","group":"country"},"source":"sample"},{"from":{"id":"Chin","search":"name","group":"name"},"to":{"id":"Ben","search":"name","group":"name"},"source":"sample"}]}
+{
+    "relations": [
+        {
+            "from": {
+                "id": "Monica",
+                "params": {
+                    "age": 35
+                },
+                "search": "name",
+                "group": "name"
+            },
+            "edge": {
+                "label": "lives in"
+            },
+            "to": {
+                "id": "Canada",
+                "search": "country",
+                "group": "country"
+            },
+            "source": "sample"
+        },{
+            "from": {
+                "id": "Chin",
+                "search": "name",
+                "group": "name"
+            },
+            "to": {
+                "id": "Ben",
+                "search": "name",
+                "group": "name"
+            },
+            "source": "sample"
+        }
+    ]
+}
 ```
 ... where main fields can be:
-- **data** - list of relations, which consist of:
+- **relations** - list of relations, which consist of:
   * **from**   - describes `From` node of a single relation
   * **to**     - describes `To` node of the same relation
   * **edge**   - describes a single connection between `From` and `To` nodes

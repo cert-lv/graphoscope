@@ -121,7 +121,7 @@ func newAccount(w http.ResponseWriter, r *http.Request) error {
 		return fmt.Errorf("Error while inserting user: " + err.Error())
 	}
 
-	session, err := sessions.Store.Get(r, sessions.CookieName)
+	session, err := sessions.Get(r, config.Sessions.CookieName)
 	if err != nil {
 		return fmt.Errorf("Can't get session: " + err.Error())
 	}

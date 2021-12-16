@@ -4,6 +4,7 @@
  *
  * Changes of the current version:
  *     - create a new session even if can't decode existing one
+ *     - some structures merged
  *     - don't print debugging info to the stderr, use logger instead
  *
  * Don't use "log.SetOutput(ioutil.Discard)" to hide printing

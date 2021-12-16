@@ -78,7 +78,6 @@ Check a built-in documentation, section `Administration`.
 
 ## TODO & ideas
 
-- [ ] If session's auth or encryption key is changed in a config file - can't access the service until browser's old cookies are deleted
 - [ ] Display available data source's fields
 - [ ] `debug` option to see resulting query to the data source and its response
 - [ ] In `graph.js` remove custom zoom limiting

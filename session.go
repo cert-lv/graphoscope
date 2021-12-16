@@ -2,13 +2,10 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"net"
 	"net/http"
 
-	deflog "log"
-
-	"github.com/go-stuff/mongostore"
+	//"github.com/go-stuff/mongostore"
 	"github.com/gorilla/websocket"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -32,7 +29,7 @@ type Sessions struct {
 	CookieName string
 
 	// Place to store sessions data, MongoDB
-	Store *mongostore.Store
+	Store *MongoStore
 }
 
 /*
@@ -60,9 +57,6 @@ type Session struct {
  * Create a sessions store when service is started
  */
 func setupSessions() error {
-	// Disable a default 'mongostore' printing to the console
-	deflog.SetOutput(ioutil.Discard)
-
 	// Drop old TTL index
 	_, err := db.Sessions.Indexes().DropAll(db.newContext())
 	if err != nil {
@@ -80,7 +74,7 @@ func setupSessions() error {
 	}
 
 	// Create a new store with new index
-	store, err := mongostore.NewStore(
+	store, err := NewMongoStore(
 		db.Sessions,
 		http.Cookie{
 			Path:     "/",
@@ -113,19 +107,12 @@ func (s *Sessions) exists(w http.ResponseWriter, r *http.Request) (string, error
 	// Get client's IP
 	ip, _, err := net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
-		log.Error().
-			Str("ip", ip).
-			Msg("Can't get IP to check existing session: " + err.Error())
-		return "", fmt.Errorf("Server internal error, try again later")
+		return "", fmt.Errorf("Can't get IP to check existing session: " + err.Error())
 	}
 
 	session, err := s.Store.Get(r, s.CookieName)
 	if err != nil {
-		log.Error().
-			Str("ip", ip).
-			Msg("Can't get existing session: " + err.Error())
-
-		return "", fmt.Errorf("Server internal error, try again later")
+		return "", fmt.Errorf("Can't check existing session: " + err.Error())
 	}
 
 	//fmt.Printf("session: %#v\n", session)
@@ -143,11 +130,7 @@ func (s *Sessions) exists(w http.ResponseWriter, r *http.Request) (string, error
 		// Update session
 		err = session.Save(r, w)
 		if err != nil {
-			log.Error().
-				Str("ip", ip).
-				Msg("Can't update session " + err.Error())
-
-			return "", fmt.Errorf("Server internal error, try again later")
+			return "", fmt.Errorf("Can't update session " + err.Error())
 		}
 
 		log.Debug().
@@ -391,7 +374,8 @@ func signinHandler(w http.ResponseWriter, r *http.Request) {
 			Str("ip", ip).
 			Str("username", username).
 			Msg("Can't get session: " + err.Error())
-
+	}
+	if session == nil {
 		templateData := &TemplateData{
 			Error: "Server internal error, try again later!",
 		}

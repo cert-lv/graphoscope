@@ -5,7 +5,6 @@ import (
 	"net"
 	"net/http"
 
-	//"github.com/go-stuff/mongostore"
 	"github.com/gorilla/websocket"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -22,18 +21,18 @@ var (
 )
 
 /*
- * Structure to hold signed in users sessions
+ * Structure to store signed in users sessions and its data.
+ *
+ * Use a separate structure as "mongostore.go" is a fork
+ * and potentially can be removed
  */
 type Sessions struct {
-	// Browser's cookie name
-	CookieName string
-
-	// Place to store sessions data, MongoDB
-	Store *MongoStore
+	*MongoStore
 }
 
 /*
- * Structure of a single user's session
+ * Structure of a single user's session.
+ * In-memory only, will not be stored in a database
  */
 type Session struct {
 	// Client's IP address
@@ -91,10 +90,7 @@ func setupSessions() error {
 		return fmt.Errorf("Can't create a MongoDB session store: " + err.Error())
 	}
 
-	sessions = &Sessions{
-		CookieName: config.Sessions.CookieName,
-		Store:      store,
-	}
+	sessions = &Sessions{store}
 
 	log.Debug().Msg("MongoDB session store created")
 	return nil
@@ -110,7 +106,7 @@ func (s *Sessions) exists(w http.ResponseWriter, r *http.Request) (string, error
 		return "", fmt.Errorf("Can't get IP to check existing session: " + err.Error())
 	}
 
-	session, err := s.Store.Get(r, s.CookieName)
+	session, err := s.Get(r, config.Sessions.CookieName)
 	if err != nil {
 		return "", fmt.Errorf("Can't check existing session: " + err.Error())
 	}
@@ -118,9 +114,9 @@ func (s *Sessions) exists(w http.ResponseWriter, r *http.Request) (string, error
 	//fmt.Printf("session: %#v\n", session)
 
 	if len(session.Values) == 0 {
-		// Check a DB connection.
-		// 's.Store.Get' doesn't return an error if connection was lost
-		err = s.Store.Collection.Database().Client().Ping(db.newContext(), nil)
+		// Check a database connection.
+		// 's.Get' doesn't return an error if connection was lost
+		err = s.Collection.Database().Client().Ping(db.newContext(), nil)
 		if err != nil {
 			return "", fmt.Errorf("Can't ping a database: " + err.Error())
 		}
@@ -208,7 +204,7 @@ func signupHandler(w http.ResponseWriter, r *http.Request) {
 			log.Error().
 				Str("ip", ip).
 				Str("username", username).
-				Msg("Can't find username in DB: " + err.Error())
+				Msg("Can't find username in a database: " + err.Error())
 
 			templateData := &TemplateData{
 				Error: "Server internal error, try again later!",
@@ -238,7 +234,7 @@ func signupHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		session, err := sessions.Store.Get(r, sessions.CookieName)
+		session, err := sessions.Get(r, config.Sessions.CookieName)
 		if err != nil {
 			log.Error().
 				Str("ip", ip).
@@ -368,7 +364,7 @@ func signinHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// User is authenticated, create a new session
-	session, err := sessions.Store.Get(r, sessions.CookieName)
+	session, err := sessions.Get(r, config.Sessions.CookieName)
 	if err != nil {
 		log.Error().
 			Str("ip", ip).

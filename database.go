@@ -298,7 +298,7 @@ func (d *Database) deleteSession(username string, w http.ResponseWriter, r *http
 
 	// Delete Web session if exists
 	if r != nil {
-		session, err := sessions.Store.Get(r, sessions.CookieName)
+		session, err := sessions.Get(r, config.Sessions.CookieName)
 		if err != nil {
 			return fmt.Errorf("Can't get session to delete: " + err.Error())
 		}

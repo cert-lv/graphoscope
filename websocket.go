@@ -53,7 +53,7 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Error().
 			Str("ip", ip).
-			Msg(err.Error())
+			Msg("Websocket handler: " + err.Error())
 		return
 	}
 
@@ -63,7 +63,7 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 		log.Error().
 			Str("ip", ip).
 			Str("username", username).
-			Msg("Can't getAccount to establish a Websocket connection: " + err.Error())
+			Msg("Can't get account to establish a Websocket connection: " + err.Error())
 		return
 	}
 

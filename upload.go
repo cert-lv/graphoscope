@@ -83,7 +83,7 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 	// Check whether user is signed in
 	username, err := sessions.exists(w, r)
 	if err != nil {
-		_, e := w.Write([]byte("Can't validate user session: " + err.Error()))
+		_, e := w.Write([]byte("Can't validate user. Check server logs for more info!"))
 		if e != nil {
 			log.Error().Str("ip", ip).Msg("Can't send error: " + e.Error())
 		}
@@ -532,7 +532,7 @@ func downloadHandler(w http.ResponseWriter, r *http.Request) {
 	// Check whether user is signed in
 	username, err := sessions.exists(w, r)
 	if err != nil {
-		_, e := w.Write([]byte("Can't validate user session: " + err.Error()))
+		_, e := w.Write([]byte("Can't validate user. Check server logs for more info!"))
 		if e != nil {
 			log.Error().
 				Str("ip", ip).

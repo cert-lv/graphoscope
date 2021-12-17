@@ -8,7 +8,7 @@ Compile with:
 go build -buildmode=plugin -ldflags="-w" -o mysql.so ./*.go
 ```
 
-**WARNING**
+**Warning**
 
 SQL doesn't allow to query missing columns, like Elasticsearch does.
 An error `column "X" does not exist` will be received. That means you must be

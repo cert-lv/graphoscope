@@ -14,7 +14,6 @@ Compile with:
 go build -buildmode=plugin -ldflags="-w" -o template.so ./*.go
 ```
 
-
 # Access details
 
 Source YAML definition's `access` fields:

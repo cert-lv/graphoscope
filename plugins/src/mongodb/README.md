@@ -11,7 +11,7 @@ go build -buildmode=plugin -ldflags="-w" -o mongodb.so ./*.go
 
 # Access details
 
-YAML source configuration possible fields:
+Source YAML definition's `access` fields:
 - **addr**: HOST:PORT database's access point, for example - `localhost:27017`
 - **db**: database name to use
 - **collection**: collection name to query

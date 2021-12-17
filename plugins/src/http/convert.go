@@ -1,5 +1,5 @@
 /*
- * SQL to the field/value list converter
+ * SQL to the field/value list convertor
  */
 
 package main
@@ -10,7 +10,9 @@ import (
 	"github.com/blastrain/vitess-sqlparser/sqlparser"
 )
 
-// Convert SQL query to the field/value list
+/*
+ * Convert SQL query to the list of [field,value]
+ */
 func (p *plugin) convert(sel *sqlparser.Select) ([][2]string, error) {
 
 	// Handle WHERE.
@@ -25,7 +27,7 @@ func (p *plugin) convert(sel *sqlparser.Select) ([][2]string, error) {
 		return nil, err
 	}
 
-	// Handle group by
+	// Handle GROUP BY
 	if len(sel.GroupBy) > 0 || checkNeedAgg(sel.SelectExprs) {
 		return nil, errors.New("'GROUP BY' & aggregation are not supported")
 	}

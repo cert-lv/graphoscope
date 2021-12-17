@@ -1,5 +1,5 @@
 /*
- * SQL to MongoDB query converter
+ * SQL to MongoDB query convertor
  */
 
 package main
@@ -8,7 +8,9 @@ import (
 	"github.com/blastrain/vitess-sqlparser/sqlparser"
 )
 
-// convert SQL statement to the object expected by the data source
+/*
+ * Convert SQL statement to the object expected by the data source
+ */
 func (p *plugin) convert(sel *sqlparser.Select) (string, error) {
 
 	/*

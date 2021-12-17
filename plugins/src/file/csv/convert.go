@@ -1,5 +1,5 @@
 /*
- * SQL to CSV query converter
+ * SQL to CSV query convertor
  */
 
 package main
@@ -8,7 +8,9 @@ import (
 	"github.com/blastrain/vitess-sqlparser/sqlparser"
 )
 
-// convert SQL statement to the CSV query
+/*
+ * Convert SQL statement to the CSV query
+ */
 func (p *plugin) convert(sel *sqlparser.Select) (string, error) {
 
 	// Handle WHERE
@@ -24,7 +26,7 @@ func (p *plugin) convert(sel *sqlparser.Select) (string, error) {
 		query += sqlparser.String(sel.OrderBy)
 	}
 
-	// Handle limit
+	// Handle LIMIT
 	if sel.Limit != nil {
 		// Handle rowcount
 		query += " LIMIT " + sqlparser.String(sel.Limit.Rowcount)

@@ -9,7 +9,9 @@ import (
 	"github.com/blastrain/vitess-sqlparser/sqlparser"
 )
 
-// if the where is empty, need to check whether to agg or not
+/*
+ * If the WHERE is empty, need to check whether to agg or not
+ */
 func checkNeedAgg(sqlSelect sqlparser.SelectExprs) bool {
 	for _, v := range sqlSelect {
 		expr, ok := v.(*sqlparser.AliasedExpr)
@@ -18,7 +20,7 @@ func checkNeedAgg(sqlSelect sqlparser.SelectExprs) bool {
 			continue
 		}
 
-		//TODO more precise
+		// TODO more precise
 		if _, ok := expr.Expr.(*sqlparser.FuncExpr); ok {
 			return true
 		}
@@ -27,6 +29,14 @@ func checkNeedAgg(sqlSelect sqlparser.SelectExprs) bool {
 	return false
 }
 
+/*
+ * Handle single "field operator value" expression.
+ *
+ * Receives:
+ *     expr     - SQL expression to process
+ *     topLevel - whether it's a top level expression
+ *     parent   - container of the expression
+ */
 func handleSelectWhereComparisonExpr(expr *sqlparser.Expr, topLevel bool, parent *sqlparser.Expr) (string, error) {
 	comparisonExpr := (*expr).(*sqlparser.ComparisonExpr)
 	colName, ok := comparisonExpr.Left.(*sqlparser.ColName)
@@ -46,7 +56,7 @@ func handleSelectWhereComparisonExpr(expr *sqlparser.Expr, topLevel bool, parent
 
 	switch comparisonExpr.Operator {
 	case "=":
-		// field exists
+		// Field exists
 		if existsCheck {
 			resultStr = fmt.Sprintf(`{"exists":{"field":"%v"}}`, colNameStr)
 		} else {
@@ -97,7 +107,7 @@ func handleSelectWhereComparisonExpr(expr *sqlparser.Expr, topLevel bool, parent
 		//resultStr = fmt.Sprintf(`{"bool" : {"must_not" : {"match_phrase" : {"%v" : "%v"}}}}`, colNameStr, rightStr)
 	}
 
-	// The root node need to have bool and must
+	// The root node need to have "bool" and "must"
 	if topLevel {
 		resultStr = fmt.Sprintf(`{"bool" : {"must" : [%v]}}`, resultStr)
 	}
@@ -105,6 +115,14 @@ func handleSelectWhereComparisonExpr(expr *sqlparser.Expr, topLevel bool, parent
 	return resultStr, nil
 }
 
+/*
+ * Handle "expression AND expression".
+ *
+ * Receives:
+ *     expr     - SQL expression to process
+ *     topLevel - whether it's a top level expression
+ *     parent   - container of the expression
+ */
 func handleSelectWhereAndExpr(expr *sqlparser.Expr, topLevel bool, parent *sqlparser.Expr) (string, error) {
 	andExpr := (*expr).(*sqlparser.AndExpr)
 	leftExpr := andExpr.Left
@@ -120,7 +138,7 @@ func handleSelectWhereAndExpr(expr *sqlparser.Expr, topLevel bool, parent *sqlpa
 	}
 
 	// Not toplevel
-	// if the parent node is also and, then the result can be merged
+	// if the parent node is also AND, then the result can be merged
 
 	var resultStr string
 	if leftStr == "" || rightStr == "" {
@@ -136,6 +154,14 @@ func handleSelectWhereAndExpr(expr *sqlparser.Expr, topLevel bool, parent *sqlpa
 	return fmt.Sprintf(`{"bool" : {"must" : [%v]}}`, resultStr), nil
 }
 
+/*
+ * Handle "expression OR expression".
+ *
+ * Receives:
+ *     expr     - SQL expression to process
+ *     topLevel - whether it's a top level expression
+ *     parent   - container of the expression
+ */
 func handleSelectWhereOrExpr(expr *sqlparser.Expr, topLevel bool, parent *sqlparser.Expr) (string, error) {
 	orExpr := (*expr).(*sqlparser.OrExpr)
 	leftExpr := orExpr.Left
@@ -159,7 +185,7 @@ func handleSelectWhereOrExpr(expr *sqlparser.Expr, topLevel bool, parent *sqlpar
 	}
 
 	// Not toplevel
-	// if the parent node is also or node, then merge the query param
+	// if the parent node is also OR node, then merge the query param
 	if _, ok := (*parent).(*sqlparser.OrExpr); ok {
 		return resultStr, nil
 	}
@@ -167,8 +193,13 @@ func handleSelectWhereOrExpr(expr *sqlparser.Expr, topLevel bool, parent *sqlpar
 	return fmt.Sprintf(`{"bool" : {"should" : [%v]}}`, resultStr), nil
 }
 
-// between a and b.
-// the meaning is equal to range query
+/*
+ * Handle "BETWEEN a AND b".
+ *
+ * Receives:
+ *     expr     - SQL expression to process
+ *     topLevel - whether it's a top level expression
+ */
 func handleSelectWhereBetweenExpr(expr *sqlparser.Expr, topLevel bool) (string, error) {
 	rangeCond := (*expr).(*sqlparser.RangeCond)
 	colName, ok := rangeCond.Left.(*sqlparser.ColName)
@@ -240,6 +271,14 @@ func handleSelectWhereBetweenExpr(expr *sqlparser.Expr, topLevel bool) (string, 
 	return resultStr, nil
 }
 
+/*
+ * Handle top level or groups of expressions.
+ *
+ * Receives:
+ *     expr     - SQL expression to process
+ *     topLevel - whether it's a top level expression
+ *     parent   - container of the expression
+ */
 func handleSelectWhereParenExpr(expr *sqlparser.Expr, topLevel bool, parent *sqlparser.Expr) (string, error) {
 	parentBoolExpr := (*expr).(*sqlparser.ParenExpr)
 	boolExpr := parentBoolExpr.Expr
@@ -257,6 +296,12 @@ func buildNestedFuncStrValue(nestedFunc *sqlparser.FuncExpr) (string, error) {
 	return "", errors.New("Unsupported function: " + nestedFunc.Name.String())
 }
 
+/*
+ * Check the right part of the expression
+ * and return its value of specific type.
+ *
+ * Receives SQL expression to process
+ */
 func buildComparisonExprRightStr(expr sqlparser.Expr) (interface{}, bool, error) {
 	var rightStr interface{}
 	var err error
@@ -320,6 +365,14 @@ func buildComparisonExprRightStr(expr sqlparser.Expr) (interface{}, bool, error)
 	return rightStr, existsCheck, nil
 }
 
+/*
+ * Handle WHERE statement.
+ *
+ * Receives:
+ *     expr     - SQL expression to process
+ *     topLevel - whether it's a top level expression
+ *     parent   - container of the expression
+ */
 func handleSelectWhere(expr *sqlparser.Expr, topLevel bool, parent *sqlparser.Expr) (string, error) {
 	if expr == nil {
 		return "", errors.New("SQL expression cannot be nil here")

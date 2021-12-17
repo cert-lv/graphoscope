@@ -34,7 +34,7 @@ func (p *plugin) Setup(source *pdk.Source, limit int) error {
 		return fmt.Errorf("'access.indices' is not defined")
 	}
 
-	// Elasticsearch server addr
+	// Elasticsearch server address
 	client, err := elastic.NewClient(
 		elastic.SetHeaders(http.Header{"Authorization": []string{"ApiKey " + source.Access["key"]}}),
 		elastic.SetURL(source.Access["url"]),

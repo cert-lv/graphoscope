@@ -1,5 +1,5 @@
 /*
- * SQL to MongoDB query converter
+ * SQL to MongoDB query convertor
  */
 
 package main
@@ -14,7 +14,9 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-// convert SQL statement to the MongoDB filter & options
+/*
+ * Convert SQL statement to the MongoDB filter & options
+ */
 func (p *plugin) convert(sel *sqlparser.Select) (bson.M, *options.FindOptions, error) {
 
 	// Handle WHERE.
@@ -29,7 +31,7 @@ func (p *plugin) convert(sel *sqlparser.Select) (bson.M, *options.FindOptions, e
 		return nil, nil, err
 	}
 
-	// Handle group by
+	// Handle GROUP BY
 	if len(sel.GroupBy) > 0 || checkNeedAgg(sel.SelectExprs) {
 		return nil, nil, errors.New("'GROUP BY' & aggregation are not supported")
 	}
@@ -37,7 +39,7 @@ func (p *plugin) convert(sel *sqlparser.Select) (bson.M, *options.FindOptions, e
 	// Pass these options to the Find method
 	options := options.Find()
 
-	// Offset & Rowcount validation is done by the API core
+	// Offset & Rowcount validation is done by the core service
 	if sel.Limit != nil {
 		// Handle offset
 		if sel.Limit.Offset != nil {
@@ -54,7 +56,7 @@ func (p *plugin) convert(sel *sqlparser.Select) (bson.M, *options.FindOptions, e
 		options.SetLimit(querySize)
 	}
 
-	// Handle order by
+	// Handle ORDER BY
 	var orderByArr bson.D
 	for _, orderByExpr := range sel.OrderBy {
 		direction := 1

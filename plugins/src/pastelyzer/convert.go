@@ -1,5 +1,5 @@
 /*
- * SQL to Pastelyzer query converter
+ * SQL to Pastelyzer query convertor
  */
 
 package main
@@ -10,7 +10,9 @@ import (
 	"github.com/blastrain/vitess-sqlparser/sqlparser"
 )
 
-// Convert SQL query to the Pastelyzer query
+/*
+ * Convert SQL query to the Pastelyzer query
+ */
 func (p *plugin) convert(sel *sqlparser.Select) ([][2]string, error) {
 
 	// Handle WHERE.
@@ -25,12 +27,12 @@ func (p *plugin) convert(sel *sqlparser.Select) ([][2]string, error) {
 		return nil, err
 	}
 
-	// Handle group by
+	// Handle GROUP BY
 	if len(sel.GroupBy) > 0 || checkNeedAgg(sel.SelectExprs) {
 		return nil, errors.New("'GROUP BY' & aggregation are not supported")
 	}
 
-	// Set limit
+	// Set LIMIT
 	if sel.Limit != nil {
 		fields = append(fields, [2]string{"limit", sqlparser.String(sel.Limit.Rowcount)})
 	}

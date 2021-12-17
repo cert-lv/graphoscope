@@ -9,8 +9,9 @@ Contains a list of by default available data sources plugins. 3rd party plugins 
 
 ## Features
 
+- SQL query syntax with features like `BETWEEN`, `IN`, `LIMIT`
+- **Usage** examples to skip searching the correct SQL syntax
 - Can query both **Web GUI** and **API**
-- **User registration**
 - Every single node & edge type can have its **own style**
 - No need to remember all the connected **data source names** - select it from a dropdown
 - Search for more **node neighbors**
@@ -26,8 +27,6 @@ Contains a list of by default available data sources plugins. 3rd party plugins 
 - Get **node & edge details** by clicking on them
 - **Pie-chart statistics** when the amount of requested data exceeds the limit
 - **Save & restore** dashboards, private or shared with a team
-- **Usage** examples to skip searching the correct SQL syntax
-- Use SQL features like `BETWEEN`, `IN`, `LIMIT`
 - Use `... OR ...` or `field IN (...)` queries even if data source doesn't support them
 - **Export** all graph data as a file
 - Display the **amount of visible nodes** grouped by type
@@ -39,7 +38,7 @@ Contains a list of by default available data sources plugins. 3rd party plugins 
 - **Upload indicators list** and wait for the report
 - **Personal graph settings**
 - **Global graph settings** for administrators
-- **User management** by administrators
+- **User management**
 - Built-in **documentation**
 - Real-time communication between the browser and server through the **Websockets**
 

@@ -260,7 +260,9 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 	return results, nil, nil
 }
 
-// getArtefacts returns all artefacts of the given paste ID
+/*
+ * Return all artefacts of the given paste ID
+ */
 func (p *plugin) getArtefacts(id string) (*bytes.Buffer, error) {
 
 	// Create the POST request to the URL with all fields mounted
@@ -294,7 +296,9 @@ func (p *plugin) getArtefacts(id string) (*bytes.Buffer, error) {
 	return body, nil
 }
 
-// getPastes returns paste IDs where given indicators were found
+/*
+ * Return pastes ID where given indicators were found
+ */
 func (p *plugin) getPastes(searchFields [][2]string) (*bytes.Buffer, error) {
 
 	// Create buffer

@@ -6,7 +6,9 @@ import (
 	"github.com/blastrain/vitess-sqlparser/sqlparser"
 )
 
-// Test SQL conversion to the data source's expected format
+/*
+ * Test SQL conversion to the data source's expected format
+ */
 func TestConvert(t *testing.T) {
 
 	// Empty plugin's instance to test
@@ -49,7 +51,9 @@ func TestConvert(t *testing.T) {
 	}
 }
 
-// equal tells whether a and b slices contain the same elements
+/*
+ * Check whether a and b slices contain the same elements
+ */
 func equal(a, b [][2]string) bool {
 	if len(a) != len(b) {
 		return false

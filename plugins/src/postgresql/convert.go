@@ -1,5 +1,5 @@
 /*
- * SQL to PostgreSQL query converter
+ * SQL to PostgreSQL query convertor
  */
 
 package main
@@ -8,7 +8,9 @@ import (
 	"github.com/blastrain/vitess-sqlparser/sqlparser"
 )
 
-// convert SQL statement to the PostgreSQL filter & options
+/*
+ * Convert SQL statement to the PostgreSQL filter & options
+ */
 func (p *plugin) convert(sel *sqlparser.Select) (string, error) {
 
 	// Handle WHERE
@@ -24,7 +26,7 @@ func (p *plugin) convert(sel *sqlparser.Select) (string, error) {
 		query += sqlparser.String(sel.OrderBy)
 	}
 
-	// Handle limit
+	// Handle LIMIT
 	if sel.Limit != nil {
 		// Handle offset
 		if sel.Limit.Offset != nil {

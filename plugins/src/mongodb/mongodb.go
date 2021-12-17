@@ -33,7 +33,7 @@ func (p *plugin) Setup(source *pdk.Source, limit int) error {
 		return fmt.Errorf("'access.collection' is not defined")
 	}
 
-	// MongoDB server addr
+	// MongoDB server address
 	clientOptions := options.Client().ApplyURI("mongodb://" + source.Access["addr"])
 
 	// Set credentials if given

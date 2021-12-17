@@ -35,7 +35,7 @@ query it independently, to make sure all columns exist.
 
 # Access details
 
-YAML source configuration possible fields:
+Source YAML definition's `access` fields:
 - **db**: database file to use, for example - `/data/sqtest.db`
 - **table**: table name to query
 
@@ -94,5 +94,5 @@ relations:
 
 Test with a query:
 ```sh
-curl -XGET '127.0.0.1:9000/?sql=FROM+sqtest+WHERE+email+like+%27a%25%27'
+curl -XGET 'https://localhost:443/api?uuid=auth-key&sql=FROM+sqtest+WHERE+email+like+%27a%25%27'
 ```

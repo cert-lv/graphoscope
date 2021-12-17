@@ -6,7 +6,9 @@ import (
 	"github.com/blastrain/vitess-sqlparser/sqlparser"
 )
 
-// Test SQL conversion to the data source's expected format
+/*
+ * Test SQL conversion to the data source's expected format
+ */
 func TestConvert(t *testing.T) {
 
 	// Empty plugin's instance to test

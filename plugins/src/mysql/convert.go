@@ -1,5 +1,5 @@
 /*
- * SQL to MySQL query converter
+ * SQL to MySQL query convertor
  */
 
 package main
@@ -8,7 +8,9 @@ import (
 	"github.com/blastrain/vitess-sqlparser/sqlparser"
 )
 
-// convert SQL statement to the MySQL query
+/*
+ * Convert SQL statement to the MySQL query
+ */
 func (p *plugin) convert(sel *sqlparser.Select) (string, error) {
 
 	// Handle WHERE

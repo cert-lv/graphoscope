@@ -21,7 +21,7 @@ and query it independently, to make sure all columns exist.
 
 # Access details
 
-YAML source configuration possible fields:
+Source YAML definition's `access` fields:
 - **addr**: HOST:PORT database's access point, for example - `localhost:3306`
 - **user**: username to connect to the database
 - **password**: user's password
@@ -48,7 +48,7 @@ INSERT INTO mycoll (email, username, fqdn, count, seen) VALUES ('d@example.com',
 INSERT INTO mycoll (email, username, fqdn, count, seen) VALUES ('e@example.com', 'e', 'example.com', 13, now());
 ```
 
-Access data will be used by the YAML configs. Example:
+Access data will be used by the source's YAML definition. Example:
 ```yaml
 name: mytest
 
@@ -86,5 +86,5 @@ relations:
 
 Test with a query:
 ```sh
-curl -XGET '127.0.0.1:9000/?sql=FROM+mytest+WHERE+email+like+%27a%25%27'
+curl -XGET 'https://localhost:443/api?uuid=auth-key&sql=FROM+mytest+WHERE+email+like+%27a%25%27'
 ```

@@ -1,6 +1,6 @@
 /*
- * SQL to Elasticsearch query converter
- * Source: https://github.com/cch123/elasticsql
+ * SQL to Elasticsearch query convertor
+ * Based on: https://github.com/cch123/elasticsql
  */
 
 package main
@@ -13,7 +13,9 @@ import (
 	"github.com/blastrain/vitess-sqlparser/sqlparser"
 )
 
-// Convert SQL query to the Elasticsearch JSON query
+/*
+ * Convert SQL query to the Elasticsearch JSON query
+ */
 func (p *plugin) convert(sel *sqlparser.Select) (string, error) {
 
 	// Handle WHERE.
@@ -27,7 +29,7 @@ func (p *plugin) convert(sel *sqlparser.Select) (string, error) {
 		return "", err
 	}
 
-	// Handle group by
+	// Handle GROUP BY
 	if len(sel.GroupBy) > 0 || checkNeedAgg(sel.SelectExprs) {
 		return "", errors.New("'GROUP BY' & aggregation are not supported")
 	}
@@ -35,7 +37,7 @@ func (p *plugin) convert(sel *sqlparser.Select) (string, error) {
 	resultMap := make(map[string]interface{})
 	resultMap["query"] = queryMapStr
 
-	// Handle order by
+	// Handle ORDER BY
 	orderByArr := []string{}
 	for _, orderByExpr := range sel.OrderBy {
 		orderByStr := fmt.Sprintf(`{"%v": "%v"}`, strings.Replace(sqlparser.String(orderByExpr.Expr), "`", "", -1), orderByExpr.Direction)
@@ -46,13 +48,13 @@ func (p *plugin) convert(sel *sqlparser.Select) (string, error) {
 		resultMap["sort"] = fmt.Sprintf("[%v]", strings.Join(orderByArr, ", "))
 	}
 
-	// Handle limit
+	// Handle LIMIT
 	if sel.Limit != nil {
 		resultMap["from"] = sqlparser.String(sel.Limit.Offset)
 		resultMap["size"] = sqlparser.String(sel.Limit.Rowcount)
 	}
 
-	// Keep the traversal in order, avoid unpredicted json
+	// Keep the traversal in order, avoid unpredicted JSON
 	keySlice := []string{"query", "from", "size", "sort"}
 	resultArr := []string{}
 	for _, mapKey := range keySlice {

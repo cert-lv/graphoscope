@@ -12,7 +12,7 @@ and query it independently, to make sure all columns exist.
 
 `curl` to test:
 ```sh
-curl '127.0.0.1:9000/?sql=FROM+csvfile+WHERE+ip=%278.8.8.8%27'
+curl 'https://localhost:443/api?uuid=auth-key&sql=FROM+csvfile+WHERE+ip=%278.8.8.8%27'
 ```
 
 Compile with:
@@ -22,5 +22,5 @@ go build -buildmode=plugin -ldflags="-w" -o file-csv.so ./*.go
 
 # Access details
 
-YAML source configuration possible fields:
+Source YAML definition's `access` fields:
 - **path**: CSV file to use, for example - `/data/test.csv`

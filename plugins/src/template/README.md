@@ -17,7 +17,7 @@ go build -buildmode=plugin -ldflags="-w" -o template.so ./*.go
 
 # Access details
 
-YAML source configuration possible fields:
+Source YAML definition's `access` fields:
 - **url**: PROTO://HOST:PORT database's access point, for example - `127.0.0.1:3000`
 - **user**: username to connect with
 - **password**: user's password

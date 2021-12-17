@@ -1,5 +1,5 @@
 /*
- * SQL to SQLite query converter
+ * SQL to SQLite query convertor
  */
 
 package main
@@ -8,7 +8,9 @@ import (
 	"github.com/blastrain/vitess-sqlparser/sqlparser"
 )
 
-// convert SQL statement to the SQLite query
+/*
+ * Convert SQL statement to the SQLite query
+ */
 func (p *plugin) convert(sel *sqlparser.Select) (string, error) {
 
 	// Handle WHERE

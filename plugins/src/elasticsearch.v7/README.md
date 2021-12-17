@@ -12,10 +12,11 @@ go build -buildmode=plugin -ldflags="-w" -o elasticsearch.v7.so ./*.go
 
 # Access details
 
-YAML source `access` configuration fields:
+Source YAML definition's `access` fields:
 - **url**: HTTP access point, for example - `http://localhost:9200`
 - **indices**: comma separated indices patterns to query, for example - `apps-*`
 - **key**: authorization key
+
 
 ## Limitations
 

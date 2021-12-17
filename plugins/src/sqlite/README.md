@@ -14,7 +14,7 @@ CGO_CFLAGS="-g -O2 -Wno-return-local-addr" go test
 **CFLAGS** as a temp. solution for the https://github.com/mattn/go-sqlite3/issues/803
 
 
-# WARNINGS
+**Warnings**
 
 When a `SIGSEGV` occurs while running a C code called via cgo (what SQLite
 plugin does), that `SIGSEGV` is not turned into a Go panic. The mechanism that

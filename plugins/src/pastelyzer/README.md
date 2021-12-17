@@ -7,12 +7,10 @@ Sample command to use plugin:
 curl 'https://localhost:443/api?uuid=auth-key&sql=FROM+pastelyzer+WHERE+ip=%278.8.8.8%27'
 ```
 
-
 Compile with:
 ```sh
 go build -buildmode=plugin -ldflags="-w" -o pastelyzer.so ./*.go
 ```
-
 
 # Access details
 

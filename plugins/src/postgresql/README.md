@@ -8,7 +8,7 @@ Compile with:
 go build -buildmode=plugin -ldflags="-w" -o postgresql.so ./*.go
 ```
 
-**WARNING**
+**Warning**
 
 SQL doesn't allow to query missing columns, like Elasticsearch does.
 An error `column "X" does not exist` will be received.
@@ -94,7 +94,6 @@ Test with a query:
 ```sh
 curl -XGET 'https://localhost:443/api?uuid=auth-key&sql=FROM+pgtest+WHERE+email+like+%27a%25%27'
 ```
-
 
 # TODO
 

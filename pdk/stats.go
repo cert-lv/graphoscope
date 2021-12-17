@@ -6,9 +6,11 @@ import (
 	"github.com/umpc/go-sortedmap"
 )
 
-// Stats contains statistics data
-// if DB has too many entries to return
-// (more than preconfigured limit)
+/*
+ * Structure to contain statistics data
+ * if some data source has too many entries to return
+ * (above the preconfigured limit)
+ */
 type Stats struct {
 	Fields map[string]*sortedmap.SortedMap
 	mx     sync.Mutex
@@ -20,9 +22,16 @@ func NewStats() *Stats {
 	}
 }
 
-// Update statistics of the received entries from some data source.
-// When the amount of returned entries becomes too large
-// users will receive the the statistics info instead of the graph elements
+/*
+ * Update statistics of the received entries from some data source.
+ * When the amount of returned entries becomes too large
+ * users will receive the statistics info instead of the graph relations data.
+ *
+ * Receives:
+ *     entry - single entry from a data source
+ *     key   - statistics chart field to update,
+ *             one entry increases the value by 1
+ */
 func (s *Stats) Update(entry map[string]interface{}, key string) {
 	// Skip if value is missing
 	value := entry[key]
@@ -41,15 +50,19 @@ func (s *Stats) Update(entry map[string]interface{}, key string) {
 	s.mx.Unlock()
 }
 
-// ToJSON converts sorted-map object to the native map,
-// converted to the JSON later,
-// so the GUI can draw interactive charts
+/*
+ * Convert sorted-map object to the native map,
+ * converted to the JSON later,
+ * so the Web GUI can draw interactive charts.
+ *
+ * Receives a data source name
+ */
 func (s *Stats) ToJSON(source string) (map[string]interface{}, error) {
 
 	// Map to store Top 10 entries
 	json := make(map[string]interface{})
 
-	// Identifier of the data source data belongs to
+	// Identifier of the source data belongs to
 	json["source"] = source
 
 	for k, v := range s.Fields {

@@ -62,7 +62,9 @@ func CopyPresentValues(source map[string]interface{}, target map[string]interfac
 	}
 }
 
-// StringSliceContains checks whether the slice contains the given string
+/*
+ * Check whether the slice contains the given string
+ */
 func StringSliceContains(slice []string, val string) bool {
 	for _, item := range slice {
 		if item == val {
@@ -73,7 +75,9 @@ func StringSliceContains(slice []string, val string) bool {
 	return false
 }
 
-// IntSliceContains checks whether the slice contains the given integer
+/*
+ * Check whether the slice contains the given integer
+ */
 func IntSliceContains(slice []int, val int) bool {
 	for _, item := range slice {
 		if item == val {

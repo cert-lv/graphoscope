@@ -1,6 +1,6 @@
 /*
- * Data source settings.
- * For YAML data sources in "../sources" by default.
+ * Data source definition.
+ * For YAML files in "../sources" by default.
  *
  * Check "../sources/source.yaml.example" for the fields description
  */

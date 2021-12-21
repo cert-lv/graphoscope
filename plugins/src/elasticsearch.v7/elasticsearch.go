@@ -157,14 +157,16 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 		for _, relation := range p.source.Relations {
 			if entry[relation.From.ID] != nil && entry[relation.To.ID] != nil {
 				umx.Lock()
-				if _, exists := unique[fmt.Sprintf("%s%s", entry[relation.From.ID], entry[relation.To.ID])]; exists {
-					umx.Unlock()
-					continue
+				if _, exists := unique[entry[relation.From.ID].(string)+entry[relation.To.ID].(string)]; exists {
+					if pdk.ResultsContain(results, entry, relation) {
+						umx.Unlock()
+						continue
+					}
 				}
 
 				counter++
 
-				unique[fmt.Sprintf("%s%s", entry[relation.From.ID], entry[relation.To.ID])] = true
+				unique[entry[relation.From.ID].(string)+entry[relation.To.ID].(string)] = true
 				umx.Unlock()
 
 				/*

@@ -11,6 +11,8 @@ Contains a list of by default available data sources plugins. 3rd party plugins 
 
 - SQL query syntax with features like `BETWEEN`, `IN`, `LIMIT`
 - **Usage** examples to skip searching the correct SQL syntax
+- Use `... OR ...` or `field IN (...)` queries even if data source doesn't support them
+- **Common fields** (like `ip`, `domain`, `timestamp`) that work across all the data sources
 - Can query both **Web GUI** and **API**
 - Every single node & edge type can have its **own style**
 - No need to remember all the connected **data source names** - select it from a dropdown
@@ -21,13 +23,11 @@ Contains a list of by default available data sources plugins. 3rd party plugins 
 - Ability to add **notes** to nodes and edges, visible to everybody
 - **Center graph** when it was scrolled/moved far outside of the visible area
 - **Delete selected** nodes with `Del`
-- **Common fields** (like `ip`, `domain`, `timestamp`) that work across all the data sources
 - **Green inclusion filters**, which work similar to Kibana's filters
 - **Red exclusion filters** are applied to all nodes (data source independent)
 - Get **node & edge details** by clicking on them
 - **Pie-chart statistics** when the amount of requested data exceeds the limit
 - **Save & restore** dashboards, private or shared with a team
-- Use `... OR ...` or `field IN (...)` queries even if data source doesn't support them
 - **Export** all graph data as a file
 - Display the **amount of visible nodes** grouped by type
 - **Group node neighbors** of specific types into the clusters
@@ -81,7 +81,6 @@ Check a built-in documentation, section `Administration`.
 - [ ] `debug` option to see resulting query to the data source and its response
 - [ ] In `graph.js` remove custom zoom limiting
       when 'https://github.com/visjs/vis-network/pull/629' or similar is merged & new version released
-- [ ] Skip a non-unique entry only if all attributes are the same too
 ---
 - [ ] Generate DEB and RPM packages
 - [ ] Log rotation system based on Zerolog
@@ -104,14 +103,14 @@ Check a built-in documentation, section `Administration`.
 
 Request all people with an age over **30**:
 ```sql
-FROM sample WHERE age > 30
+FROM demo WHERE age > 30
 ```
 
-The results will be similar to:
+The results with a demo data source ([files/demo.csv](files/demo.csv)) will be similar to:
 
 ![results](assets/img/results.png)
 
-Now it's possible to extend the graph by searching for more of John's neighbors - right click on `John` and choose `Search Sample` to search for more data in a `Sample` data source. We find that **Jennifer** and **Kate** also are his friends:
+Now it's possible to extend the graph by searching for more of John's neighbors - right click on `John` and choose `Search Demo` to search for more data in a `Demo` data source. We find that **Jennifer** and **Kate** also are his friends:
 
 ![results-extended](assets/img/results-extended.png)
 
@@ -124,8 +123,8 @@ FROM global WHERE age > 30
 
 API can be queried by the external tools, for example with `curl`:
 ```sh
-# SELECT * FROM sample WHERE age > 30
-curl -XGET 'https://localhost:443/api?uuid=09e545f2-3986-493c-983a-e39d310f695a&sql=FROM+sample+WHERE+age>30'
+# SELECT * FROM demo WHERE age > 30
+curl -XGET 'https://localhost:443/api?uuid=09e545f2-3986-493c-983a-e39d310f695a&sql=FROM+demo+WHERE+age>30'
 # SELECT * FROM global WHERE datetime BETWEEN '2019-01-20T07:27:54+02:00' AND '2019-01-20T07:27:54+02:00'
 curl -XGET 'https://localhost:443/api?uuid=09e545f2-3986-493c-983a-e39d310f695a&sql=FROM+global+WHERE+datetime+BETWEEN+%272019-01-20T07:27:54%2B02:00%27+AND+%272019-01-20T07:27:54%2B02:00%27'
 # SELECT * FROM intelmq WHERE feed.provider='ShadowServer' AND source.ip='10.10.10.1'
@@ -153,7 +152,7 @@ Response example for the first query:
                 "search": "country",
                 "group": "country"
             },
-            "source": "sample"
+            "source": "demo"
         },{
             "from": {
                 "id": "Chin",
@@ -165,7 +164,7 @@ Response example for the first query:
                 "search": "name",
                 "group": "name"
             },
-            "source": "sample"
+            "source": "demo"
         }
     ]
 }
@@ -183,22 +182,6 @@ Response example for the first query:
 ## Fields to use in queries
 
 `sources/*.yaml` data sources definitions allow to create common query fields, like **ip**, **domain**, **datetime**, etc. Other fields come from a related data source.
-
-
-# Icons
-
-Possible icons for the node types. Set in `files/groups.json`.
-For the other styling options check the documentation's section `Administration` &rarr; `Custom graph elements style`.
-
-- **ip**                                            -> light blue circle
-- **domain**                                        -> dark blue circle
-- **identifier**    - vulnerability name            -> red rhombus
-- **institution**                                   -> ping square
-- **person**                                        -> green circle
-- **taxonomy**      - identifier group's name       -> yellow square
-- **rtir**          - ticketing system event's ID   -> orange /\ triangle
-- **application**                                   -> red \/ triangle
-- **email**                                         -> green envelope icon
 
 
 ## Useful info
@@ -221,8 +204,7 @@ For the other styling options check the documentation's section `Administration`
 - Authentication<br/>
   https://github.com/gorilla/sessions<br/>
   https://github.com/go-stuff/mongostore<br/>
-  https://medium.com/@theShiva5/creating-simple-login-api-using-go-and-mongodb-9b3c1c775d2f<br/>
-  https://github.com/go-session/mongo
+  https://medium.com/@theShiva5/creating-simple-login-api-using-go-and-mongodb-9b3c1c775d2f
 
 - Markdown renderer<br/>
   https://github.com/markdown-it/markdown-it<br/>

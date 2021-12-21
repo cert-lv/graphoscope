@@ -125,8 +125,10 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 			if entry[relation.From.ID] != nil && entry[relation.To.ID] != nil {
 				umx.Lock()
 				if _, exists := unique[entry[relation.From.ID].(string)+entry[relation.To.ID].(string)]; exists {
-					umx.Unlock()
-					continue
+					if pdk.ResultsContain(results, entry, relation) {
+						umx.Unlock()
+						continue
+					}
 				}
 
 				counter++

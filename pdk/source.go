@@ -24,14 +24,16 @@ type Source struct {
 	Access          map[string]string `yaml:"access"`
 	StatsFields     []string          `yaml:"statsFields"`
 	ReplaceFields   map[string]string `yaml:"replaceFields"`
-	Relations       []*struct {
-		From *Node `yaml:"from"`
-		To   *Node `yaml:"to"`
-		Edge *struct {
-			Label      string   `yaml:"label"`
-			Attributes []string `yaml:"attributes"`
-		} `yaml:"edge"`
-	} `yaml:"relations"`
+	Relations       []*Relation       `yaml:"relations"`
+}
+
+type Relation struct {
+	From *Node `yaml:"from"`
+	To   *Node `yaml:"to"`
+	Edge *struct {
+		Label      string   `yaml:"label"`
+		Attributes []string `yaml:"attributes"`
+	} `yaml:"edge"`
 }
 
 type Node struct {

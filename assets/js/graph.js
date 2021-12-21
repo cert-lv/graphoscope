@@ -34,6 +34,9 @@ class Graph {
 
         // Create a clean graph network ..
         this.network = new vis.Network(this.container, {}, this.options);
+        // Change default network colors
+        this.changeDefaultColors();
+
         // .. or a fast demo scene
         // this.nodes = this.initNodes();  // Demo nodes
         // this.edges = this.initEdges();  // Demo edges
@@ -132,6 +135,21 @@ class Graph {
         ]);
 
         return edges;
+    }
+
+    /*
+     * Change default network colors.
+     *
+     * By default if node's group styling is not defined in "groups.json"
+     * its highlight colors won't be affected by "options.nodes.color.highlight"
+     */
+    changeDefaultColors() {
+        for (var i = 0; i < this.network.groups._defaultGroups.length; i++) {
+            this.network.groups._defaultGroups[i].highlight = {
+                background: SETTINGS.BGcolor,
+                border: SETTINGS.BorderColor
+            }
+        }
     }
 
     /*

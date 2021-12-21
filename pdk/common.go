@@ -5,8 +5,8 @@ import (
 )
 
 /*
- * CopyPresentValues goes through a list "keys" and copies "source" maps's values,
- * if such exist, to the "target".
+ * Go through the list "keys" and copy "source" maps's values,
+ * if such exist, into the "target".
  *
  * To be able to copy a field value of the internal child maps -
  * it's possible to specify a dot in a key name, function will split the
@@ -28,7 +28,7 @@ import (
  *   y.z - will copy the value "hello"
  *   n.m - will copy the value "world", as there is no internal map "n"
  */
-func CopyPresentValues(source map[string]interface{}, target map[string]interface{}, keys []string) {
+func CopyPresentValues(source, target map[string]interface{}, keys []string) {
 	for _, key := range keys {
 		// If the whole string is a key - just assign a value
 		if source[key] != nil {
@@ -60,6 +60,64 @@ func CopyPresentValues(source map[string]interface{}, target map[string]interfac
 			}
 		}
 	}
+}
+
+/*
+ * Check whether the same nodes (by their ID) from different data source entries
+ * contain identical attributes
+ */
+func attributesAreIdentical(source, target interface{}, keys []string) bool {
+	if keys == nil || len(keys) == 0 {
+		return true
+	}
+
+	if source == nil && target == nil {
+		return true
+	} else if source == nil && target != nil {
+		return false
+	} else if source != nil && target == nil {
+		return false
+	}
+
+	s := source.(map[string]interface{})
+	t := target.(map[string]interface{})
+
+	for _, key := range keys {
+		if s[key] != t[key] {
+			return false
+		}
+	}
+
+	return true
+}
+
+/*
+ * Check whether current entry is identical to any of
+ * the already collected unique results.
+ *
+ * This returns to the user only unique entries from a data source.
+ * If single relation's From.ID == To.ID, but even one attribute is different -
+ * JavaScript-side will get both entries and merge their attributes
+ */
+func ResultsContain(results []map[string]interface{}, entry map[string]interface{}, relation *Relation) bool {
+	for _, result := range results {
+		from := result["from"].(map[string]interface{})
+		to := result["to"].(map[string]interface{})
+
+		if from["id"] == entry[relation.From.ID] &&
+			to["id"] == entry[relation.To.ID] {
+
+			// Compare attributes of FROM and TO nodes and EDGE
+			if attributesAreIdentical(entry, from["attributes"], relation.From.Attributes) &&
+				attributesAreIdentical(entry, to["attributes"], relation.To.Attributes) &&
+				(relation.Edge == nil || attributesAreIdentical(entry, result["edge"], relation.Edge.Attributes)) {
+
+				return true
+			}
+		}
+	}
+
+	return false
 }
 
 /*

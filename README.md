@@ -2,6 +2,7 @@
 # Graphoscope
 
 A solution to access multiple independent data sources from a common UI and show data relations as a graph:
+
 ![](assets/img/screen.png)
 
 Contains a list of by default available data sources plugins. 3rd party plugins are also possible.

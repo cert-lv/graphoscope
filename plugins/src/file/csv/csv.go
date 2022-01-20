@@ -103,7 +103,7 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 
 	var row = make([]interface{}, 0, len(cols))
 	for range cols {
-		row = append(row, new(string))
+		row = append(row, new(sql.NullString))
 	}
 
 	mx := sync.Mutex{}
@@ -143,7 +143,10 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 		entry := make(map[string]interface{})
 
 		for i, col := range cols {
-			entry[col] = *row[i].(*string)
+			value, _ := row[i].(*sql.NullString).Value()
+			if value != nil {
+				entry[col] = value.(string)
+			}
 		}
 
 		// Update stats

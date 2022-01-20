@@ -17,7 +17,7 @@ relations:
         id: name
         group: name
         search: name
-        attributes: [ "age" ]
+        attributes: [ "age", "language" ]
 
     to:
         id: country
@@ -36,5 +36,16 @@ relations:
 
     to:
         id: friend
+        group: name
+        search: name
+
+  -
+    from:
+        id: language
+        group: language
+        search: language
+
+    to:
+        id: name
         group: name
         search: name

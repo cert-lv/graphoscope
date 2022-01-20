@@ -81,7 +81,7 @@ Check a built-in documentation, section `Administration`.
 - [ ] Display available data source's fields
 - [ ] `debug` option to see resulting query to the data source and its response
 - [ ] In `graph.js` remove custom zoom limiting
-      when 'https://github.com/visjs/vis-network/pull/629' or similar is merged & new version released
+      when https://github.com/visjs/vis-network/pull/629 or similar is merged & new version released
 ---
 - [ ] Generate DEB and RPM packages
 - [ ] Log rotation system based on Zerolog

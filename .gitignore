@@ -17,6 +17,7 @@ binary
 Makefile
 Dockerfile
 *.log
+*.log.gz
 *.pprof
 profile*.svg
 *.sublime-project

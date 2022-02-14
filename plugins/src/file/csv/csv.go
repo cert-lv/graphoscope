@@ -104,7 +104,7 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 	var row = make([]interface{}, 0, len(cols))
 	for range cols {
 		// Use "sql.NullString" instead of "string" to be able
-		// to handle empty values in CSV file
+		// to handle empty values in a CSV file
 		row = append(row, new(sql.NullString))
 	}
 

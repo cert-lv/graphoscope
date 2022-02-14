@@ -30,8 +30,11 @@ type Config struct {
 	StabilizationTime int    `yaml:"stabilizationTime"`
 
 	Log *struct {
-		File  string        `yaml:"file"`
-		Level zerolog.Level `yaml:"level"`
+		File       string        `yaml:"file"`
+		MaxSize    int           `yaml:"maxSize"`
+		MaxBackups int           `yaml:"maxBackups"`
+		MaxAge     int           `yaml:"maxAge"`
+		Level      zerolog.Level `yaml:"level"`
 	} `yaml:"log"`
 
 	Upload *struct {

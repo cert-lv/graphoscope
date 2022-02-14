@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/rs/zerolog"
+	"gopkg.in/natefinch/lumberjack.v2"
 )
 
 /*
@@ -13,19 +14,22 @@ import (
  * In a production environment log events to the file only,
  * in a development environment log to the stdout only
  */
-func setupLogger() (*os.File, error) {
+func setupLogger() error {
 
 	// For the production server
 	if config.Environment == "prod" {
-		file, err := os.OpenFile(config.Log.File, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0600)
-		if err != nil {
-			return nil, err
-		}
+		// Lumberjack provides log files rotation
+		log = zerolog.New(&lumberjack.Logger{
+			Filename:   config.Log.File,
+			MaxSize:    config.Log.MaxSize,    // Size in MB before file gets rotated
+			MaxBackups: config.Log.MaxBackups, // Max number of files kept before being overwritten
+			MaxAge:     config.Log.MaxAge,     // Max number of days to keep the files
+			Compress:   true,                  // Whether to compress log files using gzip
+		}).With().Timestamp().Logger()
 
-		log = zerolog.New(file).With().Timestamp().Logger()
 		zerolog.SetGlobalLevel(config.Log.Level)
 
-		return file, nil
+		return nil
 	}
 
 	// For the development
@@ -37,5 +41,5 @@ func setupLogger() (*os.File, error) {
 	log = zerolog.New(stdout).With().Timestamp().Logger()
 	zerolog.SetGlobalLevel(config.Log.Level)
 
-	return nil, nil
+	return nil
 }

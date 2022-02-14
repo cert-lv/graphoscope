@@ -84,7 +84,6 @@ Check a built-in documentation, section `Administration`.
       when https://github.com/visjs/vis-network/pull/629 or similar is merged & new version released
 ---
 - [ ] Generate DEB and RPM packages
-- [ ] Log rotation system based on Zerolog
 - [ ] More advanced datetime range selector. With options like `Last 24h`, `Last used ranges`, etc.
 - [ ] Edges groups styling. **TODO** from `search.js`. Implement https://github.com/visjs/vis-network/issues/1229
 - [ ] Generate PDF documentation from the existing `*.md` files

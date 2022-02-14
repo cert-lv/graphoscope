@@ -41,6 +41,12 @@ stabilizationTime: 0
 log:
     # File output in a "prod" environment
     file: /var/log/graphoscope/graphoscope.log
+    # Size in MB before file gets rotated
+    maxSize: 100
+    # Max number of files kept before being overwritten
+    maxBackups: 10
+    # Max number of days to keep the files
+    maxAge: 30
 
     # Log level.
     # Possible values:

@@ -34,13 +34,10 @@ func main() {
 	/*
 	 * Setup a global logger to the file or stdout
 	 */
-	fp, err := setupLogger()
+	err = setupLogger()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Can't setup a logfile: %s", err.Error())
+		fmt.Fprintf(os.Stderr, "Can't setup a logger: %s", err.Error())
 		os.Exit(1)
-	}
-	if fp != nil {
-		defer fp.Close()
 	}
 
 	/*

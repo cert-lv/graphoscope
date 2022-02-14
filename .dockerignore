@@ -12,6 +12,7 @@ Makefile*
 Dockerfile*
 *.yaml
 *.log
+*.log.gz
 *.pprof
 profile*.svg
 *.sublime-project

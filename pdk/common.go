@@ -83,8 +83,20 @@ func attributesAreIdentical(source, target interface{}, keys []string) bool {
 	t := target.(map[string]interface{})
 
 	for _, key := range keys {
-		if s[key] != t[key] {
-			return false
+		switch sts := s[key].(type) {
+		case []interface{}:
+			if len(sts) != len(t[key].([]interface{})) {
+				return false
+			}
+			for _, st := range sts {
+				if !InterfaceSliceContains(t[key].([]interface{}), st) {
+					return false
+				}
+			}
+		default:
+			if s[key] != t[key] {
+				return false
+			}
 		}
 	}
 
@@ -137,6 +149,19 @@ func StringSliceContains(slice []string, val string) bool {
  * Check whether the slice contains the given integer
  */
 func IntSliceContains(slice []int, val int) bool {
+	for _, item := range slice {
+		if item == val {
+			return true
+		}
+	}
+
+	return false
+}
+
+/*
+ * Check whether the slice contains the given interface
+ */
+func InterfaceSliceContains(slice []interface{}, val interface{}) bool {
 	for _, item := range slice {
 		if item == val {
 			return true

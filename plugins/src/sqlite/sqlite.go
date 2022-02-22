@@ -144,7 +144,10 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 		for _, relation := range p.source.Relations {
 			if entry[relation.From.ID] != nil && entry[relation.To.ID] != nil {
 				umx.Lock()
-				if _, exists := unique[entry[relation.From.ID].(string)+entry[relation.To.ID].(string)]; exists {
+
+				// Use "Printf(...%v..." instead of "entry[relation.From.ID].(string)"
+				// as the value can be not a string only
+				if _, exists := unique[fmt.Sprintf("%v-%v-%v-%v", relation.From.ID, entry[relation.From.ID], relation.To.ID, entry[relation.To.ID])]; exists {
 					if pdk.ResultsContain(results, entry, relation) {
 						umx.Unlock()
 						continue
@@ -153,7 +156,7 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 
 				counter++
 
-				unique[entry[relation.From.ID].(string)+entry[relation.To.ID].(string)] = true
+				unique[fmt.Sprintf("%v-%v-%v-%v", relation.From.ID, entry[relation.From.ID], relation.To.ID, entry[relation.To.ID])] = true
 				umx.Unlock()
 
 				/*
@@ -168,7 +171,7 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 				// Check FROM type & searching fields
 				if len(relation.From.VarTypes) > 0 {
 					for _, t := range relation.From.VarTypes {
-						if t.RegexCompiled.MatchString(entry[relation.From.ID].(string)) {
+						if t.RegexCompiled.MatchString(fmt.Sprintf("%v", entry[relation.From.ID])) {
 							from["group"] = t.Group
 							from["search"] = t.Search
 
@@ -194,7 +197,7 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 				// Check FROM type & searching fields
 				if len(relation.To.VarTypes) > 0 {
 					for _, t := range relation.To.VarTypes {
-						if t.RegexCompiled.MatchString(entry[relation.To.ID].(string)) {
+						if t.RegexCompiled.MatchString(fmt.Sprintf("%v", entry[relation.To.ID])) {
 							to["group"] = t.Group
 							to["search"] = t.Search
 

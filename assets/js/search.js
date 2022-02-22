@@ -501,7 +501,7 @@ class Search {
         // Join 'target' and modified 'source'
         for (const key in source) {
             if (target.hasOwnProperty(key)) {
-                if (!target[key].match(new RegExp('(^|\\W)'+source[key].toString().replaceAll('(', '\\(').replaceAll(')', '\\)')+'(\\W|$)'))) {
+                if (!target[key].match(new RegExp('(^|\\W)'+this.escapeRegex(source[key].toString())+'(\\W|$)'))) {
                     if (Array.isArray(source[key]))
                         target[key] += ', ' + source[key].join(', ');
                     else
@@ -518,5 +518,12 @@ class Search {
         }
 
         return target;
+    }
+
+    /*
+     * Escape special characters in a string for use inside of a Regular Expression
+     */
+    escapeRegex(string) {
+        return string.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
     }
 }

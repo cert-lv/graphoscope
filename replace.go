@@ -53,7 +53,7 @@ func replaceSQL(node sqlparser.SQLNode, replaceFields map[string]string) (err er
 			case *runtime.TypeAssertionError:
 				err = rt
 			default:
-				log.Error().Msgf("Can't replace SQL fields, '%T' error: %v", r, rt)
+				log.Error().Msgf("Can't replace SQL fields, \"%T\" error: %v", r, rt)
 			}
 		}
 

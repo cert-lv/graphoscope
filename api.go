@@ -143,7 +143,7 @@ func querySources(source, sql, username string) *APIresponse {
 				group.Go(func() error {
 					result, stat, err := collector.Search(query)
 					if err != nil {
-						return fmt.Errorf("%s - %s", collector.Source().Name, err.Error())
+						return fmt.Errorf("%s", err.Error())
 					}
 
 					if stat != nil {

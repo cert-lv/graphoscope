@@ -44,7 +44,16 @@ func parseSQL(sql string, includeDatetime bool, replaceFields map[string]string,
 
 	// Handle WHERE
 	if query.Where == nil {
-		return nil, fmt.Errorf("'WHERE' filters are missing")
+		return nil, fmt.Errorf("WHERE filters are missing")
+	}
+
+	switch query.Where.Expr.(type) {
+	case *sqlparser.ParenExpr,
+		*sqlparser.AndExpr,
+		*sqlparser.OrExpr,
+		*sqlparser.ComparisonExpr:
+	default:
+		return nil, fmt.Errorf("WHERE statement is not a list of filters")
 	}
 
 	// Handle LIMIT
@@ -55,7 +64,7 @@ func parseSQL(sql string, includeDatetime bool, replaceFields map[string]string,
 
 			_, err := strconv.Atoi(offset)
 			if err != nil {
-				return nil, fmt.Errorf("'LIMIT ?,x' value is not an integer: %v (%T)", offset, offset)
+				return nil, fmt.Errorf("\"LIMIT ?,x\" value is not an integer: %v (%T)", offset, offset)
 			}
 		} else {
 			query.Limit.Offset = &sqlparser.SQLVal{Type: 1, Val: []uint8{0x30}} // Start from 0
@@ -67,7 +76,7 @@ func parseSQL(sql string, includeDatetime bool, replaceFields map[string]string,
 
 			limit, err := strconv.Atoi(rowcount)
 			if err != nil {
-				return nil, fmt.Errorf("'LIMIT x,?' value is not an integer: %v (%T)", rowcount, rowcount)
+				return nil, fmt.Errorf("\"LIMIT x,?\" value is not an integer: %v (%T)", rowcount, rowcount)
 			}
 
 			if limit < 0 {
@@ -89,12 +98,12 @@ func parseSQL(sql string, includeDatetime bool, replaceFields map[string]string,
 
 	// Handle multiple FROM
 	if len(query.From) != 1 {
-		return nil, fmt.Errorf("Multiple 'FROM' currently not supported")
+		return nil, fmt.Errorf("Multiple FROM currently not supported")
 	}
 
 	// Handle DISTINCT
 	if query.Distinct != "" {
-		return nil, fmt.Errorf("'DISTINCT' shouldn't be used, API service already returns unique nodes pairs only")
+		return nil, fmt.Errorf("DISTINCT shouldn't be used, API service already returns unique nodes pairs only")
 	}
 
 	/*
@@ -289,7 +298,7 @@ func splitOrIn(expr sqlparser.Expr, list []sqlparser.Expr) ([]sqlparser.Expr, er
 		}
 
 	default:
-		log.Error().Msgf("Unexpected 'Left' part of the query to split: %#v\n", left)
+		log.Error().Msgf("Unexpected \"Left\" part of the query to split: %#v\n", left)
 	}
 
 	return list, nil

@@ -233,7 +233,7 @@ func querySources(source, sql, username string) *APIresponse {
 			Str("sql", sql).
 			Msg("Search error: " + response.Error)
 
-		response.Error = fmt.Sprintf("\"%s\" error: %s", source, response.Error)
+		response.Error = fmt.Sprintf("<span class=\"red_fg\">\"%s\" error</span>: %s", source, response.Error)
 	}
 
 	if len(response.Relations) != 0 || len(response.Stats) != 0 {

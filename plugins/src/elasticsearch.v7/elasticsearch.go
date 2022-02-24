@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -34,11 +35,19 @@ func (p *plugin) Setup(source *pdk.Source, limit int) error {
 		return fmt.Errorf("'access.indices' is not defined")
 	}
 
+	// Several ways to authorize the user
+	header := http.Header{}
+
+	if source.Access["key"] != "" {
+		header["Authorization"] = []string{"ApiKey " + source.Access["key"]}
+	} else if source.Access["username"] != "" && source.Access["password"] != "" {
+		header["Authorization"] = []string{"Basic " + base64.StdEncoding.EncodeToString([]byte(source.Access["username"]+":"+source.Access["password"]))}
+	}
+
 	// Elasticsearch server address
 	client, err := elastic.NewClient(
-		elastic.SetHeaders(http.Header{"Authorization": []string{"ApiKey " + source.Access["key"]}}),
+		elastic.SetHeaders(header),
 		elastic.SetURL(source.Access["url"]),
-		elastic.SetHealthcheck(false),
 		elastic.SetSniff(false))
 	if err != nil {
 		return err

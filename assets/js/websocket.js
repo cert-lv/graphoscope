@@ -165,6 +165,7 @@ class Websocket {
         // Some features are search related only
         if (this.application.search) {
             // Prevent searching until Websocket connection is established
+            this.application.search.searchBtn.removeClass('loading');
             this.application.search.searchBtn.addClass('disabled');
         }
 

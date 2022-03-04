@@ -83,6 +83,13 @@ func attributesAreIdentical(source, target interface{}, keys []string) bool {
 	t := target.(map[string]interface{})
 
 	for _, key := range keys {
+		// If target doesn't contain such attribute -
+		// return node to the client in any case
+		if t[key] == nil {
+			return false
+		}
+
+		// Otherwise compare all the values
 		switch sts := s[key].(type) {
 		case []interface{}:
 			if len(sts) != len(t[key].([]interface{})) {

@@ -52,22 +52,24 @@ systemctl restart mongod
 
 ## Get the source code
 
-Create a directory:
+Create directories and copy the source in there:
 ```sh
-mkdir -p /opt/go/src/github.com/cert-lv/graphoscope
+mkdir -p /opt/go/src/github.com/cert-lv
+cd /opt/go/src/github.com/cert-lv
+git clone https://github.com/cert-lv/graphoscope
+mkdir -p build/plugins
 ```
-Copy the source in there.
 
 
 ## Scripted building
 
-`Makefile`s are used to test, build and deploy Graphoscope on a remote server.
+`Makefile` and `Docker` are used to test, build and deploy Graphoscope on a remote server. Make sure to install the latest version.
 
 ```sh
 cd /opt/go/src/github.com/cert-lv/graphoscope/
 cp Makefile.example Makefile
 ```
-and edit `Makefile`s according to your needs: set a `REMOTE` variable to your remote user and host.
+and edit `Makefile`s according to your needs: set a `REMOTE` variable to your remote user and host, replace `docker` command with `podman` in case it's being used in your system.
 
 
 ## Development host setup
@@ -81,6 +83,7 @@ cp sources/demo.yaml.example sources/demo.yaml
 cp files/groups.json.example files/groups.json
 cp files/formats.yaml.example files/formats.yaml
 cp graphoscope.yaml.example graphoscope.yaml
+cp Dockerfile.example Dockerfile
 ```
 Edit `graphoscope.yaml`:
 
@@ -88,7 +91,7 @@ Edit `graphoscope.yaml`:
 - Enter a unique `authenticationKey`, `encryptionKey ` in a `sessions` section
 - Set `certFile` and `keyFile` to `certs/graphoscope.crt` and `certs/graphoscope.key`
 
-Install the latest official version of `Golang` and run:
+Install the latest official versions of `Golang` and run:
 ```sh
 export GOPATH=/opt/go
 apt install gcc make

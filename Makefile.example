@@ -14,20 +14,20 @@ VERSION     := $(shell cat VERSION)
 compile:
 	rm -f build/plugins/* build/$(IMAGE_NAME)
 
-	podman build --target plugins-builder -t $(IMAGE_NAME)-plugins:$(VERSION) -f Dockerfile .
-	podman run --rm --entrypoint sh \
+	docker build --target plugins-builder -t $(IMAGE_NAME)-plugins:$(VERSION) -f Dockerfile .
+	docker run --rm --entrypoint sh \
 	           -v $(shell pwd)/build/plugins:/opt/mount:Z \
 	           $(IMAGE_NAME)-plugins:$(VERSION) \
 	           -c "cp /go/plugins/*.so /opt/mount/"
 
-	podman build -t $(IMAGE_NAME):$(VERSION) -f Dockerfile .
-	podman run --rm --entrypoint sh \
+	docker build -t $(IMAGE_NAME):$(VERSION) -f Dockerfile .
+	docker run --rm --entrypoint sh \
 	           -v $(shell pwd)/build:/opt/mount:Z \
 	           $(IMAGE_NAME):$(VERSION) \
 	           -c "cp /go/graphoscope /opt/mount/"
 
 	tar -czvf dist/graphoscope.tar.gz -C build plugins graphoscope
-	podman rmi $(IMAGE_NAME):$(VERSION) $(IMAGE_NAME)-plugins:$(VERSION)
+	docker rmi $(IMAGE_NAME):$(VERSION) $(IMAGE_NAME)-plugins:$(VERSION)
 
 # Run local installation
 install:

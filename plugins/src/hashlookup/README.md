@@ -19,3 +19,4 @@ Or use the Makefile command:
 
 Source YAML definition's `access` fields:
 - **url**: hashlookup API endpoint, for example - `https://hashlookup.circl.lu`
+- **apiKey**: optional hashlookup API key

@@ -25,5 +25,6 @@ type plugin struct {
 	limit int
 
 	// Custom fields
-	url string
+	url    string
+	apiKey string
 }

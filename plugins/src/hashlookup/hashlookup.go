@@ -8,6 +8,7 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/Jeffail/gabs/v2"
 	"github.com/blastrain/vitess-sqlparser/sqlparser"
@@ -68,71 +69,102 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 		return nil, nil, err
 	}
 
-	var body *bytes.Buffer
+	var bodies []*bytes.Buffer
 
 	/*
 	 * Send indicators to get results back
 	 */
-	body, err = p.request(searchFields)
+	bodies, err = p.request(searchFields)
+	var unpacked []string
 	if err != nil {
 		return nil, nil, err
-	}
-
-	// Struct to store statistics data
-	// when the amount of returned entries is too large
-	stats := pdk.NewStats()
-
-	for _, field := range p.source.StatsFields {
-		stats.Fields[field] = sortedmap.New(10, desc.Int)
 	}
 
 	/*
 	 * Receive hits and deserialize them
 	 */
+
+	// Attempt to unpack arrays if we get results from the bulk endpoint
+	for _, body := range bodies {
+		jsonParsed, err := gabs.ParseJSONBuffer(body)
+		if err != nil {
+			return nil, nil, err
+		}
+		childM := jsonParsed.ChildrenMap()
+		// If SHA-1 is present, this is not an array
+		if _, ok := childM["SHA-1"]; ok {
+			unpacked = append(unpacked, jsonParsed.String())
+		} else {
+			// Unpack the Array from bulk
+			childA := jsonParsed.Children()
+			for _, child := range childA {
+				unpacked = append(unpacked, child.String())
+			}
+		}
+	}
+
+	// variable holding the Json values for the merge
+	var finalJSONParsed = gabs.New()
+	finalJSONParsed.Array("entries")
+	// variable used to convert back to go
 	var entries []map[string]interface{}
-	jsonParsed, err := gabs.ParseJSONBuffer(body)
-	if err != nil {
-		return nil, nil, err
-	}
 
-	entryObj := gabs.New()
-	entryObj.Array("entries")
+	for _, body := range unpacked {
+		fmt.Println("114" + body)
+		// Struct to store statistics data
+		// when the amount of returned entries is too large
+		stats := pdk.NewStats()
 
-	children := new(gabs.Container)
-	parents := new(gabs.Container)
+		for _, field := range p.source.StatsFields {
+			stats.Fields[field] = sortedmap.New(10, desc.Int)
+		}
 
-	if jsonParsed.Exists("children") {
+		jsonParsed, err := gabs.ParseJSON([]byte(body))
 		if err != nil {
 			return nil, nil, err
 		}
-		children = jsonParsed.Path("children")
-		for _, child := range children.Children() {
-			// Add a reference to the parent
-			child.Set(jsonParsed.S("SHA-1").Data(), "parent")
-			// Add the children to the list of entries
-			entryObj.ArrayAppend(child, "entries")
+
+		entryObj := gabs.New()
+		entryObj.Array("entries")
+
+		children := new(gabs.Container)
+		parents := new(gabs.Container)
+
+		if jsonParsed.Exists("children") {
+			if err != nil {
+				return nil, nil, err
+			}
+			children = jsonParsed.Path("children")
+			for _, child := range children.Children() {
+				// Add a reference to the parent
+				child.Set(jsonParsed.S("SHA-1").Data(), "parent")
+				// Add the children to the list of entries
+				entryObj.ArrayAppend(child, "entries")
+			}
+			// Remove the children for the main received object
+			jsonParsed.Delete("children")
 		}
-		// Remove the children for the main received object
-		jsonParsed.Delete("children")
-	}
-	if jsonParsed.Exists("parents") {
-		parents = jsonParsed.Path("parents")
-		if err != nil {
-			return nil, nil, err
+		if jsonParsed.Exists("parents") {
+			parents = jsonParsed.Path("parents")
+			if err != nil {
+				return nil, nil, err
+			}
+			for _, child := range parents.Children() {
+				// Add a reference to the parent
+				child.Set(jsonParsed.S("SHA-1").Data(), "children")
+				// Add the children to the list of entries
+				entryObj.ArrayAppend(child, "entries")
+			}
+			// Remove the parents for the main received object
+			jsonParsed.Delete("parents")
 		}
-		for _, child := range parents.Children() {
-			// Add a reference to the parent
-			child.Set(jsonParsed.S("SHA-1").Data(), "children")
-			// Add the children to the list of entries
-			entryObj.ArrayAppend(child, "entries")
-		}
-		// Remove the parents for the main received object
-		jsonParsed.Delete("parents")
+
+		entryObj.ArrayAppend(jsonParsed, "entries")
+
+		finalJSONParsed.Merge(entryObj)
 	}
 
-	entryObj.ArrayAppend(jsonParsed, "entries")
-
-	err = json.NewDecoder(strings.NewReader(entryObj.S("entries").String())).Decode(&entries)
+	err = json.NewDecoder(strings.NewReader(finalJSONParsed.S("entries").String())).Decode(&entries)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -141,6 +173,14 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 	umx := sync.Mutex{}
 	unique := make(map[string]bool)
 	counter := 0
+
+	// Struct to store statistics data
+	// when the amount of returned entries is too large
+	stats := pdk.NewStats()
+
+	for _, field := range p.source.StatsFields {
+		stats.Fields[field] = sortedmap.New(10, desc.Int)
+	}
 
 	for _, entry := range entries {
 
@@ -270,73 +310,82 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 	return results, nil, nil
 }
 
-// TODO implement the other endpoints
-// TODO implement bulk ?
 // request connects to the HTTP access point and returns the response
-func (p *plugin) request(searchFields [][2]string) (*bytes.Buffer, error) {
-
+func (p *plugin) request(searchFields [][2]string) ([]*bytes.Buffer, error) {
 	// Create a request body
 	data := url.Values{}
+
+	// List of possible Hashlookup fields
+	possibleFields := []string{"md5", "sha1", "sha256"}
+	// List of requests we will have to make
+	requests := make([]*http.Request, 0, 3)
+	responses := make([]*bytes.Buffer, 0, 3)
 
 	for _, field := range searchFields {
 		data.Add(field[0], field[1])
 	}
 
-	var req *http.Request
-	var err error
+	for _, possibleSearchField := range possibleFields {
+		// Check what endpoints we hit
+		if data.Has(possibleSearchField) {
+			tmpUrl := ""
+			var tmpReq *http.Request
+			var err error
 
-	// Create a request object
-	tmpUrl := ""
-	tmpMethod := ""
-	if data.Has("sha1") {
-		if len(data["sha1"]) > 1 {
-			tmpUrl = p.url + "/bulk/sha1/"
-			tmpMethod = "POST"
-		} else {
-			tmpUrl = p.url + "/lookup/sha1/" + data.Get("sha1")
-			tmpMethod = "GET"
+			if len(data[possibleSearchField]) > 1 {
+				tmpUrl = p.url + "/bulk/" + possibleSearchField
+				tmpMap := make(map[string][]string)
+				tmpMap["hashes"] = data[possibleSearchField]
+				tmpBody, errm := json.Marshal(tmpMap)
+				if errm != nil {
+					return nil, fmt.Errorf("Could not serialize: %s", err.Error())
+				}
+				tmpReq, err = http.NewRequest("POST", tmpUrl, bytes.NewReader(tmpBody))
+			} else {
+				tmpUrl = p.url + "/lookup/" + possibleSearchField + "/" + data.Get(possibleSearchField)
+				tmpReq, err = http.NewRequest("GET", tmpUrl, nil)
+			}
+			requests = append(requests, tmpReq)
+
+			if err != nil {
+				return nil, fmt.Errorf("Can't create the request: %s", err.Error())
+			}
 		}
-	} else {
-		fmt.Println("does not have sha1")
+	}
+	// If no possible search field, exit
+	if len(requests) == 0 {
+		return nil, fmt.Errorf("%s", errors.New("No compatible hashlookup search field."))
 	}
 
-	req, err = http.NewRequest(tmpMethod, tmpUrl, nil)
-	if err != nil {
-		return nil, fmt.Errorf("Can't create a GET request: %s", err.Error())
+	for _, req := range requests {
+		// Set basic auth credentials if given
+		if p.source.Access["apiKey"] != "" {
+			req.SetBasicAuth(p.source.Access["apiKey"], "")
+		}
+		req.Header.Add("Content-Type", "application/json")
+		// Declare an HTTP client to execute the request
+		client := http.Client{Timeout: p.source.Timeout}
+		// Send an HTTP using `req` object
+		tmpResp, err := client.Do(req)
+		if err != nil {
+			return nil, fmt.Errorf("Can't do an HTTP request: %s", err.Error())
+		}
+
+		tmpBody := &bytes.Buffer{}
+		_, err = tmpBody.ReadFrom(tmpResp.Body)
+		if err != nil {
+			tmpResp.Body.Close()
+			return nil, fmt.Errorf("Can't read an HTTP response: %s", err.Error())
+		}
+		tmpResp.Body.Close()
+		// Check the response
+		if tmpResp.StatusCode != http.StatusOK {
+			return nil, fmt.Errorf("Bad response StatusCode: %s", tmpResp.Status)
+		}
+		responses = append(responses, tmpBody)
 	}
 
-	req.Header.Add("Content-Type", "application/json")
-	req.URL.RawQuery = data.Encode()
-
-	// Set basic auth credentials if given
-	// TODO evaluate, irrelevant for the time being
-	if p.source.Access["user"] != "" && p.source.Access["password"] != "" {
-		req.SetBasicAuth(p.source.Access["user"], p.source.Access["password"])
-	}
-
-	// Declare an HTTP client to execute the request
-	client := http.Client{Timeout: p.source.Timeout}
-
-	// Send an HTTP using `req` object
-	resp, err := client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("Can't do an HTTP request: %s", err.Error())
-	}
-
-	body := &bytes.Buffer{}
-	_, err = body.ReadFrom(resp.Body)
-	if err != nil {
-		resp.Body.Close()
-		return nil, fmt.Errorf("Can't read an HTTP response: %s", err.Error())
-	}
-	resp.Body.Close()
-
-	// Check the response
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("Bad response StatusCode: %s", resp.Status)
-	}
-
-	return body, nil
+	return responses, nil
 }
 
 func (p *plugin) Stop() error {

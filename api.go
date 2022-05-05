@@ -100,21 +100,23 @@ func querySources(source, sql, username string) *APIresponse {
 	}
 
 	// Check cache first
-	cache, err := db.getCache(sql)
-	if err != nil {
-		response.Error = "Can't query cache: " + err.Error()
-	}
+	if config.Database.CacheTTL != 0 {
+		cache, err := db.getCache(sql)
+		if err != nil {
+			response.Error = "Can't query cache: " + err.Error()
+		}
 
-	if cache != nil {
-		log.Info().
-			Str("username", username).
-			Str("sql", sql).
-			Msg("Query from cache")
+		if cache != nil {
+			log.Info().
+				Str("username", username).
+				Str("sql", sql).
+				Msg("Query from cache")
 
-		response.Relations = cache.Relations
-		response.Stats = cache.Stats
+			response.Relations = cache.Relations
+			response.Stats = cache.Stats
 
-		return response
+			return response
+		}
 	}
 
 	// Group of concurrent queries to improve performance
@@ -251,7 +253,9 @@ func querySources(source, sql, username string) *APIresponse {
 	}
 
 	// Cache results to make the identical future requests faster
-	db.setCache(sql, response.Relations, response.Stats)
+	if config.Database.CacheTTL != 0 {
+		db.setCache(sql, response.Relations, response.Stats)
+	}
 
 	// Return the request results
 	return response

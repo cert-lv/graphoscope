@@ -21,7 +21,7 @@ var (
 	// Last digit of minutes and seconds will be removed
 	// from the queries as keys to make caching to work.
 	// Otherwise every single refresh will produce a new cache entry
-	reDatetimeLimit = regexp.MustCompile(`( AND datetime BETWEEN '\d{4}-\d{2}-\d{2}T\d{2}:\d)[\d:]{4}(\.000Z' AND '\d{4}-\d{2}-\d{2}T\d{2}:\d)[\d:]{4}(\.000Z')( LIMIT (\d*,)?\d*)?$`)
+	reDatetimeLimit = regexp.MustCompile(`( AND datetime BETWEEN '\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:)\d{2}(\.000Z' AND '\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:)\d{2}(\.000Z')( LIMIT (\d*,)?\d*)?$`)
 )
 
 /*
@@ -446,7 +446,7 @@ func (d *Database) delNotes(id string) error {
  */
 func (d *Database) getCache(query string) (*Cache, error) {
 	cache := &Cache{}
-	filter := bson.M{"_id": reDatetimeLimit.ReplaceAllString(query, "$1.:..$2.:..$3$4")}
+	filter := bson.M{"_id": reDatetimeLimit.ReplaceAllString(query, "$1..$2..$3$4")}
 
 	err := d.Cache.FindOne(d.newContext(), filter).Decode(cache)
 	if err == mongo.ErrNoDocuments {
@@ -473,7 +473,7 @@ func (d *Database) setCache(query string, relations []map[string]interface{}, st
 		Ts:        time.Now(),
 	}
 
-	filter := bson.M{"_id": reDatetimeLimit.ReplaceAllString(query, "$1.:..$2.:..$3$4")}
+	filter := bson.M{"_id": reDatetimeLimit.ReplaceAllString(query, "$1..$2..$3$4")}
 	update := bson.M{"$set": cache}
 
 	upsert := true
@@ -515,22 +515,24 @@ func (d *Database) setCacheTTL() {
 	}
 
 	// Create a new index
-	opts := options.CreateIndexes().SetMaxTime(time.Duration(config.Database.Timeout) * time.Second)
+	if config.Database.CacheTTL != 0 {
+		opts := options.CreateIndexes().SetMaxTime(time.Duration(config.Database.Timeout) * time.Second)
 
-	index := mongo.IndexModel{
-		Keys: bson.M{
-			"ts": 1,
-		},
-		Options: &options.IndexOptions{
-			ExpireAfterSeconds: &config.Database.CacheTTL,
-		},
-	}
+		index := mongo.IndexModel{
+			Keys: bson.M{
+				"ts": 1,
+			},
+			Options: &options.IndexOptions{
+				ExpireAfterSeconds: &config.Database.CacheTTL,
+			},
+		}
 
-	_, err = d.Cache.Indexes().CreateOne(d.newContext(), index, opts)
-	if err != nil {
-		log.Error().Msg("Can't create cache coll's index: " + err.Error())
-	} else {
-		log.Debug().Msg("Cache coll's index is created")
+		_, err = d.Cache.Indexes().CreateOne(d.newContext(), index, opts)
+		if err != nil {
+			log.Error().Msg("Can't create cache coll's index: " + err.Error())
+		} else {
+			log.Debug().Msg("Cache coll's index is created")
+		}
 	}
 }
 

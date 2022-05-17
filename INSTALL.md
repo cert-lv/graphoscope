@@ -91,7 +91,7 @@ Edit `graphoscope.yaml`:
 - Enter a unique `authenticationKey`, `encryptionKey ` in a `sessions` section
 - Set `certFile` and `keyFile` to `certs/graphoscope.crt` and `certs/graphoscope.key`
 
-Install the latest official versions of `Golang` and run:
+Install the latest official version of `Golang` and run:
 ```sh
 export GOPATH=/opt/go
 apt install gcc make

@@ -110,7 +110,6 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 	var entries []map[string]interface{}
 
 	for _, body := range unpacked {
-		fmt.Println("114" + body)
 		// Struct to store statistics data
 		// when the amount of returned entries is too large
 		stats := pdk.NewStats()
@@ -130,30 +129,52 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 		children := new(gabs.Container)
 		parents := new(gabs.Container)
 
+		// TODO fetch children / parents according to the LIMIT
+		// if the children/parent key exist and the count hits hashlookup limits,
+		// we query hashlookup again up the the query' LIMIT
+
 		if jsonParsed.Exists("children") {
 			if err != nil {
 				return nil, nil, err
 			}
-			children = jsonParsed.Path("children")
+			// Here we run the new query
+			rawChildren, err := p.getChildren(jsonParsed.S("SHA-1").Data().(string))
+			if err != nil {
+				return nil, nil, err
+			}
+			ChildrenJsonParsed, err := gabs.ParseJSONBuffer(rawChildren)
+			children = ChildrenJsonParsed.Path("children")
 			for _, child := range children.Children() {
+				// Create an object from the child
+				jsonObj := gabs.New()
 				// Add a reference to the parent
-				child.Set(jsonParsed.S("SHA-1").Data(), "parent")
+				jsonObj.Set(jsonParsed.S("SHA-1").Data(), "parent")
+				jsonObj.Set(child.Data().(string), "sha-1")
 				// Add the children to the list of entries
-				entryObj.ArrayAppend(child, "entries")
+				entryObj.ArrayAppend(jsonObj, "entries")
 			}
 			// Remove the children for the main received object
 			jsonParsed.Delete("children")
 		}
 		if jsonParsed.Exists("parents") {
-			parents = jsonParsed.Path("parents")
+			// Here we run the new query
+			rawParents, err := p.getParents(jsonParsed.S("SHA-1").Data().(string))
+			if err != nil {
+				return nil, nil, err
+			}
+			parentsJsonParsed, err := gabs.ParseJSONBuffer(rawParents)
+			parents = parentsJsonParsed.Path("parents")
 			if err != nil {
 				return nil, nil, err
 			}
 			for _, child := range parents.Children() {
-				// Add a reference to the parent
-				child.Set(jsonParsed.S("SHA-1").Data(), "children")
+				// Create an object from the parent
+				jsonObj := gabs.New()
+				// Add a reference to the children
+				jsonObj.Set(jsonParsed.S("SHA-1").Data(), "children")
+				jsonObj.Set(child.Data().(string), "sha-1")
 				// Add the children to the list of entries
-				entryObj.ArrayAppend(child, "entries")
+				entryObj.ArrayAppend(jsonObj, "entries")
 			}
 			// Remove the parents for the main received object
 			jsonParsed.Delete("parents")
@@ -386,6 +407,74 @@ func (p *plugin) request(searchFields [][2]string) ([]*bytes.Buffer, error) {
 	}
 
 	return responses, nil
+}
+
+// getChildren connect to the HTTP endpoints and retrieve children
+func (p *plugin) getChildren(parent string) (*bytes.Buffer, error) {
+
+	url := p.url + "/children/" + parent + "/10/0"
+	req, err := http.NewRequest("GET", url, nil)
+
+	// Set basic auth credentials if given
+	if p.source.Access["apiKey"] != "" {
+		req.SetBasicAuth(p.source.Access["apiKey"], "")
+	}
+	req.Header.Add("Content-Type", "application/json")
+	// Declare an HTTP client to execute the request
+	client := http.Client{Timeout: p.source.Timeout}
+	// Send an HTTP using `req` object
+	response, err := client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("Can't do an HTTP request: %s", err.Error())
+	}
+
+	body := &bytes.Buffer{}
+	_, err = body.ReadFrom(response.Body)
+	if err != nil {
+		response.Body.Close()
+		return nil, fmt.Errorf("Can't read an HTTP response: %s", err.Error())
+	}
+	response.Body.Close()
+	// Check the response
+	if response.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("Bad response StatusCode: %s", response.Status)
+	}
+
+	return body, nil
+}
+
+// getParents connect to the HTTP endpoints and retrieve parents
+func (p *plugin) getParents(child string) (*bytes.Buffer, error) {
+
+	url := p.url + "/parents/" + child + "/10/0"
+	req, err := http.NewRequest("GET", url, nil)
+
+	// Set basic auth credentials if given
+	if p.source.Access["apiKey"] != "" {
+		req.SetBasicAuth(p.source.Access["apiKey"], "")
+	}
+	req.Header.Add("Content-Type", "application/json")
+	// Declare an HTTP client to execute the request
+	client := http.Client{Timeout: p.source.Timeout}
+	// Send an HTTP using `req` object
+	response, err := client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("Can't do an HTTP request: %s", err.Error())
+	}
+
+	body := &bytes.Buffer{}
+	_, err = body.ReadFrom(response.Body)
+	if err != nil {
+		response.Body.Close()
+		return nil, fmt.Errorf("Can't read an HTTP response: %s", err.Error())
+	}
+	response.Body.Close()
+	// Check the response
+	if response.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("Bad response StatusCode: %s", response.Status)
+	}
+
+	return body, nil
 }
 
 func (p *plugin) Stop() error {

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/tls"
 	"fmt"
 	"net/http"
 	"os"
@@ -20,6 +21,26 @@ var (
 	// Current service's version
 	version string
 )
+
+/*
+ * Use recommended TLS settings
+ */
+func setupTLSserver() *http.Server {
+	cfg := &tls.Config{}
+
+	// At least TLS v1.2 is recommended
+	cfg.MinVersion = tls.VersionTLS12
+
+	// Enable secure ciphers only
+	for _, cipherSuite := range tls.CipherSuites() {
+		cfg.CipherSuites = append(cfg.CipherSuites, cipherSuite.ID)
+	}
+
+	return &http.Server{
+		Addr:      config.Host + ":" + config.Port,
+		TLSConfig: cfg,
+	}
+}
 
 func main() {
 	/*
@@ -98,12 +119,14 @@ func main() {
 	}
 
 	/*
-	 * Start an API feature
+	 * Start an HTTPS server
 	 */
 	http.HandleFunc("/api", apiHandler)
 
 	log.Info().Msgf("Graphoscope v%s. Starting the service listening on %s:%s", version, config.Host, config.Port)
-	err = http.ListenAndServeTLS(config.Host+":"+config.Port, config.CertFile, config.KeyFile, nil)
+	server := setupTLSserver()
+
+	err = server.ListenAndServeTLS(config.CertFile, config.KeyFile)
 	if err != nil {
 		log.Fatal().Msg("Can't ListenAndServeTLS: " + err.Error())
 	}

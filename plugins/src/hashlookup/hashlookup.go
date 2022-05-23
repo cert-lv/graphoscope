@@ -18,6 +18,7 @@ import (
 	"net/http"
 	"net/url"
 	"regexp"
+	"runtime"
 	"strings"
 	"sync"
 )
@@ -149,7 +150,7 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 				jsonObj := gabs.New()
 				// Add a reference to the parent
 				jsonObj.Set(jsonParsed.S("SHA-1").Data(), "parent")
-				jsonObj.Set(child.Data().(string), "sha-1")
+				jsonObj.Set(child.Data().(string), "SHA-1")
 				// Add the children to the list of entries
 				entryObj.ArrayAppend(jsonObj, "entries")
 			}
@@ -172,7 +173,7 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 				jsonObj := gabs.New()
 				// Add a reference to the children
 				jsonObj.Set(jsonParsed.S("SHA-1").Data(), "children")
-				jsonObj.Set(child.Data().(string), "sha-1")
+				jsonObj.Set(child.Data().(string), "SHA-1")
 				// Add the children to the list of entries
 				entryObj.ArrayAppend(jsonObj, "entries")
 			}
@@ -184,6 +185,7 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 
 		finalJSONParsed.Merge(entryObj)
 	}
+	runtime.Breakpoint()
 
 	err = json.NewDecoder(strings.NewReader(finalJSONParsed.S("entries").String())).Decode(&entries)
 	if err != nil {

@@ -18,7 +18,6 @@ import (
 	"net/http"
 	"net/url"
 	"regexp"
-	"runtime"
 	"strings"
 	"sync"
 )
@@ -139,12 +138,11 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 				return nil, nil, err
 			}
 			// Here we run the new query
-			rawChildren, err := p.getChildren(jsonParsed.S("SHA-1").Data().(string))
+			gabsChildren, err := p.getRelated("children", jsonParsed.S("SHA-1").Data().(string), p.limit)
 			if err != nil {
 				return nil, nil, err
 			}
-			ChildrenJsonParsed, err := gabs.ParseJSONBuffer(rawChildren)
-			children = ChildrenJsonParsed.Path("children")
+			children = gabsChildren.Path("children")
 			for _, child := range children.Children() {
 				// Create an object from the child
 				jsonObj := gabs.New()
@@ -159,12 +157,11 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 		}
 		if jsonParsed.Exists("parents") {
 			// Here we run the new query
-			rawParents, err := p.getParents(jsonParsed.S("SHA-1").Data().(string))
+			gabsParents, err := p.getRelated("parents", jsonParsed.S("SHA-1").Data().(string), p.limit)
 			if err != nil {
 				return nil, nil, err
 			}
-			parentsJsonParsed, err := gabs.ParseJSONBuffer(rawParents)
-			parents = parentsJsonParsed.Path("parents")
+			parents = gabsParents.Path("parents")
 			if err != nil {
 				return nil, nil, err
 			}
@@ -185,7 +182,6 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 
 		finalJSONParsed.Merge(entryObj)
 	}
-	runtime.Breakpoint()
 
 	err = json.NewDecoder(strings.NewReader(finalJSONParsed.S("entries").String())).Decode(&entries)
 	if err != nil {
@@ -412,71 +408,40 @@ func (p *plugin) request(searchFields [][2]string) ([]*bytes.Buffer, error) {
 }
 
 // getChildren connect to the HTTP endpoints and retrieve children
-func (p *plugin) getChildren(parent string) (*bytes.Buffer, error) {
+func (p *plugin) getRelated(relation string, parent string, limit int) (*gabs.Container, error) {
+	fmt.Println(relation)
 
-	url := p.url + "/children/" + parent + "/10/0"
-	req, err := http.NewRequest("GET", url, nil)
+	// Do everything as float64 as shortcut because it's gabs's default
+	var nbElements, total, spoon float64
+	gabsBuffer := gabs.New()
+	gabsBuffer.Array(relation)
+	var err error
 
-	// Set basic auth credentials if given
-	if p.source.Access["apiKey"] != "" {
-		req.SetBasicAuth(p.source.Access["apiKey"], "")
-	}
-	req.Header.Add("Content-Type", "application/json")
-	// Declare an HTTP client to execute the request
-	client := http.Client{Timeout: p.source.Timeout}
-	// Send an HTTP using `req` object
-	response, err := client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("Can't do an HTTP request: %s", err.Error())
-	}
+	// How many records we want at once
+	spoon = 99
+	url := ""
+	cursor := "0"
+	total = spoon
 
-	body := &bytes.Buffer{}
-	_, err = body.ReadFrom(response.Body)
-	if err != nil {
-		response.Body.Close()
-		return nil, fmt.Errorf("Can't read an HTTP response: %s", err.Error())
-	}
-	response.Body.Close()
-	// Check the response
-	if response.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("Bad response StatusCode: %s", response.Status)
-	}
-
-	return body, nil
-}
-
-// getParents connect to the HTTP endpoints and retrieve parents
-func (p *plugin) getParents(child string) (*bytes.Buffer, error) {
-
-	url := p.url + "/parents/" + child + "/10/0"
-	req, err := http.NewRequest("GET", url, nil)
-
-	// Set basic auth credentials if given
-	if p.source.Access["apiKey"] != "" {
-		req.SetBasicAuth(p.source.Access["apiKey"], "")
-	}
-	req.Header.Add("Content-Type", "application/json")
-	// Declare an HTTP client to execute the request
-	client := http.Client{Timeout: p.source.Timeout}
-	// Send an HTTP using `req` object
-	response, err := client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("Can't do an HTTP request: %s", err.Error())
+	for (nbElements < float64(limit)) && (nbElements < total) {
+		fmt.Println(nbElements)
+		url = p.url + "/" + relation + "/" + parent + "/" + fmt.Sprint(spoon) + "/" + cursor
+		fmt.Println(url)
+		body, err := p.query(url)
+		if err != nil {
+			return nil, fmt.Errorf("Can't query %s", err.Error())
+		}
+		tmp, err := gabs.ParseJSONBuffer(body)
+		if err != nil {
+			return nil, fmt.Errorf("Can't parse: %s", err.Error())
+		}
+		gabsBuffer.Merge(tmp)
+		cursor = tmp.Path("cursor").Data().(string)
+		total, _ = tmp.Path("total").Data().(float64)
+		nbElements += spoon
 	}
 
-	body := &bytes.Buffer{}
-	_, err = body.ReadFrom(response.Body)
-	if err != nil {
-		response.Body.Close()
-		return nil, fmt.Errorf("Can't read an HTTP response: %s", err.Error())
-	}
-	response.Body.Close()
-	// Check the response
-	if response.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("Bad response StatusCode: %s", response.Status)
-	}
-
-	return body, nil
+	return gabsBuffer, err
 }
 
 func (p *plugin) Stop() error {
@@ -492,4 +457,36 @@ func (p *plugin) Stop() error {
 
 	// return p.client.Disconnect(ctx)
 	return nil
+}
+
+func (p *plugin) query(url string) (*bytes.Buffer, error) {
+
+	req, err := http.NewRequest("GET", url, nil)
+
+	// Set basic auth credentials if given
+	if p.source.Access["apiKey"] != "" {
+		req.SetBasicAuth(p.source.Access["apiKey"], "")
+	}
+	req.Header.Add("Content-Type", "application/json")
+	// Declare an HTTP client to execute the request
+	client := http.Client{Timeout: p.source.Timeout}
+	// Send an HTTP using `req` object
+	response, err := client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("Can't do an HTTP request: %s", err.Error())
+	}
+
+	body := &bytes.Buffer{}
+	_, err = body.ReadFrom(response.Body)
+	if err != nil {
+		response.Body.Close()
+		return nil, fmt.Errorf("Can't read an HTTP response: %s", err.Error())
+	}
+	response.Body.Close()
+	// Check the response
+	if response.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("Bad response StatusCode: %s", response.Status)
+	}
+
+	return body, err
 }

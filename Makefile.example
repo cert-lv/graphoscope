@@ -167,6 +167,22 @@ plugins-local:
 	CGO_CFLAGS="-g -O2 -Wno-return-local-addr" go build -buildmode=plugin -ldflags="-w" -o plugins/sqlite.so plugins/src/sqlite/*.go
 	go build -buildmode=plugin -ldflags="-w" -o plugins/template.so         plugins/src/template/*.go
 
+# Build plugins locally for debugging purposes - place breakpoints with runtime.Breakpoint()
+plugins-local-debug:
+	go build -buildmode=plugin -gcflags="all=-N -l" -trimpath -o plugins/hashlookup.so       plugins/src/hashlookup/*.go
+	go build -buildmode=plugin -gcflags="all=-N -l" -trimpath -o plugins/elasticsearch.v7.so plugins/src/elasticsearch.v7/*.go
+	go build -buildmode=plugin -gcflags="all=-N -l" -trimpath -o plugins/http.so             plugins/src/http/*.go
+	go build -buildmode=plugin -gcflags="all=-N -l" -trimpath -o plugins/mongodb.so          plugins/src/mongodb/*.go
+	go build -buildmode=plugin -gcflags="all=-N -l" -trimpath -o plugins/pastelyzer.so       plugins/src/pastelyzer/*.go
+	go build -buildmode=plugin -gcflags="all=-N -l" -trimpath -o plugins/postgresql.so       plugins/src/postgresql/*.go
+	go build -buildmode=plugin -gcflags="all=-N -l" -trimpath -o plugins/mysql.so            plugins/src/mysql/*.go
+	go build -buildmode=plugin -gcflags="all=-N -l" -trimpath -o plugins/file-csv.so         plugins/src/file/csv/*.go
+	CGO_CFLAGS="-g -O2 -Wno-return-local-addr" go build -buildmode=plugin -gcflags="all=-N -l" -trimpath -o plugins/sqlite.so plugins/src/sqlite/*.go
+	go build -buildmode=plugin -gcflags="all=-N -l" -trimpath -o plugins/template.so         plugins/src/template/*.go
+
+binary-debug:
+	go build -gcflags="all=-N -l" -trimpath -o -a -o graphoscope .
+
 # Test Go code
 test:
 	go test plugins/src/elasticsearch.v7/*.go

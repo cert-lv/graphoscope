@@ -493,6 +493,10 @@ func (a *Account) send(tp, data, extra string) {
 	}
 
 	if a.Session != nil {
+		// Connections support one concurrent reader and one concurrent writer
+		a.Session.WebsocketMutex.Lock()
+		defer a.Session.WebsocketMutex.Unlock()
+
 		err = a.Session.Websocket.WriteMessage(websocket.TextMessage, bytes)
 		if err != nil {
 			log.Error().
@@ -539,6 +543,9 @@ func broadcast(tp, data, extra string) {
 
 	for _, account := range online {
 		if account.Session != nil {
+			// Connections support one concurrent reader and one concurrent writer
+			account.Session.WebsocketMutex.Lock()
+
 			err = account.Session.Websocket.WriteMessage(websocket.TextMessage, bytes)
 			if err != nil {
 				log.Error().
@@ -546,6 +553,8 @@ func broadcast(tp, data, extra string) {
 					Str("username", account.Username).
 					Msg("Can't write to the Websocket: " + err.Error())
 			}
+
+			account.Session.WebsocketMutex.Unlock()
 		}
 	}
 }

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"sync"
 
 	"github.com/gorilla/websocket"
 	"go.mongodb.org/mongo-driver/bson"
@@ -40,6 +41,8 @@ type Session struct {
 
 	// Websocket connection for client-server-client communication
 	Websocket *websocket.Conn
+	// Mutex, as WS connection supports one concurrent reader and one concurrent writer
+	WebsocketMutex sync.Mutex
 
 	// Client's initial HTTP request
 	Request *http.Request

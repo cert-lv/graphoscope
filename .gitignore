@@ -1,6 +1,7 @@
 certs/graph.*
 certs/graph-*
 certs/certca2.crt
+certs/cluster.crt
 sources/*
 !sources/*.example
 plugins/*.so

@@ -30,6 +30,15 @@ access:
     url: http://localhost:9200
     indices: apps-*
 
+# List of fields data source should return if not all are needed.
+# In some cases this allows to be more efficient. Not all plugins/data sources
+# support such feature, but, for example, in Elasticsearch plugin this allows
+# to see the index name stored in "_index"
+includeFields:
+    - _index
+    - address
+    - domain
+
 # List of fields used when generating statistics charts
 # when the amount of returned entries exceeds the limit.
 # One "Top 10" chart for every field will be generated and displayed.

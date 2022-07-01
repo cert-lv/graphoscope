@@ -383,7 +383,7 @@ input:-webkit-autofill:active {
 .common-attributes.table,
 .common-neighbors.table {
     border: none;
-    margin: 5px 10px 15px 0;
+    margin: 5px 0 15px 0;
     width: 100%;
 }
 

@@ -22,6 +22,7 @@ type Source struct {
 	SupportsSQL     bool              `yaml:"supportsSQL"`
 	Timeout         time.Duration     `yaml:"timeout"`
 	Access          map[string]string `yaml:"access"`
+	IncludeFields   []string          `yaml:"includeFields"`
 	StatsFields     []string          `yaml:"statsFields"`
 	ReplaceFields   map[string]string `yaml:"replaceFields"`
 	Relations       []*Relation       `yaml:"relations"`

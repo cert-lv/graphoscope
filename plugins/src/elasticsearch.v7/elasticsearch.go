@@ -92,7 +92,7 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 	results := []map[string]interface{}{}
 
 	// Convert SQL statement
-	searchJSON, err := p.convert(stmt)
+	searchJSON, err := p.convert(stmt, p.source.IncludeFields)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -152,9 +152,15 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 		// Deserialize
 		entry := make(map[string]interface{})
 
-		err := json.Unmarshal(hit.Source, &entry)
-		if err != nil {
-			return nil, nil, err
+		if len(p.source.IncludeFields) != 0 {
+			for key, value := range hit.Fields {
+				entry[key] = value.([]interface{})[0]
+			}
+		} else {
+			err := json.Unmarshal(hit.Source, &entry)
+			if err != nil {
+				return nil, nil, err
+			}
 		}
 
 		// Update stats

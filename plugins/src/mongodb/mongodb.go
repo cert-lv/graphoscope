@@ -91,7 +91,7 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 	results := []map[string]interface{}{}
 
 	// Convert SQL statement
-	filter, opts, err := p.convert(stmt)
+	filter, opts, err := p.convert(stmt, p.source.IncludeFields)
 	if err != nil {
 		return nil, nil, err
 	}

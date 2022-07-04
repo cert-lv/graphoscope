@@ -76,43 +76,15 @@ In general there are 3 types of objects:
 Check a built-in documentation, section `Administration`.
 
 
-## TODO & ideas
-
-- [ ] Display available data source's fields
-- [ ] `debug` option to see resulting query to the data source and its response
-- [ ] In `graph.js` remove custom zoom limiting
-      when https://github.com/visjs/vis-network/pull/629 or similar is merged & new version released
----
-- [ ] Generate DEB and RPM packages
-- [ ] More advanced datetime range selector. With options like `Last 24h`, `Last used ranges`, etc.
-- [ ] Edges groups styling. **TODO** from `search.js`. Implement https://github.com/visjs/vis-network/issues/1229
-- [ ] Generate PDF documentation from the existing `*.md` files
-- [ ] Implement other SQL features, like `NOT BETWEEN`
-- [ ] Plugins:
-  - [ ] Redis
-  - [ ] MS SQL
-  - [ ] Oracle SQL
-  - [ ] Apache Cassandra
-  - [ ] MISP
-  - [ ] VirusTotal
-  - [ ] Shodan
-  - [ ] Poland malware Sandbox API
-
-
 ## Usage from Web GUI
 
-Request all people with an age over **30**:
+With a connected demo data source ([files/demo.csv](files/demo.csv)) select it from a sources dropdown and request all people with an age over **30**:
 ```sql
-FROM demo WHERE age > 30
+age > 30
 ```
+Then extend the graph by searching for more of John's neighbors - right click on `John` and choose `Search Demo` to search for more data in a `Demo` data source. We find that **Jennifer** and **Kate** also are his friends:
 
-The results with a demo data source ([files/demo.csv](files/demo.csv)) will be similar to:
-
-![results](assets/img/results.png)
-
-Now it's possible to extend the graph by searching for more of John's neighbors - right click on `John` and choose `Search Demo` to search for more data in a `Demo` data source. We find that **Jennifer** and **Kate** also are his friends:
-
-![results-extended](assets/img/results-extended.png)
+![ui-demo](assets/img/ui-demo.gif)
 
 Querying the `global` special source retrieves data from all the data sources connected to this namespace concurrently:
 ```sql
@@ -182,6 +154,29 @@ Response example for the first query:
 ## Fields to use in queries
 
 `sources/*.yaml` data sources definitions allow to create common query fields, like **ip**, **domain**, **datetime**, etc. Other fields come from a related data source.
+
+
+## TODO & ideas
+
+- [ ] Display available data source's fields
+- [ ] `debug` option to see resulting query to the data source and its response
+- [ ] In `graph.js` remove custom zoom limiting
+      when https://github.com/visjs/vis-network/pull/629 or similar is merged & new version released
+---
+- [ ] Generate DEB and RPM packages
+- [ ] More advanced datetime range selector. With options like `Last 24h`, `Last used ranges`, etc.
+- [ ] Edges groups styling. **TODO** from `search.js`. Implement https://github.com/visjs/vis-network/issues/1229
+- [ ] Generate PDF documentation from the existing `*.md` files
+- [ ] Implement other SQL features, like `NOT BETWEEN`
+- [ ] Plugins:
+  - [ ] Redis
+  - [ ] MS SQL
+  - [ ] Oracle SQL
+  - [ ] Apache Cassandra
+  - [ ] MISP
+  - [ ] VirusTotal
+  - [ ] Shodan
+  - [ ] Poland malware Sandbox API
 
 
 ## Useful info

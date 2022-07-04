@@ -17,7 +17,7 @@ import (
 /*
  * Convert SQL statement to the MongoDB filter & options
  */
-func (p *plugin) convert(sel *sqlparser.Select) (bson.M, *options.FindOptions, error) {
+func (p *plugin) convert(sel *sqlparser.Select, fields []string) (bson.M, *options.FindOptions, error) {
 
 	// Handle WHERE.
 	// Top level node pass in an empty interface
@@ -36,8 +36,14 @@ func (p *plugin) convert(sel *sqlparser.Select) (bson.M, *options.FindOptions, e
 		return nil, nil, errors.New("'GROUP BY' & aggregation are not supported")
 	}
 
+	// Include required fields only
+	projection := bson.D{}
+	for _, field := range fields {
+		projection = append(projection, bson.E{field, 1})
+	}
+
 	// Pass these options to the Find method
-	options := options.Find()
+	options := options.Find().SetProjection(projection)
 
 	// Offset & Rowcount validation is done by the core service
 	if sel.Limit != nil {

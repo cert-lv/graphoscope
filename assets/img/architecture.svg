@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <svg
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    inkscape:export-ydpi="96"
    inkscape:export-xdpi="96"
-   inkscape:export-filename="/home/alexey/graph.png"
+   inkscape:export-filename="../../../../../../../../../../../../../home/alexey/graph.png"
    sodipodi:docname="architecture.svg"
-   inkscape:version="1.0.2 (e86c870879, 2021-01-15)"
+   inkscape:version="1.2 (dc2aedaf03, 2022-05-15)"
    id="svg8"
    version="1.1"
    viewBox="0 0 210 297"
    height="297mm"
-   width="210mm">
+   width="210mm"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
   <defs
      id="defs2" />
   <sodipodi:namedview
@@ -25,15 +25,15 @@
      inkscape:window-maximized="1"
      inkscape:window-y="32"
      inkscape:window-x="0"
-     inkscape:window-height="1371"
-     inkscape:window-width="2560"
+     inkscape:window-height="1011"
+     inkscape:window-width="1920"
      inkscape:guide-bbox="true"
      showguides="true"
      showgrid="false"
      inkscape:current-layer="layer1"
      inkscape:document-units="mm"
-     inkscape:cy="637.58631"
-     inkscape:cx="372.31634"
+     inkscape:cy="638"
+     inkscape:cx="304.5"
      inkscape:zoom="1"
      inkscape:pageshadow="2"
      inkscape:pageopacity="0.0"
@@ -43,7 +43,10 @@
      id="base"
      inkscape:snap-intersection-paths="false"
      inkscape:object-paths="false"
-     inkscape:snap-text-baseline="false" />
+     inkscape:snap-text-baseline="false"
+     inkscape:showpageshadow="2"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1" />
   <metadata
      id="metadata5">
     <rdf:RDF>
@@ -242,12 +245,12 @@
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:6.45345px;line-height:1.25;font-family:sans-serif;text-align:end;letter-spacing:0px;word-spacing:0px;text-anchor:end;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.161336;stroke-opacity:1"
-       x="75.453102"
+       x="49.523911"
        y="175.53566"
        id="text1643"><tspan
          sodipodi:role="line"
          id="tspan1641"
-         x="75.453102"
+         x="49.523911"
          y="175.53566"
          style="stroke-width:0.161336">ask <tspan
    style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#ff8080;stroke-width:0.161336"
@@ -316,18 +319,18 @@
     <text
        id="text1007"
        y="129.98215"
-       x="80.873299"
+       x="86.16497"
        style="font-style:normal;font-weight:normal;font-size:5.77224px;line-height:1.25;font-family:sans-serif;text-align:end;letter-spacing:0px;word-spacing:0px;text-anchor:end;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.144306"
        xml:space="preserve"><tspan
          style="stroke-width:0.144306"
          y="129.98215"
-         x="80.873306"
+         x="86.16497"
          id="tspan1005"
          sodipodi:role="line">If <tspan
-   id="tspan1009"
-   style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';stroke-width:0.144306">data source</tspan> == &quot;<tspan
-   id="tspan1108"
-   style="fill:#ff8080;fill-opacity:1;stroke-width:0.144306">sensors</tspan>&quot;</tspan></text>
+   style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold'"
+   id="tspan1131">used plugin</tspan> == &quot;<tspan
+   style="fill:#ff8080;fill-opacity:1"
+   id="tspan1135">elasticsearch</tspan>&quot;</tspan></text>
     <text
        id="text1030"
        y="254.60246"
@@ -342,20 +345,20 @@
     <text
        id="text1069"
        y="138.83722"
-       x="64.143105"
+       x="55.67643"
        style="font-style:normal;font-weight:normal;font-size:5.77224px;line-height:1.25;font-family:sans-serif;text-align:end;letter-spacing:0px;word-spacing:0px;text-anchor:end;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.144306"
        xml:space="preserve"><tspan
          style="stroke-width:0.144306"
          y="138.83722"
-         x="64.143105"
+         x="55.67643"
          id="tspan1067"
          sodipodi:role="line">If <tspan
-   id="tspan1071"
-   style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';stroke-width:0.144306">data source</tspan> == &quot;<tspan
+   style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold'"
+   id="tspan1133">used plugin</tspan> == &quot;<tspan
    id="tspan1460"
    style="fill:#ff8080;fill-opacity:1;stroke-width:0.144306">...</tspan>&quot;</tspan></text>
     <g
-       transform="matrix(0.60977764,0,0,0.60977764,-71.216372,71.089972)"
+       transform="matrix(0.60977764,0,0,0.60977764,-64.866368,71.089972)"
        style="stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none"
        id="g1096">
       <path
@@ -374,26 +377,24 @@
        sodipodi:nodetypes="ccccc"
        inkscape:connector-curvature="0"
        id="path6158-9-7-6-2"
-       d="m 91.328802,136.5686 v 51.27157 l 0.863139,-1.93272 h -1.717724 l 0.85497,1.9311"
+       d="m 88.1538,136.5686 v 51.27157 l 0.863139,-1.93272 h -1.717724 l 0.85497,1.9311"
        style="fill:#969696;fill-opacity:1;stroke:#969696;stroke-width:0.609777;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:normal" />
     <path
        inkscape:connector-curvature="0"
        id="path1092"
-       d="M 91.328802,136.5686 H 66.103797"
+       d="M 88.1538,136.5686 H 62.928795"
        style="fill:none;stroke:#969696;stroke-width:0.598234;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:0.598234, 1.7947;stroke-dashoffset:0;stroke-opacity:1" />
     <text
        id="text1104"
        y="153.68962"
-       x="76.0205"
+       x="50.091309"
        style="font-style:normal;font-weight:normal;font-size:5.77224px;line-height:1.25;font-family:sans-serif;text-align:end;letter-spacing:0px;word-spacing:0px;text-anchor:end;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.144306"
        xml:space="preserve"><tspan
          style="stroke-width:0.144306"
          y="153.68962"
-         x="76.0205"
+         x="50.091309"
          id="tspan1102"
-         sodipodi:role="line">If <tspan
-   id="tspan1106"
-   style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';stroke-width:0.144306">data source</tspan> == &quot;<tspan
+         sodipodi:role="line">If querying &quot;<tspan
    id="tspan1606"
    style="fill:#ff8080;stroke-width:0.144306">global</tspan>&quot;</tspan></text>
     <text
@@ -411,7 +412,7 @@
        sodipodi:nodetypes="ccccc"
        inkscape:connector-curvature="0"
        id="path6158-9-7-8"
-       d="m 64.752188,156.83467 v 11.86815 l 0.863141,-1.93272 h -1.717726 l 0.854969,1.93109"
+       d="m 39.352172,156.83467 v 11.86815 l 0.863141,-1.93272 h -1.717726 l 0.854969,1.93109"
        style="fill:#969696;fill-opacity:1;stroke:#969696;stroke-width:0.609777;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:normal" />
     <rect
        y="57.849937"
@@ -457,34 +458,34 @@
     <text
        id="text1846-3"
        y="163.21501"
-       x="62.126827"
+       x="36.726803"
        style="font-style:normal;font-weight:normal;font-size:6.45345px;line-height:1.25;font-family:sans-serif;text-align:end;letter-spacing:0px;word-spacing:0px;text-anchor:end;fill:#969696;fill-opacity:1;stroke:none;stroke-width:0.161336"
        xml:space="preserve"><tspan
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.44186px;font-family:sans-serif;-inkscape-font-specification:sans-serif;fill:#969696;fill-opacity:1;stroke-width:0.161336"
          y="163.21501"
-         x="62.126827"
+         x="36.726803"
          id="tspan1844-6"
          sodipodi:role="line">2</tspan></text>
     <text
        id="text1846-1"
        y="163.14748"
-       x="88.457733"
+       x="85.28273"
        style="font-style:normal;font-weight:normal;font-size:6.45345px;line-height:1.25;font-family:sans-serif;text-align:end;letter-spacing:0px;word-spacing:0px;text-anchor:end;fill:#969696;fill-opacity:1;stroke:none;stroke-width:0.161336"
        xml:space="preserve"><tspan
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.44186px;font-family:sans-serif;-inkscape-font-specification:sans-serif;fill:#969696;fill-opacity:1;stroke-width:0.161336"
          y="163.14748"
-         x="88.457733"
+         x="85.28273"
          id="tspan1844-2"
          sodipodi:role="line">2</tspan></text>
     <text
        id="text1846-9"
        y="163.19521"
-       x="101.46962"
+       x="107.81961"
        style="font-style:normal;font-weight:normal;font-size:6.45345px;line-height:1.25;font-family:sans-serif;text-align:end;letter-spacing:0px;word-spacing:0px;text-anchor:end;fill:#969696;fill-opacity:1;stroke:none;stroke-width:0.161336"
        xml:space="preserve"><tspan
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.44186px;font-family:sans-serif;-inkscape-font-specification:sans-serif;fill:#969696;fill-opacity:1;stroke-width:0.161336"
          y="163.19521"
-         x="101.46962"
+         x="107.81961"
          id="tspan1844-3"
          sodipodi:role="line">2</tspan></text>
     <text
@@ -501,11 +502,11 @@
     <rect
        ry="2.1186783"
        y="190.7896"
-       x="36.154705"
+       x="32.218445"
        height="19.882944"
-       width="81.911224"
+       width="89.688431"
        id="rect958-0"
-       style="fill:#ffabab;fill-opacity:1;stroke:none;stroke-width:0.161338;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:normal" />
+       style="fill:#ffabab;fill-opacity:1;stroke:none;stroke-width:0.168824;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:normal" />
     <text
        id="text1912"
        y="199.07866"
@@ -525,7 +526,7 @@
          x="77.015205"
          sodipodi:role="line">specific <tspan
    style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';stroke-width:0.127561"
-   id="tspan2009">DB</tspan> query syntax</tspan></text>
+   id="tspan2009">Data source</tspan> query syntax</tspan></text>
     <text
        id="text1846-19-1"
        y="228.0836"

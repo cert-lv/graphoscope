@@ -21,7 +21,7 @@ var (
  * Receives a query to parse, whether result should contain a "datetime" field,
  * whether data source supports SQL features
  */
-func parseSQL(sql string, includeDatetime bool, replaceFields map[string]string, supportsSQL bool) ([]*sqlparser.Select, error) {
+func parseSQL(sql string, includeDatetime bool, includeFields []string, replaceFields map[string]string, supportsSQL bool) ([]*sqlparser.Select, error) {
 
 	// Remove "datetime" field from the query if must be ignored
 	if !includeDatetime {
@@ -32,9 +32,28 @@ func parseSQL(sql string, includeDatetime bool, replaceFields map[string]string,
 	 * Parse and validate received SQL query
 	 */
 
+	// Parse final SQL query
 	ast, err := sqlparser.Parse("SELECT * " + sql)
 	if err != nil {
 		return nil, fmt.Errorf("Can't parse SQL query: %s", err.Error())
+	}
+
+	// Include required fields only
+	if len(includeFields) != 0 {
+		// Remove default "*" as field
+		ast.(*sqlparser.Select).SelectExprs = sqlparser.SelectExprs{}
+
+		for _, field := range includeFields {
+			colName := &sqlparser.ColName{
+				Name: sqlparser.NewColIdent(field),
+			}
+
+			aliasedExpr := &sqlparser.AliasedExpr{
+				Expr: colName,
+			}
+
+			ast.(*sqlparser.Select).SelectExprs = append(ast.(*sqlparser.Select).SelectExprs, aliasedExpr)
+		}
 	}
 
 	query, ok := ast.(*sqlparser.Select)
@@ -149,6 +168,7 @@ func parseSQL(sql string, includeDatetime bool, replaceFields map[string]string,
  */
 func splitQuery(expr *sqlparser.Select) ([]*sqlparser.Select, error) {
 
+	fields := sqlparser.String(expr.SelectExprs)
 	where := expr.Where.Expr
 	lefts := []sqlparser.Expr{}
 
@@ -167,7 +187,7 @@ func splitQuery(expr *sqlparser.Select) ([]*sqlparser.Select, error) {
 			//     field='...' AND datetime BETWEEN ...
 			//     field IN ('...','...') AND datetime BETWEEN ...
 			if comp, ok := and.Left.(*sqlparser.ComparisonExpr); ok {
-				lefts, err = splitOrIn(comp, nil)
+				lefts, err = splitOrIn(fields, comp, nil)
 				if err != nil {
 					return nil, err
 				}
@@ -177,7 +197,7 @@ func splitQuery(expr *sqlparser.Select) ([]*sqlparser.Select, error) {
 				//     (field='...' OR field='...') AND datetime BETWEEN ...
 				//     (field IN ('...','...')) AND datetime BETWEEN ...
 			} else if paren, ok := and.Left.(*sqlparser.ParenExpr); ok {
-				lefts, err = splitOrIn(paren.Expr, nil)
+				lefts, err = splitOrIn(fields, paren.Expr, nil)
 				if err != nil {
 					return nil, err
 				}
@@ -188,14 +208,14 @@ func splitQuery(expr *sqlparser.Select) ([]*sqlparser.Select, error) {
 		//     (field='...' OR field=...')
 		//     (field IN ('...','...'))
 	} else if paren, ok := where.(*sqlparser.ParenExpr); ok {
-		lefts, err = splitOrIn(paren.Expr, nil)
+		lefts, err = splitOrIn(fields, paren.Expr, nil)
 		if err != nil {
 			return nil, err
 		}
 
 		// Handle: field='...' OR field=...'
 	} else if or, ok := where.(*sqlparser.OrExpr); ok {
-		lefts, err = splitOrIn(or, nil)
+		lefts, err = splitOrIn(fields, or, nil)
 		if err != nil {
 			return nil, err
 		}
@@ -204,7 +224,7 @@ func splitQuery(expr *sqlparser.Select) ([]*sqlparser.Select, error) {
 		//     field='...'
 		//     field IN ('...','...')
 	} else if comp, ok := where.(*sqlparser.ComparisonExpr); ok {
-		lefts, err = splitOrIn(comp, nil)
+		lefts, err = splitOrIn(fields, comp, nil)
 		if err != nil {
 			return nil, err
 		}
@@ -235,7 +255,7 @@ func splitQuery(expr *sqlparser.Select) ([]*sqlparser.Select, error) {
 /*
  * A loop to detect and split OR/IN query
  */
-func splitOrIn(expr sqlparser.Expr, list []sqlparser.Expr) ([]sqlparser.Expr, error) {
+func splitOrIn(fields string, expr sqlparser.Expr, list []sqlparser.Expr) ([]sqlparser.Expr, error) {
 	if list == nil {
 		list = []sqlparser.Expr{}
 	}
@@ -262,7 +282,7 @@ func splitOrIn(expr sqlparser.Expr, list []sqlparser.Expr) ([]sqlparser.Expr, er
 					list = append(list, c)
 
 				} else if or, ok := left.Left.(*sqlparser.OrExpr); ok {
-					list, err = splitOrIn(or, list)
+					list, err = splitOrIn(fields, or, list)
 					if err != nil {
 						return nil, err
 					}
@@ -280,7 +300,7 @@ func splitOrIn(expr sqlparser.Expr, list []sqlparser.Expr) ([]sqlparser.Expr, er
 
 		if left.Operator == "in" {
 			for _, value := range left.Right.(sqlparser.ValTuple) {
-				ast, err := sqlparser.Parse("SELECT * WHERE " + field + "=" + sqlparser.String(value))
+				ast, err := sqlparser.Parse("SELECT " + fields + " WHERE " + field + "=" + sqlparser.String(value))
 				if err != nil {
 					return nil, err
 				}
@@ -289,7 +309,7 @@ func splitOrIn(expr sqlparser.Expr, list []sqlparser.Expr) ([]sqlparser.Expr, er
 			}
 
 		} else if left.Operator == "=" {
-			ast, err := sqlparser.Parse("SELECT * WHERE " + field + "=" + sqlparser.String(left.Right))
+			ast, err := sqlparser.Parse("SELECT " + fields + " WHERE " + field + "=" + sqlparser.String(left.Right))
 			if err != nil {
 				return nil, err
 			}

@@ -24,7 +24,7 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 	// Get requestor IP
 	ip, _, err := net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
-		log.Error().Msg("Userip: " + r.RemoteAddr + " is not IP:port")
+		log.Error().Msg("User IP: " + r.RemoteAddr + " is not IP:port")
 	}
 
 	// User inputs:
@@ -129,7 +129,7 @@ func querySources(source, sql, username string) *APIresponse {
 	if collector, ok := collectors[source]; ok {
 
 		// Parse textual SQL into a syntax tree object
-		queries, err := parseSQL(sql, collector.Source().IncludeDatetime, collector.Source().ReplaceFields, collector.Source().SupportsSQL)
+		queries, err := parseSQL(sql, collector.Source().IncludeDatetime, collector.Source().IncludeFields, collector.Source().ReplaceFields, collector.Source().SupportsSQL)
 		if err != nil {
 			response.Error = err.Error()
 
@@ -180,7 +180,7 @@ func querySources(source, sql, username string) *APIresponse {
 			}
 
 			// Parse textual SQL into syntax tree object
-			queries, err := parseSQL(sql, collector.Source().IncludeDatetime, collector.Source().ReplaceFields, collector.Source().SupportsSQL)
+			queries, err := parseSQL(sql, collector.Source().IncludeDatetime, collector.Source().IncludeFields, collector.Source().ReplaceFields, collector.Source().SupportsSQL)
 			if err != nil {
 				response.Error = err.Error()
 

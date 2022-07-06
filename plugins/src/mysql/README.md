@@ -51,10 +51,13 @@ INSERT INTO mycoll (email, username, fqdn, count, seen) VALUES ('e@example.com',
 Access data will be used by the source's YAML definition. Example:
 ```yaml
 name: mytest
+label: MYTest
+icon: database
 
 plugin: mysql
 inGlobal: false
 includeDatetime: false
+supportsSQL: true
 
 access:
     addr: 127.0.0.1:3306

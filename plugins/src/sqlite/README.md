@@ -58,10 +58,13 @@ INSERT INTO sqcoll (email, username, fqdn, count, seen) VALUES ('e@example.com',
 Access data will be used by the YAML configs. Example:
 ```yaml
 name: sqtest
+label: SQTest
+icon: database
 
 plugin: sqlite
 inGlobal: true
 includeDatetime: false
+supportsSQL: true
 
 access:
     db: /data/sqtest.db
@@ -71,8 +74,8 @@ statsFields:
   - domain
 
 replaceFields:
-  - [ "datetime", "seen" ]
-  - [ "domain",   "fqdn" ]
+    datetime: seen
+    domain:   fqdn
 
 
 relations:

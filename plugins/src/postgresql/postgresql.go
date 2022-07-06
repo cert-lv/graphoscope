@@ -113,7 +113,7 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 	// Slice to store all the search results
 	entries := []map[string]interface{}{}
 
-	err = pgxscan.Select(ctx, p.connection, &entries, "SELECT * FROM "+p.source.Access["table"]+" WHERE "+query)
+	err = pgxscan.Select(ctx, p.connection, &entries, "SELECT "+sqlparser.String(stmt.SelectExprs)+" FROM "+p.source.Access["table"]+" WHERE "+query)
 	if err != nil {
 		return nil, nil, err
 	}

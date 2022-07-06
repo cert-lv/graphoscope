@@ -53,10 +53,13 @@ INSERT INTO pgcoll (email, username, fqdn, count, seen) VALUES ('e@example.com',
 Access data will be used by the YAML configs. Example:
 ```yaml
 name: pgtest
+label: PGTest
+icon: database
 
 plugin: postgresql
 inGlobal: true
 includeDatetime: false
+supportsSQL: true
 
 access:
     addr: 127.0.0.1:5432
@@ -69,8 +72,8 @@ statsFields:
   - domain
 
 replaceFields:
-  - [ "datetime", "seen" ]
-  - [ "domain",   "fqdn" ]
+    datetime: seen
+    domain:   fqdn
 
 
 relations:

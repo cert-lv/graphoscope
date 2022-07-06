@@ -96,7 +96,7 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 	ctx, cancel := context.WithTimeout(context.Background(), p.source.Timeout)
 	defer cancel()
 
-	rows, err := p.db.QueryContext(ctx, "SELECT * FROM "+p.source.Access["table"]+" WHERE "+query)
+	rows, err := p.db.QueryContext(ctx, "SELECT "+sqlparser.String(stmt.SelectExprs)+" FROM "+p.source.Access["table"]+" WHERE "+query)
 	if err != nil {
 		return nil, nil, err
 	}

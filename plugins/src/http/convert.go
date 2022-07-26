@@ -32,16 +32,28 @@ func (p *plugin) convert(sel *sqlparser.Select) ([][2]string, error) {
 		return nil, errors.New("'GROUP BY' & aggregation are not supported")
 	}
 
+	// Handle WHERE,
+	// will be a textual representation of the whole query
+	query := sqlparser.String(sel.Where.Expr)
+
+	// Handle ORDER BY
+	if sel.OrderBy != nil {
+		query += sqlparser.String(sel.OrderBy)
+	}
+
 	// Set selection OFFSET and ROWCOUNT
 	if sel.Limit != nil {
 		if sel.Limit.Offset != nil {
 			fields = append(fields, [2]string{"offset", sqlparser.String(sel.Limit.Offset)})
+			query += " LIMIT " + sqlparser.String(sel.Limit.Offset) + "," + sqlparser.String(sel.Limit.Rowcount)
 		} else {
 			fields = append(fields, [2]string{"offset", "0"})
+			query += " LIMIT 0," + sqlparser.String(sel.Limit.Rowcount)
 		}
 
 		fields = append(fields, [2]string{"rowcount", sqlparser.String(sel.Limit.Rowcount)})
 	}
 
+	fields = append(fields, [2]string{"sql", query})
 	return fields, nil
 }

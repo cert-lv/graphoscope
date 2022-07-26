@@ -1,7 +1,10 @@
 # HTTP plugin
 
-HTTP connector sends a GET/POST request with fields
-and expects a `[{...},{...},{...}]` formatted JSON response back.
+HTTP connector sends a GET/POST request and expects a `[{...},{...},{...}]` list of flat JSON objects back.
+
+Request contains:
+- a list of `field=value` in case HTTP API doesn't support SQL queries
+- `sql` field with a complete SQL query in case API supports it
 
 `curl` to test:
 ```sh

@@ -19,9 +19,25 @@ func TestConvert(t *testing.T) {
 		sql       string
 		converted [][2]string
 	}{
-		{`SELECT * WHERE ip='10.10.10.10' LIMIT 5,1`, [][2]string{[2]string{"ip", "10.10.10.10"}, [2]string{"offset", "5"}, [2]string{"rowcount", "1"}}},
-		{`SELECT * WHERE size BETWEEN 100 AND 300`, [][2]string{[2]string{"size_from", "100"}, [2]string{"size_to", "300"}}},
-		{`select * where name='sarah' and age=40 limit 1`, [][2]string{[2]string{"name", "sarah"}, [2]string{"age", "40"}, [2]string{"operator", "and"}, [2]string{"offset", "0"}, [2]string{"rowcount", "1"}}},
+		{`SELECT * WHERE ip='10.10.10.10' LIMIT 5,1`, [][2]string{
+			[2]string{"ip", "10.10.10.10"},
+			[2]string{"offset", "5"},
+			[2]string{"rowcount", "1"},
+			[2]string{"sql", "ip = '10.10.10.10' LIMIT 5,1"},
+		}},
+		{`SELECT * WHERE size BETWEEN 100 AND 300`, [][2]string{
+			[2]string{"size_from", "100"},
+			[2]string{"size_to", "300"},
+			[2]string{"sql", "size between 100 and 300"},
+		}},
+		{`select * where name='sarah' and age=40 limit 1`, [][2]string{
+			[2]string{"name", "sarah"},
+			[2]string{"age", "40"},
+			[2]string{"operator", "and"},
+			[2]string{"offset", "0"},
+			[2]string{"rowcount", "1"},
+			[2]string{"sql", "name = 'sarah' and age = 40 LIMIT 0,1"},
+		}},
 	}
 
 	for _, table := range tables {

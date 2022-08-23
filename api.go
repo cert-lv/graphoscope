@@ -30,9 +30,11 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 	// User inputs:
 	//   - auth UUID
 	//   - output format
+	//   - query debug info, disabled by default
 	//   - SQL request
 	uuid := r.FormValue("uuid")
 	format := r.FormValue("format")
+	includeDebug := false
 	sql := r.FormValue("sql")
 
 	// Response to send back
@@ -65,6 +67,11 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Disable debug info by default
+	if r.FormValue("debug") == "true" {
+		includeDebug = true
+	}
+
 	// Find requested data source
 	match := reSource.FindStringSubmatch(sql)
 	if len(match) != 2 {
@@ -81,7 +88,7 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 	source := match[1]
 
 	// Query data sources for the new relations
-	response = querySources(source, sql, account.Username)
+	response = querySources(source, sql, includeDebug, account.Username)
 	response.send(w, ip, account.Username, format, sql)
 
 	// Allow OS to take memory back
@@ -91,12 +98,13 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 /*
  * Query all the requested data sources
  */
-func querySources(source, sql, username string) *APIresponse {
+func querySources(source, sql string, includeDebug bool, username string) *APIresponse {
 
 	// Response to send back
 	response := &APIresponse{
 		Relations: []map[string]interface{}{},
 		Stats:     make(map[string]interface{}),
+		Debug:     make(map[string]interface{}),
 	}
 
 	// Check cache first
@@ -143,7 +151,7 @@ func querySources(source, sql, username string) *APIresponse {
 
 				// Run the search
 				group.Go(func() error {
-					result, stat, err := collector.Search(query)
+					result, stat, debug, err := collector.Search(query)
 					if err != nil {
 						return fmt.Errorf("%s", err.Error())
 					}
@@ -154,6 +162,11 @@ func querySources(source, sql, username string) *APIresponse {
 
 					response.Lock()
 					response.Relations = append(response.Relations, result...)
+
+					if includeDebug {
+						response.Debug[collector.Source().Name] = debug
+					}
+
 					response.Unlock()
 
 					return nil
@@ -194,7 +207,7 @@ func querySources(source, sql, username string) *APIresponse {
 						Msg("New global request")
 
 					group.Go(func() error {
-						result, stat, err := collector.Search(query)
+						result, stat, debug, err := collector.Search(query)
 						if err != nil {
 							return fmt.Errorf("%s - %s", collector.Source().Name, err.Error())
 						}
@@ -206,6 +219,11 @@ func querySources(source, sql, username string) *APIresponse {
 
 						response.Lock()
 						response.Relations = append(response.Relations, result...)
+
+						if includeDebug {
+							response.Debug[collector.Source().Name] = debug
+						}
+
 						response.Unlock()
 
 						return nil

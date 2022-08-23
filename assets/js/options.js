@@ -36,7 +36,8 @@ class Options {
      */
     save() {
         const options = document.getElementById('stabilization').value + ',' +
-                        document.getElementById('limit').value;
+                        document.getElementById('limit').value + ',' +
+                        $('.ui.checkbox.debug').checkbox('is checked');
 
         // Send to the server
         this.profile.websocket.send('options', options);

@@ -97,10 +97,22 @@ func (a *Account) optionsHandler(data string) {
 		return
 	}
 
+	debug, err := strconv.ParseBool(parts[2])
+	if err != nil {
+		log.Error().
+			Str("ip", a.Session.IP).
+			Str("username", a.Username).
+			Msg("Can't parse debug value: " + err.Error())
+
+		a.send("error", "Invalid <strong>debug</strong> value given, boolean expected.", "Can't save!")
+		return
+	}
+
 	// Update options
 	options := &Options{
 		StabilizationTime: stabilization,
 		Limit:             limit,
+		Debug:             debug,
 	}
 
 	err = a.update("options", options)

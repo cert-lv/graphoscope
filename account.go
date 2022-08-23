@@ -46,6 +46,9 @@ type Account struct {
 	// A list of uploaded and processed files with indicators
 	Uploads *Uploads `bson:"uploads"`
 
+	// Whether to show a debug info of the queries
+	Debug bool `bson:"debug"`
+
 	// Personal notifications if user wasn't online and
 	// wasn't able to receive a notification in a real time
 	Notifications []*Notification `bson:"notifications"`
@@ -85,6 +88,9 @@ type Options struct {
 	// The amount of entries each data source should return.
 	// Will be a part of each SQL query, set to 0 to disable
 	Limit int `bson:"limit"`
+
+	// Whether to display queries debug info
+	Debug bool `bson:"debug"`
 }
 
 /*

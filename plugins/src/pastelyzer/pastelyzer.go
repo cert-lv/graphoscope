@@ -53,7 +53,7 @@ func (p *plugin) Setup(source *pdk.Source, limit int) error {
 	return nil
 }
 
-func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[string]interface{}, error) {
+func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[string]interface{}, map[string]interface{}, error) {
 
 	// Storage for the results to return
 	results := []map[string]interface{}{}
@@ -61,27 +61,28 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 	// Convert SQL statement
 	searchFields, err := p.convert(stmt)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	var body *bytes.Buffer
+	var debug map[string]interface{}
 
 	/*
 	 * Get all artefacts of the requested paste ID
 	 */
 	if searchFields[0][0] == "source" {
-		body, err = p.getArtefacts(searchFields[0][1])
+		body, debug, err = p.getArtefacts(searchFields[0][1])
 		if err != nil {
-			return nil, nil, err
+			return nil, nil, debug, err
 		}
 
 	} else {
 		/*
 		 * Send indicators to get related paste IDs
 		 */
-		body, err = p.getPastes(searchFields)
+		body, debug, err = p.getPastes(searchFields)
 		if err != nil {
-			return nil, nil, err
+			return nil, nil, debug, err
 		}
 	}
 
@@ -105,7 +106,7 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 	var entries []map[string]interface{}
 	err = json.NewDecoder(body).Decode(&entries)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, debug, err
 	}
 
 	// Process results
@@ -115,10 +116,10 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 		if counter >= p.limit {
 			top, err := stats.ToJSON(p.source.Name)
 			if err != nil {
-				return nil, nil, err
+				return nil, nil, debug, err
 			}
 
-			return nil, top, nil
+			return nil, top, debug, nil
 		}
 
 		// Update stats
@@ -262,18 +263,24 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 		}
 	}
 
-	return results, nil, nil
+	return results, nil, debug, nil
 }
 
 /*
  * Return all artefacts of the given paste ID
  */
-func (p *plugin) getArtefacts(id string) (*bytes.Buffer, error) {
+func (p *plugin) getArtefacts(id string) (*bytes.Buffer, map[string]interface{}, error) {
+
+	// Debug info
+	debug := make(map[string]interface{})
+
+	query := p.url + "/content/" + id + "/artefacts/typed"
+	debug["query"] = query
 
 	// Create the POST request to the URL with all fields mounted
-	req, err := http.NewRequest("GET", p.url+"/content/"+id+"/artefacts/typed", nil)
+	req, err := http.NewRequest("GET", query, nil)
 	if err != nil {
-		return nil, fmt.Errorf("Error on request creation: %s", err.Error())
+		return nil, debug, fmt.Errorf("Error on request creation: %s", err.Error())
 	}
 
 	// Declare an HTTP client to execute the request
@@ -282,29 +289,29 @@ func (p *plugin) getArtefacts(id string) (*bytes.Buffer, error) {
 	// Finally send a POST HTTP request
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("Error on request execution: %s", err.Error())
+		return nil, debug, fmt.Errorf("Error on request execution: %s", err.Error())
 	}
 
 	body := &bytes.Buffer{}
 	_, err = body.ReadFrom(resp.Body)
 	if err != nil {
 		resp.Body.Close()
-		return nil, err
+		return nil, debug, err
 	}
 	resp.Body.Close()
 
 	// Check the response
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("Bad response StatusCode: %s", resp.Status)
+		return nil, debug, fmt.Errorf("Bad response StatusCode: %s", resp.Status)
 	}
 
-	return body, nil
+	return body, debug, nil
 }
 
 /*
  * Return pastes ID where given indicators were found
  */
-func (p *plugin) getPastes(searchFields [][2]string) (*bytes.Buffer, error) {
+func (p *plugin) getPastes(searchFields [][2]string) (*bytes.Buffer, map[string]interface{}, error) {
 
 	// Create buffer
 	buf := new(bytes.Buffer)
@@ -313,17 +320,23 @@ func (p *plugin) getPastes(searchFields [][2]string) (*bytes.Buffer, error) {
 
 	for _, field := range searchFields {
 		if err := w.WriteField(field[0], field[1]); err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 	}
 
 	// IMPORTANT: Close multipart writer before using it
 	w.Close()
 
+	// Debug info
+	debug := make(map[string]interface{})
+
+	debug["query"] = p.url + "/artefacts/typed"
+	debug["POST_payload"] = buf.String()
+
 	// Create the POST request to the URL with all fields mounted
 	req, err := http.NewRequest("POST", p.url+"/artefacts/typed", buf)
 	if err != nil {
-		return nil, fmt.Errorf("Error on request creation: %s", err.Error())
+		return nil, debug, fmt.Errorf("Error on request creation: %s", err.Error())
 	}
 	// Set the header of the request to send
 	req.Header.Set("Content-Type", w.FormDataContentType())
@@ -334,23 +347,23 @@ func (p *plugin) getPastes(searchFields [][2]string) (*bytes.Buffer, error) {
 	// Finally send our POST HTTP request
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("Error on request execution: %s", err.Error())
+		return nil, debug, fmt.Errorf("Error on request execution: %s", err.Error())
 	}
 
 	body := &bytes.Buffer{}
 	_, err = body.ReadFrom(resp.Body)
 	if err != nil {
 		resp.Body.Close()
-		return nil, err
+		return nil, debug, err
 	}
 	resp.Body.Close()
 
 	// Check the response
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("Bad response StatusCode: %s", resp.Status)
+		return nil, debug, fmt.Errorf("Bad response StatusCode: %s", resp.Status)
 	}
 
-	return body, nil
+	return body, debug, nil
 }
 
 func (p *plugin) Stop() error {

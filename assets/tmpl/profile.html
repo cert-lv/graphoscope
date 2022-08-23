@@ -26,6 +26,7 @@
         <script type="text/javascript">
             MAXUPLOADSIZE = {{ .Account.Uploads.MaxSize }};
             NOTIFICATIONS = {{ .Account.Notifications }};
+            OPTIONS = {{ .Account.Options }};
         </script>
     </head>
 
@@ -88,6 +89,24 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="row short">
+                    <p>Whether to display queries debug info. During the user interaction many actions happen like SQL to Elasticsearch JSON query conversion, fields name adaptation, etc. Each plugin can save progress information and return to the user. Accessible from the browser console.</p>
+                </div>
+
+                <div class="row short">
+                    <div class="column">
+                        <span>Debug info:</span>
+                    </div>
+                    <div class="column">
+                        <div class="ui toggle checkbox debug">
+                            <input type="checkbox" {{ if .Account.Options.Debug }}checked{{ end }}>
+                            <label></label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row"></div>
 
                 <div class="row">
                     <div class="ui save profile orange button" title="Save settings">

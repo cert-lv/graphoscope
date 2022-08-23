@@ -79,7 +79,7 @@ func (p *plugin) Setup(source *pdk.Source, limit int) error {
 	return nil
 }
 
-func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[string]interface{}, error) {
+func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[string]interface{}, map[string]interface{}, error) {
 
 	// Storage for the results to return
 	results := []map[string]interface{}{}
@@ -88,13 +88,20 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 	 * STEP 4.
 	 *
 	 * Convert SQL statement
-	 * so the data source can understand what client is searching for
+	 * so the data source can understand what client is searching for.
+	 *
+	 * Add created query to the debug info, so admin/developer can see
+	 * what happens in a background
 	 */
 
 	// filter, err := p.convert(stmt)
 	// if err != nil {
-	// 	return nil, nil, err
+	// 	return nil, nil, nil, err
 	// }
+
+	// Add debug info
+	debug := make(map[string]interface{})
+	//debug["query"] = searchJSON
 
 	// Context to be able to cancel goroutines
 	// when some DB wants to return > limit amount of entries
@@ -111,7 +118,7 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 
 	// entries, err := p.client.Find(ctx, filter)
 	// if err != nil {
-	// 	return nil, nil, err
+	// 	return nil, nil, debug, err
 	// }
 	entries := []map[string]interface{}{}
 
@@ -152,10 +159,10 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 
 			top, err := stats.ToJSON(p.source.Name)
 			if err != nil {
-				return nil, nil, err
+				return nil, nil, debug, err
 			}
 
-			return nil, top, nil
+			return nil, top, debug, nil
 		}
 
 		// Update stats
@@ -271,7 +278,7 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 		}
 	}
 
-	return results, nil, nil
+	return results, nil, debug, nil
 }
 
 func (p *plugin) Stop() error {

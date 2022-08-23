@@ -24,6 +24,7 @@
         <script>
             MSG = '{{ .Error }}';
             NOTIFICATIONS = {{ .Account.Notifications }};
+            OPTIONS = {{ .Account.Options }};
         </script>
     </head>
 
@@ -389,6 +390,7 @@
 
                         <div class="ui toggle checkbox admin">
                             <input type="checkbox" data-username="{{ $account.Username }}" {{ if $account.Admin }}checked{{ end }}>
+                            <label></label>
                         </div>
                     </div>
                 </div>

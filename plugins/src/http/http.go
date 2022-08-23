@@ -59,7 +59,7 @@ func (p *plugin) Setup(source *pdk.Source, limit int) error {
 	return nil
 }
 
-func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[string]interface{}, error) {
+func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[string]interface{}, map[string]interface{}, error) {
 
 	// Storage for the results to return
 	results := []map[string]interface{}{}
@@ -67,17 +67,18 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 	// Convert SQL statement
 	searchFields, err := p.convert(stmt)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	var body *bytes.Buffer
+	var debug map[string]interface{}
 
 	/*
 	 * Send indicators to get results back
 	 */
-	body, err = p.request(searchFields)
+	body, debug, err = p.request(searchFields)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, debug, err
 	}
 
 	// Struct to store statistics data
@@ -94,7 +95,7 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 	var entries []map[string]interface{}
 	err = json.NewDecoder(body).Decode(&entries)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, debug, err
 	}
 
 	mx := sync.Mutex{}
@@ -109,10 +110,10 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 		if counter >= p.limit {
 			top, err := stats.ToJSON(p.source.Name)
 			if err != nil {
-				return nil, nil, err
+				return nil, nil, debug, err
 			}
 
-			return nil, top, nil
+			return nil, top, debug, nil
 		}
 
 		// Update stats
@@ -228,11 +229,11 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 		}
 	}
 
-	return results, nil, nil
+	return results, nil, debug, nil
 }
 
 // request connects to the HTTP access point and returns the response
-func (p *plugin) request(searchFields [][2]string) (*bytes.Buffer, error) {
+func (p *plugin) request(searchFields [][2]string) (*bytes.Buffer, map[string]interface{}, error) {
 
 	// Create a request body
 	data := url.Values{}
@@ -244,17 +245,23 @@ func (p *plugin) request(searchFields [][2]string) (*bytes.Buffer, error) {
 	var req *http.Request
 	var err error
 
+	// Debug info
+	debug := make(map[string]interface{})
+
 	// Create a request object
 	if p.method == "POST" {
 		payload := new(bytes.Buffer)
 		err = json.NewEncoder(payload).Encode(data)
 		if err != nil {
-			return nil, fmt.Errorf("Can't encode POST response: %s", err.Error())
+			return nil, nil, fmt.Errorf("Can't encode POST response: %s", err.Error())
 		}
+
+		debug["query"] = p.url
+		debug["POST_payload"] = payload.String()
 
 		req, err = http.NewRequest("POST", p.url, payload)
 		if err != nil {
-			return nil, fmt.Errorf("Can't create a POST request: %s", err.Error())
+			return nil, debug, fmt.Errorf("Can't create a POST request: %s", err.Error())
 		}
 
 		req.Header.Add("Content-Type", "application/json; charset=UTF-8")
@@ -262,11 +269,13 @@ func (p *plugin) request(searchFields [][2]string) (*bytes.Buffer, error) {
 	} else {
 		req, err = http.NewRequest("GET", p.url, nil)
 		if err != nil {
-			return nil, fmt.Errorf("Can't create a POST request: %s", err.Error())
+			return nil, debug, fmt.Errorf("Can't create a POST request: %s", err.Error())
 		}
 
 		req.Header.Add("Content-Type", "application/x-www-form-urlencoded; param=value")
 		req.URL.RawQuery = data.Encode()
+
+		debug["query"] = p.url + "?" + req.URL.RawQuery
 	}
 
 	// Set basic auth credentials if given
@@ -280,23 +289,23 @@ func (p *plugin) request(searchFields [][2]string) (*bytes.Buffer, error) {
 	// Send an HTTP using `req` object
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("Can't do an HTTP request: %s", err.Error())
+		return nil, debug, fmt.Errorf("Can't do an HTTP request: %s", err.Error())
 	}
 
 	body := &bytes.Buffer{}
 	_, err = body.ReadFrom(resp.Body)
 	if err != nil {
 		resp.Body.Close()
-		return nil, fmt.Errorf("Can't read an HTTP response: %s", err.Error())
+		return nil, debug, fmt.Errorf("Can't read an HTTP response: %s", err.Error())
 	}
 	resp.Body.Close()
 
 	// Check the response
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("Bad response StatusCode: %s", resp.Status)
+		return nil, debug, fmt.Errorf("Bad response StatusCode: %s", resp.Status)
 	}
 
-	return body, nil
+	return body, debug, nil
 }
 
 func (p *plugin) Stop() error {

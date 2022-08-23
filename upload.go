@@ -279,6 +279,7 @@ func (a *Account) processUploads(filename string, upload *Upload) error {
 	// Merged responses from different requests
 	rRelations := ""
 	rStats := ""
+	rDebug := ""
 	rError := ""
 
 	// Validate user input
@@ -321,7 +322,7 @@ func (a *Account) processUploads(filename string, upload *Upload) error {
 			upload.Source, strings.TrimSpace(line), upload.StartTime, upload.EndTime)
 
 		// Query data sources for a new relations data
-		response := querySources(upload.Source, sql, a.Username)
+		response := querySources(upload.Source, sql, a.Options.Debug, a.Username)
 
 		if len(response.Relations) != 0 {
 			rRelations += "\n\nIndicator: " + line + "\n\n"
@@ -349,6 +350,25 @@ func (a *Account) processUploads(filename string, upload *Upload) error {
 			}
 		}
 
+		if a.Options.Debug && response.Debug != nil {
+			rDebug += "\n\nDebug info: " + line + "\n"
+
+			for source, section := range response.Debug {
+				if len(section.(map[string]interface{})) == 0 {
+					continue
+				}
+
+				// Format debug info
+				csv, err := formatTo(section, upload.Format)
+				if err != nil {
+					rError += "\n  - " + err.Error()
+					break
+				} else {
+					rDebug += "\n" + source + "\n" + csv
+				}
+			}
+		}
+
 		if response.Error != "" {
 			// Skip identical errors
 			if !strings.Contains(rError, response.Error) {
@@ -372,6 +392,10 @@ func (a *Account) processUploads(filename string, upload *Upload) error {
 	if rStats != "" {
 		report += "\n\n\nThe amount of relations for some indicators exceeds the limit. Stats info based on limited info:"
 		report += rStats
+	}
+
+	if rDebug != "" {
+		report += "\n" + rDebug
 	}
 
 	if rError != "" {

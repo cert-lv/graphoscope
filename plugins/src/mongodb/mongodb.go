@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"regexp"
 	"sync"
@@ -85,7 +86,7 @@ func (p *plugin) Setup(source *pdk.Source, limit int) error {
 	return nil
 }
 
-func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[string]interface{}, error) {
+func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[string]interface{}, map[string]interface{}, error) {
 
 	// Storage for the results to return
 	results := []map[string]interface{}{}
@@ -93,8 +94,23 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 	// Convert SQL statement
 	filter, opts, err := p.convert(stmt, p.source.IncludeFields)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
+
+	// Debug info
+	debug := make(map[string]interface{})
+
+	filterBase64, err := json.Marshal(filter)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+	optsBase64, err := json.Marshal(opts)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	debug["filter"] = string(filterBase64)
+	debug["options"] = string(optsBase64)
 
 	/*
 	 * Run the query
@@ -108,7 +124,7 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 
 	cursor, err := p.collection.Find(ctx, filter, opts)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, debug, err
 	}
 	defer cursor.Close(ctx)
 
@@ -134,10 +150,10 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 
 			top, err := stats.ToJSON(p.source.Name)
 			if err != nil {
-				return nil, nil, err
+				return nil, nil, debug, err
 			}
 
-			return nil, top, nil
+			return nil, top, debug, nil
 		}
 
 		// Deserialize
@@ -145,7 +161,7 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 
 		err := cursor.Decode(&entry)
 		if err != nil {
-			return nil, nil, err
+			return nil, nil, debug, err
 		}
 
 		// Update stats
@@ -262,10 +278,10 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 	}
 
 	if err := cursor.Err(); err != nil {
-		return nil, nil, err
+		return nil, nil, debug, err
 	}
 
-	return results, nil, nil
+	return results, nil, debug, nil
 }
 
 func (p *plugin) Stop() error {

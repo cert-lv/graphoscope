@@ -247,10 +247,13 @@ class Search {
         var sql = query.replace(' WHERE ', ' WHERE (') + ') AND datetime BETWEEN \'' + startTime + '\' AND \'' + endTime +'\'';
 
         // Limit is optional
-        if (OPTIONS.Limit != 0)
+        if (OPTIONS.Limit !== 0)
             sql += ' LIMIT 0,' + OPTIONS.Limit;
 
-        console.log(sql);
+        if (OPTIONS.Debug === true ) {
+            console.log('%cUser query:', 'font-weight:bold');
+            console.log(sql);
+        }
 
         // Send resulting SQL query to the server
         this.application.websocket.send('sql', sql);
@@ -295,6 +298,16 @@ class Search {
             // to be able to improve the query
             if (results.stats !== undefined)
                 this.application.charts.create(query, results.stats, id);
+
+            // Show debug info in browser's console
+            if (results.debug !== undefined) {
+                console.log('%cDebug info:', 'font-weight:bold');
+
+                for (const source in results.debug) {
+                    for (const key in results.debug[source])
+                        console.log('%c' + source + ' ' + key + ': %c' + results.debug[source][key], 'color:#ff5f2d', 'color:default');
+                }
+            }
         }
     }
 

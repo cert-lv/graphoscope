@@ -62,7 +62,7 @@ class Websocket {
      * Check incoming message type and execute related actions
      */
     onMessage(e) {
-        console.log(e.data);
+        if (OPTIONS.Debug === true) console.log(e.data);
         const message = JSON.parse(e.data);
 
         switch(message.type) {

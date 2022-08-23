@@ -313,6 +313,14 @@ span.ui.orange.text {
 }
 
 /*
+ * UI checkboxes
+ */
+.ui.toggle.checkbox input:checked~label:before,
+.ui.toggle.checkbox input:focus:checked~label:before {
+    background-color: #ff5f2d !important;
+}
+
+/*
  * Calendar
  */
 .ui.popup.calendar {

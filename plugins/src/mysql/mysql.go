@@ -75,16 +75,22 @@ func (p *plugin) Setup(source *pdk.Source, limit int) error {
 	return nil
 }
 
-func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[string]interface{}, error) {
+func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[string]interface{}, map[string]interface{}, error) {
 
 	// Storage for the results to return
 	results := []map[string]interface{}{}
 
 	// Convert SQL statement
-	query, err := p.convert(stmt)
+	filter, err := p.convert(stmt)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
+
+	query := "SELECT " + sqlparser.String(stmt.SelectExprs) + " FROM " + p.source.Access["table"] + " WHERE " + filter
+
+	// Debug info
+	debug := make(map[string]interface{})
+	debug["query"] = query
 
 	/*
 	 * Run the query
@@ -96,13 +102,13 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 	ctx, cancel := context.WithTimeout(context.Background(), p.source.Timeout)
 	defer cancel()
 
-	rows, err := p.db.QueryContext(ctx, "SELECT "+sqlparser.String(stmt.SelectExprs)+" FROM "+p.source.Access["table"]+" WHERE "+query)
+	rows, err := p.db.QueryContext(ctx, query)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, debug, err
 	}
 	cols, err := rows.Columns()
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, debug, err
 	}
 
 	mx := sync.Mutex{}
@@ -130,10 +136,10 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 
 			top, err := stats.ToJSON(p.source.Name)
 			if err != nil {
-				return nil, nil, err
+				return nil, nil, debug, err
 			}
 
-			return nil, top, nil
+			return nil, top, debug, nil
 		}
 
 		columns := make([]string, len(cols))
@@ -145,7 +151,7 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 
 		err := rows.Scan(columnPointers...)
 		if err != nil {
-			return nil, nil, err
+			return nil, nil, debug, err
 		}
 
 		// Deserialize
@@ -268,7 +274,7 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 		}
 	}
 
-	return results, nil, nil
+	return results, nil, debug, nil
 }
 
 func (p *plugin) Stop() error {

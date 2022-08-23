@@ -158,6 +158,7 @@ Response example for the first query:
 
 ## TODO & ideas
 
+- [ ] Add docs about queries debug info
 - [ ] Display available data source's fields
 - [ ] `debug` option to see resulting query to the data source and its response
 - [ ] In `graph.js` remove custom zoom limiting

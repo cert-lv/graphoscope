@@ -86,7 +86,7 @@ func (p *plugin) Setup(source *pdk.Source, limit int) error {
 	return nil
 }
 
-func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[string]interface{}, error) {
+func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[string]interface{}, map[string]interface{}, error) {
 
 	// Storage for the results to return
 	results := []map[string]interface{}{}
@@ -94,8 +94,12 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 	// Convert SQL statement
 	searchJSON, err := p.convert(stmt, p.source.IncludeFields)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
+
+	// Debug info
+	debug := make(map[string]interface{})
+	debug["query"] = searchJSON
 
 	// Context to be able to cancel goroutines
 	// when some DB wants to return > limit amount of entries
@@ -113,7 +117,7 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 	// the other plugins
 	found, err := p.client.Search().Index(p.index).Source(searchJSON).Do(ctx)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, debug, err
 	}
 
 	/*
@@ -143,10 +147,10 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 
 			top, err := stats.ToJSON(p.source.Name)
 			if err != nil {
-				return nil, nil, err
+				return nil, nil, debug, err
 			}
 
-			return nil, top, nil
+			return nil, top, debug, nil
 		}
 
 		// Deserialize
@@ -159,7 +163,7 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 		} else {
 			err := json.Unmarshal(hit.Source, &entry)
 			if err != nil {
-				return nil, nil, err
+				return nil, nil, debug, err
 			}
 		}
 
@@ -281,15 +285,15 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 			// Parsing ES search results canceled
 			top, err := stats.ToJSON(p.source.Name)
 			if err != nil {
-				return nil, nil, err
+				return nil, nil, debug, err
 			}
 
-			return nil, top, nil
+			return nil, top, debug, nil
 		default:
 		}
 	}
 
-	return results, nil, nil
+	return results, nil, debug, nil
 }
 
 func (p *plugin) Stop() error {

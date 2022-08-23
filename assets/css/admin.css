@@ -25,11 +25,6 @@
     margin-top: 8px;
 }
 
-.ui.toggle.checkbox input:checked~label:before,
-.ui.toggle.checkbox input:focus:checked~label:before {
-    background-color: #ff5f2d !important;
-}
-
 .ui.grid>.row.username {
     padding-bottom: 2rem;
 }

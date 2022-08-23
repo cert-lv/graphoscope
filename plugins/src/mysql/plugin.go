@@ -11,7 +11,7 @@ import (
  */
 var (
 	Name    = "mysql"
-	Version = "1.0.1"
+	Version = "1.0.2"
 	Plugin  plugin
 )
 

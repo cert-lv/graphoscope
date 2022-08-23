@@ -24,6 +24,9 @@ type APIresponse struct {
 	// when the amount of returned results exceeds the limit
 	Stats map[string]interface{} `json:"stats,omitempty"`
 
+	// Queries debug info in case user requests it
+	Debug map[string]interface{} `json:"debug,omitempty"`
+
 	// If some data source returns an error this message will be shown.
 	// Graph data or statistics will be returned as well
 	Error string `json:"error,omitempty"`
@@ -91,6 +94,25 @@ func (a *APIresponse) format(f string) string {
 					output += "\n\n"
 				}
 				output += csv
+			}
+		}
+
+		if a.Debug != nil {
+			if len(a.Relations) != 0 {
+				output += "\n\nDebug info:\n"
+			}
+
+			for source, section := range a.Debug {
+				if len(section.(map[string]interface{})) == 0 {
+					continue
+				}
+
+				csv, err := formatTo(section, "table")
+				if err != nil {
+					output += "Error: " + err.Error()
+				} else {
+					output += "\n" + source + "\n" + csv
+				}
 			}
 		}
 
@@ -185,13 +207,17 @@ func formatTo(data interface{}, format string) (string, error) {
 		return "", fmt.Errorf("Can't format API response to JSON: " + err.Error())
 	}
 
-	return string(b), nil
+	return string(b) + "\n", nil
 }
 
 /*
  * Remove system internal fields from an output formatted as table
  */
 func removeFields(slice []string, f, t int) []string {
+	if f == -1 && t == -1 {
+		return slice
+	}
+
 	slice = append(slice[:f], slice[f+1:]...)
 	return append(slice[:t-1], slice[t:]...)
 }

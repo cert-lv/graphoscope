@@ -16,8 +16,8 @@ type Plugin interface {
 	Setup(*Source, int) error
 
 	// Execute the given query.
-	// Returns results, statistics & error
-	Search(*sqlparser.Select) ([]map[string]interface{}, map[string]interface{}, error)
+	// Returns results, statistics, debug info & error
+	Search(*sqlparser.Select) ([]map[string]interface{}, map[string]interface{}, map[string]interface{}, error)
 
 	// Stop the collector when the core service stops,
 	// gracefully disconnect from the data source if needed

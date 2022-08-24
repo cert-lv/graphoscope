@@ -37,6 +37,7 @@ Contains a list of by default available data sources plugins. 3rd party plugins 
 - **Notification** about new features
 - **Format** comma or space separated values into a valid search query
 - **Upload indicators list** and wait for the report
+- If enabled, query **debug info** is returned to the user to see what happens in a background
 - **Personal graph settings**
 - **Global graph settings** for administrators
 - **User management**

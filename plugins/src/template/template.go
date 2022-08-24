@@ -90,7 +90,7 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 	 * Convert SQL statement
 	 * so the data source can understand what client is searching for.
 	 *
-	 * Add created query to the debug info, so admin/developer can see
+	 * Add created query to the debug info, so admin or developer can see
 	 * what happens in a background
 	 */
 

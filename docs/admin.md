@@ -4,9 +4,10 @@
 4. [Demo data](#demo-data)
 5. [New data source](#new-data-source)
 6. [Query auto-formatting rules](#query-auto-formatting-rules)
-7. [Custom graph elements style](#custom-graph-elements-style)
-8. [Limit returned data](#limit-returned-data)
-9. [Plugins development](#plugins-development)
+7. [Debug info](#debug-info)
+8. [Custom graph elements style](#custom-graph-elements-style)
+9. [Limit returned data](#limit-returned-data)
+10. [Plugins development](#plugins-development)
 
 
 After a fresh installation the service's environment is `development` - all users have the same highest level rights. Therefore the first step is to set administrators.
@@ -150,6 +151,11 @@ email:
 To add a non-default group - append it's name to the YAML file with a list of regexps to detect it and restart the service.
 
 
+## Debug info
+
+During queries several things happen in a background like SQL to Elasticsearch JSON query conversion, fields name adaptation, etc. Each plugin can save progress information and return to the user. Disabled by default, can be enabled in profile settings. Accessible in a browser's console.
+
+
 ## Custom graph elements style
 
 It's possible to customize the style of graph nodes. The previous data source definition contained `group: name` and `group: country` - two styling groups, similar to the CSS classnames. To set your own styles change directory to the service's location and create a new file based on the example:
@@ -271,7 +277,7 @@ Edit `<plugin-name>.go`
   - **STEP 1** - validate required parameters or settings, given by the user
   - **STEP 2** - create a connection to the data source if needed, check whether it is established. For example, `MongoDB` requires an established connection, while `HTTP REST API` does not
   - **STEP 3** - store plugin settings, like "client" object, URL, database name, etc.
-  - **STEP 4** - when new query is launched - an SQL statement conversion must be done, so the data source can understand what client is searching for
+  - **STEP 4** - when new query is launched - an SQL statement conversion must be done, so the data source can understand what client is searching for. Created query should be added to the debug info, so admin or developer can see what happens in a background.
 
 Edit `convert.go`
   - **STEP 5** - do the SQL conversion. Check, for example, a `MongoDB` plugin to see how SQL can be converted to the hierarchical object or an `HTTP` plugin where you get just a list of requested `field/value` pairs

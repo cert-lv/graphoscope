@@ -49,7 +49,7 @@ More info in the `Search` documentation section.
 
 ## Time period
 
-`6` allows the user to select a time period to request data from. Sometimes you are interested in the last hour only, sometimes in the last 3 months. The default value is to search within the last `24 hours`.
+`6` allows the user to select a time period to request data from. Sometimes you are interested in the last hour only, sometimes in the last 6 months. The default value is to search within the last `24 hours`.
 
 Note that larger time period causes larger background data sources load!
 

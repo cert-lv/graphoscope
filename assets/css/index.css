@@ -337,16 +337,16 @@ input:-webkit-autofill:active {
     margin: 0 0 0 2px;
 }
 
+#dashboard-name {
+    padding-bottom: 0.6em;
+}
+
 .profile .ui.dropdown .menu {
     box-shadow: 0 2px 4px 0 rgb(34,36,38,.45);
     border: 0;
     border-top: 1px solid rgba(34,36,38,.15);
 }
 
-.ui.save.dashboard.button {
-    position: relative;
-    top: -2px;
-}
 .ui.save.dashboard.input {
     margin-top: 10px;
 }

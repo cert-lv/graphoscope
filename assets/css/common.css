@@ -245,11 +245,13 @@ span.ui.orange.text {
     margin: .4em 8px;
 }
 
-.ui.top.right.pointing.dropdown>.menu:after {
-    top: -.5em;
+.ui.top.right.pointing.dropdown>.menu:after,
+.ui.daterange.popup:before {
+    top: -.5em !important;
 }
 
-.ui.pointing.dropdown>.menu:not(.hidden):after {
+.ui.pointing.dropdown>.menu:not(.hidden):after,
+.ui.daterange.popup:before {
     width: 1em;
     height: 1em;
 }
@@ -323,16 +325,45 @@ span.ui.orange.text {
 /*
  * Calendar
  */
-.ui.popup.calendar {
-    box-shadow: 0 2px 4px 0 rgb(34,36,38,.45);
+
+.ui.daterange.popup {
+    padding-bottom: 1.7em;
 }
+
+.ui.daterange.button {
+    width: 100%;
+    margin: 3px 0 15px 0;
+    color: rgba(0, 0, 0, .87);
+    font-weight: normal;
+}
+.ui.daterange.popup > table > tbody > tr > td {
+    min-width: 290px;
+    padding-left: 5px;
+    vertical-align: top;
+}
+
+.ui.daterange.popup .customranges {
+    min-width: 150px;
+    padding: 26px 8px 10px 0;
+}
+.ui.daterange.popup .customranges .ui.button {
+    width: 100%;
+    margin-bottom: 5px
+}
+
+.ui.calendar {
+    margin-top: 5px;
+}
+#rangestart3 {
+    margin-right: 5px;
+}
+
 .ui.table>thead>tr>th,
 .ui.popup.calendar::before {
     background: #eee;
 }
 .ui.calendar .ui.table {
     border: 0;
-    border-top: 1px solid rgba(34,36,38,.15);
 }
 
 .ui.bottom.left.popup:before,
@@ -340,8 +371,37 @@ span.ui.orange.text {
     box-shadow: -1px -1px 0 0 #d2d6d6;
 }
 
+.ui.calendar .ui.celled.table > tbody > tr > td {
+    border-left: 0;
+}
+.ui.calendar .ui.table > tbody > tr > td {
+    border-top: 0;
+}
+
+.ui.calendar .ui.table > thead > tr > th {
+    border-bottom: 0;
+}
+
+.ui.calendar .ui.table tr .link {
+    border-radius: 3px;
+}
+.ui.calendar .ui.table tr .link.range {
+    border-radius: 0;
+}
+
+.ui.calendar .ui.table > thead > tr:nth-child(2) > th {
+    color: #aaaeae;
+}
+
+.ui.table>thead>tr:last-child>th:first-child {
+    border-radius: 0 0 0 0.28571429rem;
+}
+.ui.table>thead>tr:last-child>th:last-child {
+    border-radius: 0 0 0.28571429rem 0;
+}
+
 /*
- * XXX: Fix calendar bug when popup appears in a wrong 'left-center' position instead of 'bottom-right'
+ * XXX: Fixed calendar bug when popup appears in a wrong 'left-center' position instead of 'bottom-right'
  */
 .ui.left.center.popup,
 #rangeend .ui.bottom.left.popup {

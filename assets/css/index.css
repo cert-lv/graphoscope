@@ -319,13 +319,17 @@ input:-webkit-autofill:active {
 /*
  * Right info panel
  */
+.info {
+    padding: 5px 0 0 10px;
+}
+
 .ui.selection.load.dropdown {
-    margin: 10px 0 0 10px;
+    margin-top: 3px;
 }
 
 .ui.selection.load.dashboard.dropdown,
 .ui.save.dashboard.input {
-    width: calc(100% - 152px);
+    width: calc(100% - 142px);
 }
 
 .ui.load.dashboard.button,
@@ -344,7 +348,7 @@ input:-webkit-autofill:active {
     top: -2px;
 }
 .ui.save.dashboard.input {
-    margin: 10px 0 0 10px;
+    margin-top: 10px;
 }
 .ui.delete.dashboard.button i,
 .ui.save.dashboard.button i,
@@ -371,7 +375,7 @@ input:-webkit-autofill:active {
 #attributes,
 #common-attributes {
     position: absolute;
-    top: 195px;
+    top: 206px;
     bottom: 0px;
     left: 10px;
     right: 0px;
@@ -383,7 +387,7 @@ input:-webkit-autofill:active {
 .common-attributes.table,
 .common-neighbors.table {
     border: none;
-    margin: 5px 0 15px 0;
+    margin: 3px 0 15px 0;
     width: 100%;
 }
 
@@ -416,7 +420,7 @@ input:-webkit-autofill:active {
 
 #attributes-notes {
     padding: .67857143em 1em;
-    margin-top: 5px;
+    margin-top: 3px;
     border: 1px solid rgba(34,36,38,.15);
     border-radius: .28571429rem;
     width: calc(100% - 63px);
@@ -437,7 +441,7 @@ input:-webkit-autofill:active {
 .ui.save.notes.button {
     border: 1px solid rgba(34,36,38,.15);
     opacity: 1 !important;
-    margin-top: 5px;
+    margin-top: 3px;
     float: right;
 }
 

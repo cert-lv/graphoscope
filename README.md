@@ -164,7 +164,6 @@ Response example for the first query:
       when https://github.com/visjs/vis-network/pull/629 or similar is merged & new version released
 ---
 - [ ] Generate DEB and RPM packages
-- [ ] More advanced datetime range selector. With options like `Last 24h`, `Last used ranges`, etc.
 - [ ] Edges groups styling. **TODO** from `search.js`. Implement https://github.com/visjs/vis-network/issues/1229
 - [ ] Generate PDF documentation from the existing `*.md` files
 - [ ] Implement other SQL features, like `NOT BETWEEN`

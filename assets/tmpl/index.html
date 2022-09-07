@@ -140,32 +140,37 @@
             *************************-->
             <div class="four wide right column">
                 <div class="info">
-                    <div class="ui form calendar">
-                        <div class="two fields">
-                            <div class="field">
-                                <label>Start date</label>
-                                <div class="ui calendar" id="rangestart">
-                                    <div class="ui input left icon">
-                                        <i class="calendar icon"></i>
-                                        <input type="text" placeholder="Start">
+                    <label class="attributes-header">Datetime range</label>
+                    <div class="ui daterange button">&nbsp;</div>
+                    <div class="ui daterange fluid popup hidden">
+                        <table>
+                            <tr>
+                                <td class="customranges">
+                                    <div class="ui lastHour button">Last hour</div>
+                                    <div class="ui last12hours button">Last 12 hours</div>
+                                    <div class="ui lastDay button">Last day</div>
+                                    <div class="ui lastWeek button">Last week</div>
+                                    <div class="ui lastMonth button">Last month</div>
+                                    <div class="ui last6months button">Last 6 months</div>
+                                </td>
+                                <td>
+                                  <label>Start date</label>
+                                    <div class="ui calendar" id="rangestart">
                                     </div>
-                                </div>
-                            </div>
-                            <div class="field">
-                                <label>End date</label>
-                                <div class="ui calendar" id="rangeend">
-                                    <div class="ui input left icon">
-                                        <i class="calendar icon"></i>
-                                        <input type="text" placeholder="End">
+                                </td>
+                                <td>
+                                  <label>End date</label>
+                                    <div class="ui calendar" id="rangeend">
                                     </div>
-                                </div>
-                            </div>
-                        </div>
+                                </td>
+                            </tr>
+                        </table>
                     </div>
 
+                    <label class="attributes-header">Dashboard</label>
                     <div class="ui selection load dashboard dropdown">
                       <i class="dropdown icon"></i>
-                      <div class="default text">Load dashboard</div>
+                      <div class="default text">Load</div>
                       <div class="menu">
                         {{ range $name, $value := .Account.Dashboards }}
                             <div class="item" data-value="{{ $name }}">{{ $name }}</div>
@@ -186,7 +191,7 @@
                     </div>
 
                     <div class="ui save dashboard input">
-                        <input type="text" placeholder="Unique dashboard name" id="dashboard-name" spellcheck="false">
+                        <input type="text" placeholder="Unique name" id="dashboard-name" spellcheck="false">
                     </div>
                     <div class="ui shared dashboard checkbox">
                         <input type="checkbox" name="example">

@@ -20,6 +20,9 @@ class Search {
         this.rangeStart = $('#rangestart');
         this.rangeEnd =   $('#rangeend');
 
+        // SQL autocomplete
+        this.autocomplete = new SQLAutocomplete(this, this.input);
+
         // Amount of currently running searches
         this.jobs = 0;
 
@@ -37,15 +40,38 @@ class Search {
      * Bind Web GUI buttons
      */
     bind() {
-        // Usage buttons
+        // Usage button
         document.getElementById('usage-btn').addEventListener('click', (e) => {
             this.usage();
         });
 
-        // Run search with the Enter key
-        this.input.addEventListener('keyup', (e) => {
-            if (e.key === 'Enter')
-                this.run();
+        // Bind keyboard keys
+        this.input.addEventListener('keydown', (e) => {
+            var list = this.autocomplete.container.getElementsByTagName('div');
+
+            // Run search with the Enter key
+            // or select autocompleted field
+            if (e.key === 'Enter') {
+                // Simulate a click on the "active" autocomplete item
+                // Or run the search query
+                if (this.autocomplete.currentFocus > -1)
+                    if (list.length !== 0) list[this.autocomplete.currentFocus].click();
+                else
+                    this.run();
+
+            // Data sources fields autocomplete
+            } else if (e.key === 'Tab') {
+                this.autocomplete.build(e.target.selectionStart);
+                e.preventDefault();
+
+            } else if (e.key === 'ArrowDown') {
+                this.autocomplete.setActive(list, 1);
+                e.preventDefault();
+
+            } else if (e.key === 'ArrowUp') {
+                this.autocomplete.setActive(list, -1);
+                e.preventDefault();
+            }
         });
 
         // Format button

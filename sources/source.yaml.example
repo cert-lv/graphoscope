@@ -30,6 +30,13 @@ access:
     url: http://localhost:9200
     indices: apps-*
 
+# As from some data sources there is no way to get all the possible fields
+# to query (for the Web GUI autocomplete) this array can be filled by an
+# administrator manually
+queryFields:
+    - address
+    - domain
+
 # List of fields data source should return if not all are needed.
 # In some cases this allows to be more efficient. Not all plugins/data sources
 # support such feature, but, for example, in Elasticsearch plugin this allows

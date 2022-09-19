@@ -16,6 +16,14 @@ Source YAML definition's `access` fields:
 - **collection**: collection name to query
 
 
+# Get all the possible fields
+
+As MongoDB doesn't provide a built-in way to get all the possible collection's
+fields without requesting all documents plugin will try:
+1. To return a manually filled `queryFields` - useful when some fields rarely appear
+2. To request 1000 documents and get all their unique fields, including nested
+
+
 # Golang driver
 
 The **mongo-go-driver** contains four object types:

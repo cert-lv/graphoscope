@@ -4,8 +4,21 @@ Plugin to query Pastelyzer (https://github.com/cert-lv/pastelyzer) as a data sou
 
 Sample command to use plugin:
 ```sh
+# Get paste IDs where IP 8.8.8.8 was mentioned
 curl 'https://localhost:443/api?uuid=auth-key&sql=FROM+pastelyzer+WHERE+ip=%278.8.8.8%27'
+# Get all artefacts of the given paste ID
+curl 'https://localhost:443/api?uuid=auth-key&sql=FROM+pastelyzer+WHERE+source=35853628'
 ```
+
+Possible artefacts to query:
+- cc-number
+- credential
+- domain
+- email
+- ip
+- onion
+- sha1
+- any
 
 Compile with:
 ```sh

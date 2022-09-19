@@ -86,6 +86,65 @@ func (p *plugin) Setup(source *pdk.Source, limit int) error {
 	return nil
 }
 
+func (p *plugin) Fields() ([]string, error) {
+
+	// Map for collecting unique fields only
+	fieldsMap := make(map[string]bool)
+
+	// In elasticsearch mapping is a place to get all the fields from
+	mapping := p.client.GetMapping()
+	service := mapping.Index(p.index)
+
+	ctx, cancel := context.WithTimeout(context.Background(), p.source.Timeout)
+	defer cancel()
+
+	results, err := service.Do(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	// Recursively process all the fields
+	for _, result := range results {
+		properties := result.(map[string]interface{})["mappings"].(map[string]interface{})["properties"]
+		if properties == nil {
+			// Additional option for campatibility with Elasticsearch 6.x
+			event := result.(map[string]interface{})["mappings"].(map[string]interface{})["event"]
+			if event != nil {
+				properties = result.(map[string]interface{})["mappings"].(map[string]interface{})["event"].(map[string]interface{})["properties"]
+			}
+		}
+
+		switch prop := properties.(type) {
+		case map[string]interface{}:
+			for field, data := range prop {
+				if data.(map[string]interface{})["properties"] != nil {
+					p.getFields(data.(map[string]interface{})["properties"].(map[string]interface{}), field, fieldsMap)
+				} else {
+					fieldsMap[field] = true
+				}
+			}
+		}
+	}
+
+	// Convert map to the slice
+	fields := make([]string, 0, len(fieldsMap))
+	for value, _ := range fieldsMap {
+		fields = append(fields, value)
+	}
+
+	return fields, nil
+}
+
+func (p *plugin) getFields(data map[string]interface{}, field string, fields map[string]bool) {
+	for f, m := range data {
+		if m.(map[string]interface{})["properties"] != nil {
+			p.getFields(m.(map[string]interface{})["properties"].(map[string]interface{}), field+"."+f, fields)
+		} else {
+			fields[field+"."+f] = true
+		}
+	}
+}
+
 func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[string]interface{}, map[string]interface{}, error) {
 
 	// Storage for the results to return

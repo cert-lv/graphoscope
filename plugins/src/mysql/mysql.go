@@ -75,6 +75,22 @@ func (p *plugin) Setup(source *pdk.Source, limit int) error {
 	return nil
 }
 
+func (p *plugin) Fields() ([]string, error) {
+
+	// Request 1 row to get all the possible columns
+	rows, err := p.db.Query("SELECT * FROM `" + p.source.Access["table"] + "` LIMIT 1")
+	if err != nil && err != sql.ErrNoRows {
+		return nil, err
+	}
+
+	cols, err := rows.Columns()
+	if err != nil {
+		return nil, err
+	}
+
+	return cols, nil
+}
+
 func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[string]interface{}, map[string]interface{}, error) {
 
 	// Storage for the results to return

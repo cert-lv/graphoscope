@@ -32,6 +32,9 @@ type TemplateData struct {
 	// which help to format comma/space separated indicators to a valid SQL query
 	Formats string
 
+	// A list of all known data sources fields for the Web GUI autocomplete
+	Fields []string
+
 	// Built-in documentation content, N sections
 	Docs [3]string
 
@@ -164,6 +167,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 		Shared:         shared,
 		Groups:         groups,
 		Formats:        formats,
+		Fields:         fields,
 		GraphSettings:  settings,
 	}
 

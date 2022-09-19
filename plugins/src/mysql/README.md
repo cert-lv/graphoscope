@@ -69,6 +69,10 @@ access:
 statsFields:
   - domain
 
+replaceFields:
+    datetime: seen
+    domain:   fqdn
+
 
 relations:
   -

@@ -529,7 +529,7 @@ class Graph {
         this.network.on('zoom', (obj) => {
 
             const coef = 0.1 / this.network.getScale(),
-                  pos =  this.network.getViewPosition();
+                  pos = this.network.getViewPosition();
 
             if (this.network.getScale() < 0.2) {
                 this.network.moveTo({

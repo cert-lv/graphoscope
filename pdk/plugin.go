@@ -15,6 +15,10 @@ type Plugin interface {
 	// establish connection, etc.
 	Setup(*Source, int) error
 
+	// Get a list of all known data source's fields
+	// for the Web GUI autocomplete
+	Fields() ([]string, error)
+
 	// Execute the given query.
 	// Returns results, statistics, debug info & error
 	Search(*sqlparser.Select) ([]map[string]interface{}, map[string]interface{}, map[string]interface{}, error)

@@ -96,6 +96,43 @@ input:-webkit-autofill:active {
 }
 
 /*
+ * Autocomplete
+ */
+#autocomplete {
+    position: absolute;
+    z-index: 4;
+    top: 100%;
+    left: 0;
+    right: 0;
+    overflow-y: auto;
+    max-height: 50vh;
+    margin-top: 3px;
+    border-radius: 0 0 5px 5px;
+    border: 1px solid #dfdfdf;
+    border-top: none;
+    background-color: #fff;
+    display: none;
+}
+
+#autocomplete div {
+    padding: 0.3em 0.85em;
+    cursor: pointer;
+}
+#autocomplete div:last-child {
+    padding-bottom: 5px;
+}
+
+/* When hovering an item */
+#autocomplete div:hover {
+    background: rgba(0,0,0,.05);
+}
+
+/* When navigating through the items using the arrow keys */
+#autocomplete div.autocomplete-active {
+    background: rgba(0,0,0,.05);
+}
+
+/*
  * Graph context menu
  */
 #context-menu,

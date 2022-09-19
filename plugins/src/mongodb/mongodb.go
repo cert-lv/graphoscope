@@ -11,6 +11,7 @@ import (
 	"github.com/cert-lv/graphoscope/pdk"
 	"github.com/umpc/go-sortedmap"
 	"github.com/umpc/go-sortedmap/desc"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -84,6 +85,66 @@ func (p *plugin) Setup(source *pdk.Source, limit int) error {
 
 	// fmt.Printf("MongoDB %s: %#v\n\n", source.Name, p)
 	return nil
+}
+
+func (p *plugin) Fields() ([]string, error) {
+
+	// First check for manually provided fields
+	if len(p.source.QueryFields) != 0 {
+		return p.source.QueryFields, nil
+	}
+
+	// Map for collecting unique fields only
+	fieldsMap := make(map[string]bool)
+
+	opts := options.Find().SetLimit(1000)
+	ctx, cancel := context.WithTimeout(context.Background(), p.source.Timeout)
+	defer cancel()
+
+	cursor, err := p.collection.Find(ctx, bson.M{}, opts)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	// Iterate through the results/cursor
+	for cursor.Next(ctx) {
+		// Deserialize
+		entry := make(map[string]interface{})
+
+		err := cursor.Decode(&entry)
+		if err != nil {
+			return nil, err
+		}
+
+		for field, data := range entry {
+			switch data.(type) {
+			case map[string]interface{}:
+				p.getFields(data.(map[string]interface{}), field, fieldsMap)
+			default:
+				fieldsMap[field] = true
+			}
+		}
+	}
+
+	// Convert map to the slice
+	fields := make([]string, 0, len(fieldsMap))
+	for value, _ := range fieldsMap {
+		fields = append(fields, value)
+	}
+
+	return fields, nil
+}
+
+func (p *plugin) getFields(data map[string]interface{}, field string, fields map[string]bool) {
+	for f, m := range data {
+		switch m.(type) {
+		case map[string]interface{}:
+			p.getFields(m.(map[string]interface{}), field+"."+f, fields)
+		default:
+			fields[field+"."+f] = true
+		}
+	}
 }
 
 func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[string]interface{}, map[string]interface{}, error) {

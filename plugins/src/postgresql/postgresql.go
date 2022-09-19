@@ -89,6 +89,30 @@ func (p *plugin) Setup(source *pdk.Source, limit int) error {
 	return nil
 }
 
+func (p *plugin) Fields() ([]string, error) {
+
+	// Slice to store the search result
+	entries := []map[string]interface{}{}
+
+	// Context with a timeout
+	ctx, cancel := context.WithTimeout(context.Background(), p.source.Timeout)
+	defer cancel()
+
+	// Request 1 row to get all the possible columns
+	err := pgxscan.Select(ctx, p.connection, &entries, "SELECT * FROM "+p.source.Access["table"]+" LIMIT 1")
+	if err != nil {
+		return nil, err
+	}
+
+	// Convert map to the slice
+	fields := make([]string, 0, len(entries[0]))
+	for value, _ := range entries[0] {
+		fields = append(fields, value)
+	}
+
+	return fields, nil
+}
+
 func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[string]interface{}, map[string]interface{}, error) {
 
 	// Storage for the results to return

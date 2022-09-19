@@ -6,6 +6,7 @@ import (
 	"os"
 	"plugin"
 	"reflect"
+	"sort"
 	"time"
 
 	yaml "gopkg.in/yaml.v3"
@@ -26,6 +27,10 @@ var (
 	// In a Web GUI do not display some elements
 	// when there are no non-global data sources
 	nonGlobalExist = false
+
+	// A list of all known data sources fields
+	// for the Web GUI autocomplete
+	fields []string
 )
 
 /*
@@ -106,6 +111,9 @@ func setupCollectors() error {
 		return fmt.Errorf("Can't read directory '%s': %s", config.Sources, err.Error())
 	}
 
+	// Map of unique fields
+	uniqueFields := map[string]bool{}
+
 	for _, f := range files {
 		// Skip not YAML files
 		name := f.Name()
@@ -143,6 +151,30 @@ func setupCollectors() error {
 			continue
 		}
 
+		// Get all the possible field names
+		list, err := clone.Fields()
+		if err != nil {
+			log.Error().
+				Str("source", source.Name).
+				Str("plugin", source.Plugin).
+				Msg("Can't get fields: " + err.Error())
+		}
+
+		// Rename common field names
+		for renamed, old := range clone.Source().ReplaceFields {
+			for i, field := range list {
+				if field == old {
+					list[i] = renamed
+					break
+				}
+			}
+		}
+
+		// Merge field names with a global list
+		for _, field := range list {
+			uniqueFields[field] = true
+		}
+
 		if !clone.Source().InGlobal {
 			nonGlobalExist = true
 		}
@@ -155,6 +187,17 @@ func setupCollectors() error {
 			Str("plugin", source.Plugin).
 			Msg("Collector initialized")
 	}
+
+	// Create a slice with the capacity of unique fields.
+	// This capacity makes appending flow much more efficient
+	fields = make([]string, 0, len(uniqueFields))
+
+	for field := range uniqueFields {
+		fields = append(fields, field)
+	}
+
+	// Sort keys for easier usage
+	sort.Strings(fields)
 
 	return nil
 }

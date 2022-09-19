@@ -24,6 +24,7 @@
         <script type="text/javascript" src="assets/js/graph.js?v={{ .Version }}"></script>
         <script type="text/javascript" src="assets/js/filters.js?v={{ .Version }}"></script>
         <script type="text/javascript" src="assets/js/dashboards.js?v={{ .Version }}"></script>
+        <script type="text/javascript" src="assets/js/sql-autocomplete.js?v={{ .Version }}"></script>
         <script type="text/javascript" src="assets/js/search.js?v={{ .Version }}"></script>
         <script type="text/javascript" src="assets/js/tags.js?v={{ .Version }}"></script>
         <script type="text/javascript" src="assets/js/charts.js?v={{ .Version }}"></script>
@@ -42,6 +43,7 @@
             FORMATS = JSON.parse({{ .Formats }});
             NOTIFICATIONS = {{ .Account.Notifications }};
             {{ if .Features }}FEATURES = {{ .Features }};{{ end }}
+            FIELDS =     {{ .Fields }};
         </script>
     </head>
 
@@ -69,6 +71,7 @@
                 <!-- Search bar with action buttons -->
                 <div class="ui action fluid search input">
                     <input id="search_input" type="text" placeholder="Search..." spellcheck="false" value="">
+                    <div id="autocomplete"></div>
 
                     <div class="ui format button" title="Format the request">
                         <i class="pen alternate icon"></i>

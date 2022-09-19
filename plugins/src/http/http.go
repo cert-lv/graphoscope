@@ -59,6 +59,10 @@ func (p *plugin) Setup(source *pdk.Source, limit int) error {
 	return nil
 }
 
+func (p *plugin) Fields() ([]string, error) {
+	return p.source.QueryFields, nil
+}
+
 func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[string]interface{}, map[string]interface{}, error) {
 
 	// Storage for the results to return

@@ -14,7 +14,7 @@ Contains a list of by default available data sources plugins. 3rd party plugins 
 - **Usage** examples to skip searching the correct SQL syntax
 - Use `... OR ...` or `field IN (...)` queries even if data source doesn't support them
 - **Common fields** (like `ip`, `domain`, `timestamp`) that work across all the data sources
-- Fields **autocomplete** with `Tab` key
+- Fields **autocomplete** with a `Tab` key
 - Can query both **Web GUI** and **API**
 - Every single node & edge type can have its **own style**
 - No need to remember all the connected **data source names** - select it from a dropdown

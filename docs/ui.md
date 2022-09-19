@@ -26,7 +26,7 @@
 
 ## Search bar
 
-`2` is the main way to interact with the background data sources. Just like with other search engines, type what you are looking for, press `Enter` or the search button and get results from the chosen databases.
+`2` is the main way to interact with the background data sources. Just like with other search engines, type what you are looking for, press `Enter` or the search button and get results from the chosen databases. Press `Tab` for the current field name autocomplete.
 
 More info in the `Search` documentation section.
 

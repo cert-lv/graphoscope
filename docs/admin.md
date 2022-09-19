@@ -3,11 +3,12 @@
 3. [Global graph settings](#global-graph-settings)
 4. [Demo data](#demo-data)
 5. [New data source](#new-data-source)
-6. [Query auto-formatting rules](#query-auto-formatting-rules)
-7. [Debug info](#debug-info)
-8. [Custom graph elements style](#custom-graph-elements-style)
-9. [Limit returned data](#limit-returned-data)
-10. [Plugins development](#plugins-development)
+6. [Fields autocomplete](#fields-autocomplete)
+7. [Query auto-formatting rules](#query-auto-formatting-rules)
+8. [Debug info](#debug-info)
+9. [Custom graph elements style](#custom-graph-elements-style)
+10. [Limit returned data](#limit-returned-data)
+11. [Plugins development](#plugins-development)
 
 
 After a fresh installation the service's environment is `development` - all users have the same highest level rights. Therefore the first step is to set administrators.
@@ -129,6 +130,26 @@ relations:
 ```
 
 For more parameters and details check example file `sources/source.yaml.example`.
+
+
+## Fields autocomplete
+
+How autocomplete works in a background:
+
+1. Service is started
+2. Connection is established to the each data source (if it's required)
+3. Each data source returns a list of available fields to query
+4. A global list of unique fields is being created and returned to the Web GUI
+
+There are two ways to get a list of field names of the data source:
+
+- Automatically. Such plugins know how to query a data source and return a list of fields
+- Manually. As from some data sources there is no way to get all the possible fields - such list can be created manually by an administrator. Check plugin's README for more info. Then in a data source's YAML definition file use a `queryFields` setting to define all the possible fields:
+```
+queryFields:
+    - address
+    - domain
+```
 
 
 ## Query auto-formatting rules

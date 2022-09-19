@@ -1,16 +1,17 @@
 1. [Syntax](#syntax)
 2. [Common queries](#common-queries)
 3. [Extended usage of basic APIs](#extended-usage-of-basic-apis)
-4. [Common fields](#common-fields)
-5. [Hide visible nodes](#hide-visible-nodes)
-6. [Filters](#filters)
-7. [Too much results](#too-much-results)
-8. [Faster search](#faster-search)
-9. [Large list of indicators](#large-list-of-indicators)
-10. [Direct API usage](#direct-api-usage)
-11. [Limit the amount of returned data](#limit-the-amount-of-returned-data)
-12. [Order of returned data](#order-of-returned-data)
-13. [Output format](#output-format)
+4. [Field names autocomplete](#field-names-autocomplete)
+5. [Common fields](#common-fields)
+6. [Hide visible nodes](#hide-visible-nodes)
+7. [Filters](#filters)
+8. [Too much results](#too-much-results)
+9. [Faster search](#faster-search)
+10. [Large list of indicators](#large-list-of-indicators)
+11. [Direct API usage](#direct-api-usage)
+12. [Limit the amount of returned data](#limit-the-amount-of-returned-data)
+13. [Order of returned data](#order-of-returned-data)
+14. [Output format](#output-format)
 
 
 ![datasources](assets/img/datasources.png)
@@ -84,6 +85,17 @@ domain <> 'example.com'
 ## Extended usage of basic APIs
 
 Some data sources support single `field=value` queries only, but if connected properly it's possible to use queries like `... OR ... OR ...` or `field IN ('...', '...')`, which will be splitted into multiple independent single queries in a background. Check for `supportsSQL: true/false` setting.
+
+
+## Field names autocomplete
+
+Any query have to contain at least one field to search the given value in. Autocomplete makes it easier to find and type the correct data source's field name. In a search bar type at least one character and press a `Tab` key, all fields from all data sources that start with the given characters will make a dropdown:
+
+![autocomplete](assets/img/autocomplete.png)
+
+Use arrow keys and `Enter` or mouse to choose the needed item.
+
+Autocomplete works even if the field is not at the end of the query. Simply place a cursor at some place, where field name is incomplete and press a `Tab` key. When needed item is selected a word under a cursor will be replaced.
 
 
 ## Common fields

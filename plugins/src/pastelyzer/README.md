@@ -10,7 +10,7 @@ curl 'https://localhost:443/api?uuid=auth-key&sql=FROM+pastelyzer+WHERE+ip=%278.
 curl 'https://localhost:443/api?uuid=auth-key&sql=FROM+pastelyzer+WHERE+source=35853628'
 ```
 
-Possible artefacts to query:
+As there is no way to get automatically all the possible fields to query (for the Web GUI autocomplete) - such artefacts are:
 - cc-number
 - credential
 - domain

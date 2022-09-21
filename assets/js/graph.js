@@ -528,10 +528,10 @@ class Graph {
     setupZoomLimit() {
         this.network.on('zoom', (obj) => {
 
-            const coef = 0.1 / this.network.getScale(),
+            const coef = 0.1 / obj.scale,
                   pos = this.network.getViewPosition();
 
-            if (this.network.getScale() < 0.2) {
+            if (obj.scale < 0.2) {
                 this.network.moveTo({
                     position: {
                         x: pos.x + (obj.pointer.x - this.canvas.width /2) * coef,

@@ -14,7 +14,7 @@ import (
 func (p *plugin) convert(sel *sqlparser.Select) (string, error) {
 
 	/*
-	 * STEP 5.
+	 * STEP 6.
 	 *
 	 * Do the SQL conversion.
 	 * Check, for example, a MongoDB plugin to see how SQL

@@ -15,7 +15,7 @@ func TestConvert(t *testing.T) {
 	c := plugin{}
 
 	/*
-	 * STEP 12.
+	 * STEP 13.
 	 *
 	 * Test whether example SQL queries are correctly converted to the expected format.
 	 * Sometimes it's easier to compare textual representation of the object,

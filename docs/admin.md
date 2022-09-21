@@ -298,25 +298,26 @@ Edit `<plugin-name>.go`
   - **STEP 1** - validate required parameters or settings, given by the user
   - **STEP 2** - create a connection to the data source if needed, check whether it is established. For example, `MongoDB` requires an established connection, while `HTTP REST API` does not
   - **STEP 3** - store plugin settings, like "client" object, URL, database name, etc.
-  - **STEP 4** - when new query is launched - an SQL statement conversion must be done, so the data source can understand what client is searching for. Created query should be added to the debug info, so admin or developer can see what happens in a background.
+  - **STEP 4** - get a list of all known data source's fields for the Web GUI autocomplete
+  - **STEP 5** - when new query is launched - an SQL statement conversion must be done, so the data source can understand what client is searching for. Created query should be added to the debug info, so admin or developer can see what happens in a background.
 
 Edit `convert.go`
-  - **STEP 5** - do the SQL conversion. Check, for example, a `MongoDB` plugin to see how SQL can be converted to the hierarchical object or an `HTTP` plugin where you get just a list of requested `field/value` pairs
+  - **STEP 6** - do the SQL conversion. Check, for example, a `MongoDB` plugin to see how SQL can be converted to the hierarchical object or an `HTTP` plugin where you get just a list of requested `field/value` pairs
 
 Edit `<plugin-name>.go`
-  - **STEP 6** - run the query and get the results. Implementation depends on the data source's methods. In an `HTTP` plugin it's just a GET/POST request
-  - **STEP 7** - process data returned by the data source. Most of this loop content you shouldn't modify at all
-  - **STEP 8** - gracefully stop the plugin when main service stops, drop all connections correctly
+  - **STEP 7** - run the query and get the results. Implementation depends on the data source's methods. In an `HTTP` plugin it's just a GET/POST request
+  - **STEP 8** - process data returned by the data source. Most of this loop content you shouldn't modify at all
+  - **STEP 9** - gracefully stop the plugin when main service stops, drop all connections correctly
 
 Edit `plugin.go`
-  - **STEP 9** - define all the custom fields needed by the plugin, such as "client" object, database/collection name, etc. See the `STEP 3`
-  - **STEP 10** - set plugin name and version
+  - **STEP 10** - define all the custom fields needed by the plugin, such as "client" object, database/collection name, etc. See the `STEP 3`
+  - **STEP 11** - set plugin name and version
 
 Edit `README.md`
-  - **STEP 11** - white plugin description and documentation if needed
+  - **STEP 12** - white plugin description and documentation if needed
 
 Edit `<plugin-name>_test.go`
-  - **STEP 12** - test whether example SQL queries are correctly converted to the expected format
+  - **STEP 13** - test whether example SQL queries are correctly converted to the expected format
 
 During all these steps you can use existing plugins as the working examples.
 

@@ -80,6 +80,17 @@ func (p *plugin) Setup(source *pdk.Source, limit int) error {
 }
 
 func (p *plugin) Fields() ([]string, error) {
+	/*
+	 * STEP 4.
+	 *
+	 * Get a list of all known data source's fields for the Web GUI autocomplete.
+	 *
+	 * Use "p.source.QueryFields" if there is no way to get automatically
+	 * all the possible fields to query and the list will be filled manually.
+	 *
+	 * Query data source otherwise. Check MySQL plugin for an example
+	 */
+
 	return p.source.QueryFields, nil
 }
 
@@ -89,7 +100,7 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 	results := []map[string]interface{}{}
 
 	/*
-	 * STEP 4.
+	 * STEP 5.
 	 *
 	 * Convert SQL statement
 	 * so the data source can understand what client is searching for.
@@ -114,7 +125,7 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 	// defer cancel()
 
 	/*
-	 * STEP 6.
+	 * STEP 7.
 	 *
 	 * Run the query and get the results.
 	 * Here we just create an empty slice for a demo
@@ -140,7 +151,7 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 	}
 
 	/*
-	 * STEP 7.
+	 * STEP 8.
 	 *
 	 * Process data returned by the data source.
 	 * Most of this loop content you shouldn't modify at all.
@@ -287,7 +298,7 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 
 func (p *plugin) Stop() error {
 	/*
-	 * STEP 8.
+	 * STEP 9.
 	 *
 	 * Stop the plugin when main service stops,
 	 * drop all connections correctly

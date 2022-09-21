@@ -9,7 +9,7 @@ import (
  */
 var (
 	/*
-	 * STEP 10.
+	 * STEP 11.
 	 *
 	 * Set plugin name and version
 	 */
@@ -28,7 +28,7 @@ type plugin struct {
 	source *pdk.Source
 
 	/*
-	 * STEP 9.
+	 * STEP 10.
 	 *
 	 * Define all the custom fields needed by the plugin,
 	 * such as "client" object, database/collection name, etc..

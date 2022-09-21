@@ -1,4 +1,4 @@
-### STEP 11.
+### STEP 12.
 ### Write plugin description and documentation
 
 

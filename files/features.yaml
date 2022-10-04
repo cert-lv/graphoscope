@@ -1,6 +1,7 @@
 [
-    "16.09.2022",
+    "04.10.2022",
 
     "New and more advanced <strong>datetime picker</strong> now replaces both old pickers",
-    "Field names <strong>autocomplete</strong>. Type at least one character and press Tab"
+    "Field names <strong>autocomplete</strong>. Type at least one character and press Tab",
+    "An option to <strong>export</strong>/<strong>import</strong> graph's visible data (in Web GUI only, not into a database)"
 ]

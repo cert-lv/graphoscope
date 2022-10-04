@@ -510,6 +510,7 @@ i.flag:not(.icon) {
 #center,
 #image,
 #export,
+#import,
 #fullscreen {
     position: absolute;
     margin-top: 5px;
@@ -522,23 +523,43 @@ i.flag:not(.icon) {
 #center:hover,
 #image:hover,
 #export:hover,
+#import:hover,
 #fullscreen:hover {
     color: #888b8b;
 }
 
 #center {
-    right: 108px;
+    right: 133px;
 }
 #image {
     margin-top: 3px;
-    right: 76px;
+    right: 102px;
     font-size: 23px;
 }
 #export {
+    right: 76px;
+}
+#import {
     right: 50px;
 }
 #fullscreen {
     right: 24px;
+}
+
+/*
+ * Upload file selection
+ */
+#file {
+    margin-left: 10px;
+}
+.ui.import.input input[type="file"] {
+    display: none;
+}
+.ui.import.input > .ui.button {
+    border: none;
+}
+.ui.import.input > .ui.button > i.icon {
+    margin-right: 5px !important;
 }
 
 /*

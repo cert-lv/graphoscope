@@ -1,11 +1,19 @@
 ![](assets/img/logo.svg)
 # Graphoscope
 
-A solution to access multiple independent data sources from a common UI and show data relations as a graph:
+An interactive solution to access multiple independent data sources from a common UI and show data relations as a graph:
 
 ![](assets/img/screen.png)
 
-Contains a list of by default available data sources plugins. 3rd party plugins are also possible.
+Contains a list of by default available data sources plugins. 3rd party plugins are also possible. Example workflow if all needed data sources are connected:
+
+1. IP address only is know at the beginning, use it as initial query
+2. From Passive DNS find related **domain names**
+3. From second data source find **institution** that address belongs to
+4. From clients database find institution contact person's **email**
+5. From leaked passwords database find where that email was used and secret **passwords**
+
+At the end of `IP address -> Institution -> Contact person's email -> Password` process there could be a possible explanation why something bad has happened to the institution's server.
 
 
 ## Features
@@ -30,7 +38,7 @@ Contains a list of by default available data sources plugins. 3rd party plugins 
 - Get **node & edge details** by clicking on them
 - **Pie-chart statistics** when the amount of requested data exceeds the limit
 - **Save & restore** dashboards, private or shared with a team
-- **Export** all graph data as a file
+- **Export/import** all graph visible data
 - Display the **amount of visible nodes** grouped by type
 - **Group node neighbors** of specific types into the clusters
 - **Cache** results for a faster re-query
@@ -161,14 +169,15 @@ Response example for the first query:
 ## TODO & ideas
 
 - [ ] Display available data source's fields
-- [ ] In `graph.js` remove custom zoom limiting
-      when https://github.com/visjs/vis-network/pull/629 or similar is merged & new version released
 ---
 - [ ] Generate DEB and RPM packages
+- [ ] In `graph.js` remove custom zoom limiting
+      when https://github.com/visjs/vis-network/pull/629 or similar is merged & new version released
 - [ ] Edges groups styling. **TODO** from `search.js`. Implement https://github.com/visjs/vis-network/issues/1229
 - [ ] Generate PDF documentation from the existing `*.md` files
 - [ ] Implement other SQL features, like `NOT BETWEEN`
 - [ ] Plugins:
+  - [ ] RTIR
   - [ ] Redis
   - [ ] MS SQL
   - [ ] Oracle SQL

@@ -18,6 +18,8 @@ class Graph {
         this.imageBtn =      document.getElementById('image');
         // Button to export visible graph data as a file
         this.exportBtn =     document.getElementById('export');
+        // Button to import graph data from a file
+        this.importBtn =     document.getElementById('import');
         // Button to toggle fullscreen mode
         this.fullscreenBtn = document.getElementById('fullscreen');
         // Table with graph elements attributes
@@ -86,6 +88,11 @@ class Graph {
         // Export visible graph data as a file
         this.exportBtn.addEventListener('click', (e) => {
             this.export();
+        });
+
+        // Import graph data from a file
+        this.importBtn.addEventListener('click', (e) => {
+            this.import();
         });
 
         // Toggle fullscreen mode
@@ -857,6 +864,9 @@ class Graph {
         $('.ui.attributes.table').empty();
 
         for (const attr in attrs) {
+            if (attr === 'source')
+                continue;
+
             var value = attrs[attr].toString();
 
             if (value instanceof Array) {
@@ -951,7 +961,7 @@ class Graph {
         const data = [];
 
         for (var id in this.network.body.nodes) {
-            const node =  this.network.body.nodes[id];
+            const node = this.network.body.nodes[id];
 
             // Skip hidden nodes
             if (node.options.hidden)
@@ -960,16 +970,34 @@ class Graph {
             // Nodes without neighbors
             if (node.edges.length === 0) {
                 const item = {
-                    from: node.options.attributes,
+                    from: {},
                     to:   {},
                     edge: {}
                 }
 
-                item.from.id = node.id;
+                item.from.attributes = JSON.parse(JSON.stringify(node.options.attributes));  // Prevent modifying original object
+                item.from.search = node.options.search;
                 item.from.group = node.options.group;
+                item.from.id = node.id;
+
+                if (node.source) {
+                    item.source = node.source;
+
+                } else if (node.options.attributes.source) {
+                    node.source = node.options.attributes.source;
+                    item.source = node.options.attributes.source;
+                    delete node.options.attributes.source;
+
+                } else {
+                    item.source = node.source;
+                }
+
+                delete item.from.attributes[item.from.group];
+
+                if (Object.keys(item.from.attributes).length === 0)
+                    delete item.from.attributes;
 
                 data.push(item);
-
                 continue;
             }
 
@@ -992,48 +1020,118 @@ class Graph {
                 if (edge.fromId === node.id && !edge.to.options.hidden) {
                     const attrs = this.network.body.data.edges.get(edge.id);
 
+                    // Skip virtual cluster nodes
+                    if (!attrs) continue;
+
                     const item = {
-                        from: edge.from.options.attributes,
-                        to:   edge.to.options.attributes,
+                        from: {},
+                        to:   {},
                         edge: attrs.attributes
                     }
 
-                    item.from.id = edge.from.id;
-                    item.to.id =   edge.to.id;
-
+                    item.from.attributes = JSON.parse(JSON.stringify(edge.from.options.attributes));  // Prevent modifying original object
+                    item.from.search = edge.from.options.search;
                     item.from.group = edge.from.options.group;
-                    item.to.group =   edge.to.options.group;
+                    item.from.id = edge.from.id;
+
+                    item.to.attributes = JSON.parse(JSON.stringify(edge.to.options.attributes));  // Prevent modifying original object
+                    item.to.search = edge.to.options.search;
+                    item.to.group = edge.to.options.group;
+                    item.to.id = edge.to.id;
+
+                    if (item.edge.source) {
+                        edge.from.source = item.edge.source;
+                        edge.to.source = item.edge.source;
+                        item.source = item.edge.source;
+
+                    } else if (edge.from.options.attributes.source) {
+                        edge.from.source = edge.from.options.attributes.source;
+                        edge.to.source = edge.from.options.attributes.source;
+                        item.source = edge.from.options.attributes.source;
+                        delete edge.from.options.attributes.source;
+
+                    } else {
+                        item.source = edge.from.source;
+                    }
+
+                    delete item.from.attributes.source;
+                    delete item.from.attributes[item.from.group];
+                    delete item.to.attributes.source;
+                    delete item.to.attributes[item.to.group];
+                    delete item.edge.source;
+
+                    if (Object.keys(item.from.attributes).length === 0)
+                        delete item.from.attributes;
+                    if (Object.keys(item.to.attributes).length === 0)
+                        delete item.to.attributes;
 
                     data.push(item);
 
                 } else if (edge.fromId === node.id && edge.to.options.hidden && !linked) {
                     const item = {
-                        from: edge.from.options.attributes,
+                        from: {},
                         to:   {},
                         edge: {}
                     }
 
-                    item.from.id = edge.from.id;
+                    item.from.attributes = JSON.parse(JSON.stringify(edge.from.options.attributes));  // Prevent modifying original object
+                    item.from.search = edge.from.options.search;
                     item.from.group = edge.from.options.group;
+                    item.from.id = edge.from.id;
+
+                    if (edge.from.source) {
+                        item.source = edge.from.source;
+
+                    } else if (edge.from.options.attributes.source) {
+                        edge.from.source = edge.from.options.attributes.source;
+                        item.source = edge.from.options.attributes.source;
+                        delete edge.from.options.attributes.source;
+
+                    } else {
+                        item.source = edge.from.source;
+                    }
+
+                    delete item.from.attributes[item.from.group];
+
+                    if (Object.keys(item.from.attributes).length === 0)
+                        delete item.from.attributes;
 
                     data.push(item);
 
                 } else if (edge.toId === node.id && edge.from.options.hidden && !linked) {
                     const item = {
                         from: {},
-                        to:   edge.to.options.attributes,
+                        to:   {},
                         edge: {}
                     }
 
+                    item.to.attributes = JSON.parse(JSON.stringify(edge.to.options.attributes));  // Prevent modifying original object
+                    item.to.search = edge.to.options.search;
+                    item.to.group = edge.to.options.group;
                     item.to.id = edge.to.id;
-                    item.to.group =   edge.to.options.group;
+
+                    if (edge.to.source) {
+                        item.source = edge.to.source;
+
+                    } else if (edge.to.options.attributes.source) {
+                        edge.to.source = edge.to.options.attributes.source;
+                        item.source = edge.to.options.attributes.source;
+                        delete edge.to.options.attributes.source;
+                    } else {
+                        item.source = edge.to.source;
+                    }
+
+                    delete item.to.attributes[item.to.group];
+
+                    if (Object.keys(item.to.attributes).length === 0)
+                        delete item.to.attributes;
 
                     data.push(item);
                 }
             }
         }
 
-        // Prevent downloading of empty data
+        // Prevent download of empty data
         if (data.length === 0) {
             this.application.modal.error('No data!', 'Add some data to the graph and try again!');
             return;
@@ -1043,7 +1141,7 @@ class Graph {
         const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(data, undefined, 4)),
               downloadAnchorNode = document.createElement('a');
 
-        downloadAnchorNode.setAttribute('href',      dataStr);
+        downloadAnchorNode.setAttribute('href', dataStr);
         downloadAnchorNode.setAttribute('download', 'export.json');
         document.body.appendChild(downloadAnchorNode);  // Required for firefox
         downloadAnchorNode.click();
@@ -1051,25 +1149,73 @@ class Graph {
     }
 
     /*
+     * Import graph elements from a file
+     */
+    import() {
+        const text = 'Select a JSON file with a graph data to display:' +
+                        '<div class="ui import input" id="file">' +
+                            '<input type="file" id="inputFile">' +
+                            '<div class="ui icon grey button">' +
+                                '<i class="attach icon"></i>' +
+                                'File' +
+                            '</div>' +
+                        '</div>';
+
+        this.application.modal.empty('Import data', text, 'download');
+
+        // File selection for the import
+        $('.ui.import.input > .ui.icon.button').on('click', () => {
+            document.getElementById('inputFile').click();
+        });
+
+        // Show selected file's name
+        $('input:file', '.ui.input').on('change', (e) => {
+            if (e.target.files.length > 0) {
+                var file = e.target.files[0],
+                reader = new FileReader();
+
+                reader.readAsText(file, 'UTF-8');
+                reader.onload = (e) => {
+                    try {
+                        const result = JSON.parse(e.target.result);
+                        this.application.search.processRelations(null, result);
+                        this.application.modal.close();
+                    } catch (e) {
+                        this.application.modal.error('Error!', 'Invalid JSON file selected!');
+                    }
+                }
+                reader.onerror = (e) => {
+                    this.application.modal.error('Error!', 'Can\'t read file!');
+                }
+            }
+        });
+    }
+
+    /*
      * Toggle canvas fullscreen state
      */
     fullscreen() {
-
         // Enable fullscreen
         if (this.fullscreenBtn.className.indexOf('expand') !== -1) {
             $(this.centerBtn).css({
                 'position': 'fixed',
                 'top':      10,
-                'right':    91,
+                'right':    116,
             });
 
             $(this.imageBtn).css({
                 'position': 'fixed',
                 'top':      10,
-                'right':    59,
+                'right':    85,
             });
 
             $(this.exportBtn).css({
+                'position': 'fixed',
+                'top':      10,
+                'right':    59,
+            });
+
+            $(this.importBtn).css({
                 'position': 'fixed',
                 'top':      10,
                 'right':    33,
@@ -1095,15 +1241,20 @@ class Graph {
         } else {
             $(this.centerBtn).css({
                 'position': 'absolute',
-                'right':    108,
+                'right':    133,
             });
 
             $(this.imageBtn).css({
                 'position': 'absolute',
-                'right':    76,
+                'right':    102,
             });
 
             $(this.exportBtn).css({
+                'position': 'absolute',
+                'right':    76,
+            });
+
+            $(this.importBtn).css({
                 'position': 'absolute',
                 'right':    50,
             });
@@ -1180,6 +1331,7 @@ class Graph {
         this.centerBtn.style.top = y;
         this.imageBtn.style.top = y;
         this.exportBtn.style.top = y;
+        this.importBtn.style.top = y;
         this.fullscreenBtn.style.top = y;
 
         //this.network.fit();

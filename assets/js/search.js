@@ -426,7 +426,7 @@ class Search {
      * and relations data
      */
     processRelations(id, relations) {
-        //console.log(id, relations);
+        //console.log(id, JSON.stringify(relations));
 
         // XXX: idea to add multiple nodes in 1 step:
         // https://github.com/almende/vis/issues/3278
@@ -451,8 +451,8 @@ class Search {
                   existingEdge = this.application.graph.network.body.edges[from.id + '-' + to.id];
 
             // Create nodes which don't exist yet
-            const nodeFrom = this.addNode(this.application.graph.network.body.nodes[from.id], from, id),
-                  nodeTo =   this.addNode(this.application.graph.network.body.nodes[to.id],   to,   id);
+            const nodeFrom = this.addNode(this.application.graph.network.body.nodes[from.id], from, id, entry.source),
+                  nodeTo =   this.addNode(this.application.graph.network.body.nodes[to.id],   to,   id, entry.source);
 
             // Set neighbors group to be able to cluster them
             nodeFrom.options.neighbors[nodeTo.options.group] = true;
@@ -517,8 +517,11 @@ class Search {
      *     existing - node if its value already exists on a graph, 'undefined' otherwise
      *     data     - single node's parameters
      *     filterID - filter's ID this node is related to
+     *     source   - data source's name where data comes from
      */
-    addNode(existing, data, filterID) {
+    addNode(existing, data, filterID, source) {
+        data.attributes = data.attributes || {};
+        data.attributes['source'] = source;
 
         // Update existing one
         if (existing) {
@@ -536,7 +539,6 @@ class Search {
         } else {
             // Additional merge to convert all values to strings
             data.attributes = this.merge({}, data.attributes)
-            //data.attributes = data.attributes || {};
             data.attributes[data.group] = data.id;
 
             data.neighbors = {};

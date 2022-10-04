@@ -3,8 +3,26 @@
  */
 class Modal {
     constructor() {
-        // Pointer to the window HTML element
-        this.container = $('.ui.basic.modal');
+        // Pointers to the window HTML elements
+        this.containerOk =    $('.ui.basic.ok.modal');
+        this.containerEmpty = $('.ui.basic.empty.modal');
+    }
+
+    /*
+     * Empty notification without actions
+     */
+    empty(header, text, icon) {
+        //console.log('empty', header, text);
+
+        if (header) {
+            // Remove previous message if exists
+            if (!text)
+                text = '';
+
+            this.containerEmpty.find('.header').html('<i class="' + icon + ' icon"></i>' + header);
+            this.containerEmpty.find('.content').html(text);
+            this.containerEmpty.modal('show');
+        }
     }
 
     /*
@@ -18,9 +36,9 @@ class Modal {
             if (!text)
                 text = '';
 
-            this.container.find('.header').html('<i class="exclamation circle icon"></i>' + header);
-            this.container.find('.content').html(text);
-            this.container.modal('show');
+            this.containerOk.find('.header').html('<i class="exclamation circle icon"></i>' + header);
+            this.containerOk.find('.content').html(text);
+            this.containerOk.modal('show');
         }
     }
 
@@ -30,8 +48,16 @@ class Modal {
     error(header, text) {
         //console.log(header, text);
 
-        this.container.find('.header').html('<i class="exclamation triangle icon"></i>' + header);
-        this.container.find('.content').html(text);
-        this.container.modal('show');
+        this.containerOk.find('.header').html('<i class="exclamation triangle icon"></i>' + header);
+        this.containerOk.find('.content').html(text);
+        this.containerOk.modal('show');
+    }
+
+    /*
+     * Close any modal window
+     */
+    close() {
+        this.containerOk.modal('hide');
+        this.containerEmpty.modal('hide');
     }
 }

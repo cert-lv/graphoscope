@@ -96,6 +96,14 @@
     margin-right: 10px;
     width: 195px;
 }
+.ui.daterange.button {
+    width: 100%;
+    color: rgba(0, 0, 0, .87);
+    font-weight: normal;
+}
+.five.fields > .field:nth-child(2) {
+    width: 400px;
+}
 .five.fields > .field:last-child {
     margin-right: 0;
 }

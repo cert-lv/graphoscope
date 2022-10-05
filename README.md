@@ -168,6 +168,7 @@ Response example for the first query:
 
 ## TODO & ideas
 
+- [ ] Button to reload fields list for the autocomplete
 - [ ] Display available data source's fields
 ---
 - [ ] Generate DEB and RPM packages

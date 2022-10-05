@@ -12,6 +12,9 @@ window.addEventListener('DOMContentLoaded', function() {
             // Notifications
             this.notifications = new Notifications(this);
 
+            // Datetime range picker
+            this.calendar = new Calendar();
+
             // Query data sources
             this.search = new Search(this);
 

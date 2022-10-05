@@ -22,6 +22,9 @@ window.addEventListener('DOMContentLoaded', function() {
             // User's account management
             this.account = new Account(this);
 
+            // Datetime range picker
+            this.calendar = new Calendar();
+
             // Long term actions
             this.actions = new Actions(this);
         }

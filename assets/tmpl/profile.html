@@ -19,6 +19,7 @@
         <script type="text/javascript" src="assets/js/modal.js?v={{ .Version }}"></script>
         <script type="text/javascript" src="assets/js/options.js?v={{ .Version }}"></script>
         <script type="text/javascript" src="assets/js/account.js?v={{ .Version }}"></script>
+        <script type="text/javascript" src="assets/js/calendar.js?v={{ .Version }}"></script>
         <script type="text/javascript" src="assets/js/actions.js?v={{ .Version }}"></script>
         <script type="text/javascript" src="assets/js/notifications.js?v={{ .Version }}"></script>
         <script type="text/javascript" src="assets/js/profile.js?v={{ .Version }}"></script>
@@ -270,22 +271,31 @@
                         </div>
 
                         <div class="field">
-                            <label>Start date</label>
-                            <div class="ui calendar" id="rangestart">
-                                <div class="ui input left icon">
-                                    <i class="calendar icon"></i>
-                                    <input type="text" placeholder="Start">
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="field">
-                            <label>End date</label>
-                            <div class="ui calendar" id="rangeend">
-                                <div class="ui input left icon">
-                                    <i class="calendar icon"></i>
-                                    <input type="text" placeholder="End">
-                                </div>
+                            <label class="attributes-header">Datetime range</label>
+                            <div class="ui daterange button">&nbsp;</div>
+                            <div class="ui daterange fluid popup hidden">
+                                <table>
+                                    <tr>
+                                        <td class="customranges">
+                                            <div class="ui lastHour button">Last hour</div>
+                                            <div class="ui last12hours button">Last 12 hours</div>
+                                            <div class="ui lastDay button">Last day</div>
+                                            <div class="ui lastWeek button">Last week</div>
+                                            <div class="ui lastMonth button">Last month</div>
+                                            <div class="ui last6months button">Last 6 months</div>
+                                        </td>
+                                        <td>
+                                          <label>Start date</label>
+                                            <div class="ui calendar" id="rangestart">
+                                            </div>
+                                        </td>
+                                        <td>
+                                          <label>End date</label>
+                                            <div class="ui calendar" id="rangeend">
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
                             </div>
                         </div>
 

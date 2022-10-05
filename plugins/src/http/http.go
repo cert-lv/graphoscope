@@ -145,6 +145,18 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 				umx.Unlock()
 
 				/*
+				 * Check if expected relation exists in received data.
+				 * This allows returned JSON objects to have dynamic schema
+				 */
+				if _, ok := entry[relation.From.ID]; !ok {
+					continue
+				}
+
+				if _, ok := entry[relation.To.ID]; !ok {
+					continue
+				}
+
+				/*
 				 * FROM node with attributes
 				 */
 				from := map[string]interface{}{

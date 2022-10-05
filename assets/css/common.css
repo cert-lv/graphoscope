@@ -241,24 +241,27 @@ span.ui.orange.text {
 /*
  * Menu dropdown
  */
+.profile .ui.dropdown .menu {
+    box-shadow: 0 2px 4px 0 rgb(34,36,38,.45);
+    border: 0;
+    border-top: 1px solid rgba(34,36,38,.15);
+}
+
 .ui.dropdown .menu>.divider {
     margin: .4em 8px;
 }
 
-.ui.top.right.pointing.dropdown>.menu:after,
-.ui.daterange.popup:before {
-    top: -.5em !important;
+.ui.top.right.pointing.dropdown>.menu:after {
+    top: -.35em !important;
 }
 
-.ui.pointing.dropdown>.menu:not(.hidden):after,
-.ui.daterange.popup:before {
-    width: 1em;
-    height: 1em;
+.ui.pointing.dropdown>.menu:not(.hidden):after {
+    width: 0.7em;
+    height: 0.7em;
 }
 
 .ui.top.right.pointing.dropdown>.menu {
     top: 95%;
-    right: -2px !important;
 }
 
 /*
@@ -325,23 +328,17 @@ span.ui.orange.text {
 /*
  * Calendar
  */
-
+.ui.bottom.popup {
+    margin: 10px 0 0;
+}
 .ui.daterange.popup {
     padding-bottom: 1.7em;
-}
-
-.ui.daterange.button {
-    width: 100%;
-    margin: 3px 0 15px 0;
-    color: rgba(0, 0, 0, .87);
-    font-weight: normal;
 }
 .ui.daterange.popup > table > tbody > tr > td {
     min-width: 290px;
     padding-left: 5px;
     vertical-align: top;
 }
-
 .ui.daterange.popup .customranges {
     min-width: 150px;
     padding: 26px 8px 10px 0;
@@ -369,6 +366,10 @@ span.ui.orange.text {
 .ui.bottom.left.popup:before,
 .ui.bottom.right.popup:before {
     box-shadow: -1px -1px 0 0 #d2d6d6;
+}
+.ui.top.left.popup:before,
+.ui.top.right.popup:before {
+    box-shadow: 1px 1px 0 0 #d2d6d6;
 }
 
 .ui.calendar .ui.celled.table > tbody > tr > td {

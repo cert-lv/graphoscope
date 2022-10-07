@@ -692,6 +692,9 @@ class Graph {
      * - https://github.com/Loriowar/comindivion/blob/master/web/static/js/vis_interactive.js
      */
     setupSelection() {
+        // Skip if disabled by administrator
+        if (!SETTINGS.MultiSelect) return;
+
         const NO_CLICK = 0;
         const RIGHT_CLICK = 3;
         const topMargin = this.topMargin;

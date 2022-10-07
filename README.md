@@ -168,7 +168,7 @@ Response example for the first query:
 
 ## TODO & ideas
 
-- [ ] Button to reload fields list for the autocomplete
+- [ ] Data source info missing when clicking graph elements
 - [ ] Display available data source's fields
 ---
 - [ ] Generate DEB and RPM packages
@@ -176,8 +176,9 @@ Response example for the first query:
       when https://github.com/visjs/vis-network/pull/629 or similar is merged & new version released
 - [ ] Edges groups styling. **TODO** from `search.js`. Implement https://github.com/visjs/vis-network/issues/1229
 - [ ] Generate PDF documentation from the existing `*.md` files
+- [ ] Video tutorials series
 - [ ] Implement other SQL features, like `NOT BETWEEN`
-- [ ] Plugins:
+- [ ] Input plugins:
   - [ ] RTIR
   - [ ] Redis
   - [ ] MS SQL
@@ -187,6 +188,11 @@ Response example for the first query:
   - [ ] VirusTotal
   - [ ] Shodan
   - [ ] Poland malware Sandbox API
+- [ ] Output plugins:
+  - [ ] RTIR
+  - [ ] JIRA
+  - [ ] MISP
+  - [ ] RITA
 
 
 ## Useful info

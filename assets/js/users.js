@@ -3,9 +3,9 @@
  * Administrators can reset passwords, delete users, etc.
  */
 class Users {
-    constructor(profile) {
+    constructor(admin) {
         // Pointer to the admin page core
-        this.profile = profile;
+        this.admin = admin;
 
         // Bind Web GUI buttons
         this.bind();
@@ -44,7 +44,7 @@ class Users {
      */
     checkLoadError() {
         if (MSG !== '')
-            this.profile.modal.error('Something went wrong!', MSG);
+            this.admin.modal.error('Something went wrong!', MSG);
     }
 
     /*
@@ -52,6 +52,6 @@ class Users {
      * Receives a user name and an action to apply
      */
     apply(username, action) {
-        this.profile.websocket.send('users', username+','+action);
+        this.admin.websocket.send('users', username+','+action);
     }
 }

@@ -1,14 +1,15 @@
 1. [Set administrators](#set-administrators)
-2. [User management](#user-management)
-3. [Global graph settings](#global-graph-settings)
-4. [Demo data](#demo-data)
-5. [New data source](#new-data-source)
-6. [Fields autocomplete](#fields-autocomplete)
-7. [Query auto-formatting rules](#query-auto-formatting-rules)
-8. [Debug info](#debug-info)
-9. [Custom graph elements style](#custom-graph-elements-style)
-10. [Limit returned data](#limit-returned-data)
-11. [Plugins development](#plugins-development)
+2. [Global graph settings](#global-graph-settings)
+3. [User management](#user-management)
+4. [Actions](#actions)
+5. [Demo data](#demo-data)
+6. [New data source](#new-data-source)
+7. [Fields autocomplete](#fields-autocomplete)
+8. [Query auto-formatting rules](#query-auto-formatting-rules)
+9. [Debug info](#debug-info)
+10. [Custom graph elements style](#custom-graph-elements-style)
+11. [Limit returned data](#limit-returned-data)
+12. [Plugins development](#plugins-development)
 
 
 After a fresh installation the service's environment is `development` - all users have the same highest level rights. Therefore the first step is to set administrators.
@@ -27,6 +28,11 @@ After a fresh installation the service's environment is `development` - all user
 Now service is ready to run in a production mode. Open `graphoscope.yaml` file, set `environment: prod` and restart the service.
 
 
+## Global graph settings
+
+`Settings` tab contains many settings related to the styling of nodes/edges and interaction with graph elements. Some individual settings can be found in a `Profile` section.
+
+
 ## User management
 
 In the same window you can:
@@ -36,9 +42,9 @@ In the same window you can:
 - Give or remove **admin rights**
 
 
-## Global graph settings
+## Actions
 
-`Graph` tab contains many settings related to the styling of nodes/edges and interaction with graph elements. Some individual settings can be found in a `Profile` section.
+On `Actions` tab some actions can be made without restarting the service. For example: reload collectors.
 
 
 ## Demo data

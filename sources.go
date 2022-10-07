@@ -114,6 +114,9 @@ func setupCollectors() error {
 	// Map of unique fields
 	uniqueFields := map[string]bool{}
 
+	// Reset flag in case collectors are reloaded without service restart
+	nonGlobalExist = false
+
 	for _, f := range files {
 		// Skip not YAML files
 		name := f.Name()
@@ -140,6 +143,16 @@ func setupCollectors() error {
 		// Clone interface to avoid pointers in "collectors" to the same value
 		collectorIntf := reflect.New(reflect.TypeOf(collector).Elem())
 		clone := collectorIntf.Interface().(pdk.Plugin)
+
+		// Close previous connection if exists
+		err = clone.Stop()
+		if err != nil {
+			log.Error().
+				Str("source", source.Name).
+				Str("plugin", source.Plugin).
+				Msg("Can't stop collector: " + err.Error())
+			continue
+		}
 
 		// Set current unique parameters
 		err = clone.Setup(source, config.Limit)

@@ -25,8 +25,8 @@ window.addEventListener('DOMContentLoaded', function() {
             // Datetime range picker
             this.calendar = new Calendar();
 
-            // Long term actions
-            this.actions = new Actions(this);
+            // Long-term user actions
+            this.actions = new UserActions(this);
         }
     }
 

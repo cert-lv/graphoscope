@@ -295,5 +295,9 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 }
 
 func (p *plugin) Stop() error {
+	if p.db == nil {
+		return nil
+	}
+
 	return p.db.Close()
 }

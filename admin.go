@@ -498,3 +498,30 @@ func (a *Account) usersHandler(data string) {
 		return
 	}
 }
+
+/*
+ * Reload collectors.
+ *
+ * This allows:
+ *   - To recreate dropped connections to the data sources
+ *   - To refresh the list of fields to query for the Web GUI autocomplete
+ */
+func (a *Account) reloadCollectorsHandler() {
+	err := setupCollectors()
+	if err != nil {
+		a.send("error", "Can't reload collectors: "+err.Error(), "Error!")
+
+		log.Info().
+			Str("ip", a.Session.IP).
+			Str("username", a.Username).
+			Msg("Can't reload collectors: " + err.Error())
+		return
+	}
+
+	a.send("ok", "", "")
+
+	log.Info().
+		Str("ip", a.Session.IP).
+		Str("username", a.Username).
+		Msg("Collectors reloaded")
+}

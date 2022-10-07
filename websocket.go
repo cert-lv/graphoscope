@@ -173,6 +173,8 @@ func (a *Account) listen() {
 			a.settingsHandler(message.Data)
 		case "users":
 			a.usersHandler(message.Data)
+		case "reload-collectors":
+			a.reloadCollectorsHandler()
 		case "notifications":
 			a.notificationsHandler()
 		case "filters":

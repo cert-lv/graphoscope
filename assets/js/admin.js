@@ -22,6 +22,9 @@ window.addEventListener('DOMContentLoaded', function() {
 
             // Registered users management
             this.users = new Users(this);
+
+            // Administrators only actions
+            this.actions = new AdminActions(this);
         }
     }
 

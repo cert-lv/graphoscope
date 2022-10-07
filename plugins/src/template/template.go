@@ -301,8 +301,13 @@ func (p *plugin) Stop() error {
 	 * STEP 9.
 	 *
 	 * Stop the plugin when main service stops,
-	 * drop all connections correctly
+	 * drop all connections correctly. Check the existence first in case
+	 * collector is reloaded
 	 */
+
+	// if p.client == nil {
+	// 	return nil
+	// }
 
 	// ctx, cancel := context.WithTimeout(context.Background(), p.source.Timeout)
 	// defer cancel()

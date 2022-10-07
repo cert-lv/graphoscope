@@ -356,7 +356,9 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 }
 
 func (p *plugin) Stop() error {
-	p.client.Stop()
+	if p.client != nil {
+		p.client.Stop()
+	}
 
 	// No error to check, so return nil
 	return nil

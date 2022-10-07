@@ -18,6 +18,7 @@
         <script type="text/javascript" src="assets/js/modal.js?v={{ .Version }}"></script>
         <script type="text/javascript" src="assets/js/settings.js?v={{ .Version }}"></script>
         <script type="text/javascript" src="assets/js/users.js?v={{ .Version }}"></script>
+        <script type="text/javascript" src="assets/js/admin-actions.js?v={{ .Version }}"></script>
         <script type="text/javascript" src="assets/js/notifications.js?v={{ .Version }}"></script>
         <script type="text/javascript" src="assets/js/admin.js?v={{ .Version }}"></script>
 
@@ -41,14 +42,15 @@
         {{ template "topbar" . }}
 
         <div class="ui secondary menu">
-            <a class="item active" data-tab="graph">Graph</a>
+            <a class="item active" data-tab="settings">Settings</a>
             <a class="item" data-tab="users">Users</a>
+            <a class="item" data-tab="actions">Actions</a>
         </div>
 
         <!--*********************
         *   Graph UI settings   *
         **********************-->
-        <div class="ui tab segment active" data-tab="graph">
+        <div class="ui tab segment active" data-tab="settings">
             <div class="ui two column grid settings">
                 <div class="row">
                     <h3 class="ui header">
@@ -396,6 +398,33 @@
                 </div>
                 {{ end }}
 
+
+                <div class="row"></div>
+            </div>
+        </div>
+
+        <!--*******************
+        *   Actions section   *
+        ********************-->
+        <div class="ui tab segment" data-tab="actions">
+            <div class="ui grid actions">
+                <div class="row">
+                    <h3 class="ui header">
+                        <i class="id redo alternate icon"></i>
+                        <div class="content">Reload collectors</div>
+                    </h3>
+                </div>
+
+                <div class="row short">
+                    This allows to recreate dropped connections to the data sources and to refresh the list of fields to query for the Web GUI autocomplete
+                </div>
+
+                <div class="row">
+                    <div class="ui orange reload button">
+                        <i class="sync icon"></i>
+                        Reload
+                    </div>
+                </div>
 
                 <div class="row"></div>
             </div>

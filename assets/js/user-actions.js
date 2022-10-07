@@ -1,7 +1,7 @@
 /*
- * Long term actions
+ * Long-term users actions
  */
-class Actions {
+class UserActions {
     constructor(profile) {
         // Pointer to the profile page core
         this.profile = profile;

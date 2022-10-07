@@ -346,6 +346,10 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 }
 
 func (p *plugin) Stop() error {
+	if p.client == nil {
+		return nil
+	}
+
 	ctx, cancel := context.WithTimeout(context.Background(), p.source.Timeout)
 	defer cancel()
 

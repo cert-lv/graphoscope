@@ -79,13 +79,6 @@ upload:
 #
 # Web GUI related settings.
 #
-# Sometimes it's enough to go with API features only,
-# which also don't require a running database.
-#
-# If disabled - other settings below will be ignored
-#
-
-guiEnabled: true
 
 # Graph styling groups definition
 groups: files/groups.json

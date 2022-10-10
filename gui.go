@@ -12,15 +12,9 @@ var (
 )
 
 /*
- * Start a Web GUI.
- * Can be disabled if API features are required only
+ * Setup Web GUI handlers
  */
-func startGUI() error {
-	// Skip if API only should run
-	if !config.GUIenabled {
-		return nil
-	}
-
+func setupGUI() error {
 	var err error
 
 	// Parse graph elements style groups definitions

@@ -70,6 +70,14 @@ func main() {
 	}
 
 	/*
+	 * Setup Web GUI handlers
+	 */
+	err = setupGUI()
+	if err != nil {
+		log.Fatal().Msg("Can't start Web GUI components: " + err.Error())
+	}
+
+	/*
 	 * Load plugins
 	 */
 	err = loadPlugins()
@@ -108,14 +116,6 @@ func main() {
 	err = loadVersion()
 	if err != nil {
 		log.Fatal().Msg("Can't load version: " + err.Error())
-	}
-
-	/*
-	 * Start a Web GUI if needed
-	 */
-	err = startGUI()
-	if err != nil {
-		log.Fatal().Msg("Can't start Web GUI components: " + err.Error())
 	}
 
 	/*

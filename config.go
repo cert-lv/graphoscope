@@ -48,8 +48,6 @@ type Config struct {
 	/*
 	 * Web GUI related settings
 	 */
-	GUIenabled bool `yaml:"guiEnabled"`
-
 	Groups   string `yaml:"groups"`
 	Formats  string `yaml:"formats"`
 	Features string `yaml:"features"`

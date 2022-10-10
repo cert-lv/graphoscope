@@ -183,15 +183,24 @@ Response example for the first query:
   - [ ] MS SQL
   - [ ] Oracle SQL
   - [ ] Apache Cassandra
+  - [ ] Genji
+  - [ ] Presto
   - [ ] MISP
   - [ ] VirusTotal
   - [ ] Shodan
   - [ ] Poland malware Sandbox API
+  - [ ] General TCP
+  - [ ] ipinfo.io
+- [ ] Middle plugins:
+  - [ ] Taxonomy
+  - [ ] Modify
+  - [ ] Filter
 - [ ] Output plugins:
   - [ ] RTIR
   - [ ] JIRA
   - [ ] MISP
   - [ ] RITA
+  - [ ] REST API
 
 
 ## Useful info

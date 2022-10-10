@@ -888,6 +888,10 @@ class Graph {
             $('.ui.attributes.table').append('<tr><td>' + attr + '</td><td>' + value + '</td></tr>');
         }
 
+        // Add source at the end of attributes table
+        if (attrs['source'])
+            $('.ui.attributes.table').append('<tr><td>source</td><td>' + attrs['source'] + '</td></tr>');
+
         // Search for selected element's notes
         this.showNotes(id);
 

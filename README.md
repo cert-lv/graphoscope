@@ -168,7 +168,6 @@ Response example for the first query:
 
 ## TODO & ideas
 
-- [ ] Data source info missing when clicking graph elements
 - [ ] Display available data source's fields
 ---
 - [ ] Generate DEB and RPM packages

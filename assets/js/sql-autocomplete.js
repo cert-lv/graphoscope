@@ -5,9 +5,12 @@
  * https://www.w3schools.com/howto/tryit.asp?filename=tryhow_js_autocomplete
  */
 class SQLAutocomplete {
-    constructor(search, input) {
+    constructor(input) {
         // Search input
         this.input = input;
+
+        // Data sources dropdown
+        this.source = $('.source.dropdown');
 
         // Container of the autocomplete fields
         this.container = document.getElementById('autocomplete');
@@ -30,6 +33,7 @@ class SQLAutocomplete {
     build(pos) {
         // Get word under a cursor for the autocomplete
         var res = this.getFieldAt(pos),
+            source = this.source.dropdown('get value'),
             left = res[0],
             right = res[1],
             word = res[2];
@@ -40,22 +44,45 @@ class SQLAutocomplete {
         if (word === '')
             return false;
 
+        // An array of unique fields
+        var unique = [];
+        // Currently highlighted dropdown option
         this.currentFocus = -1;
 
+        // Build a data source related unique fields list
+        if (source === 'global') {
+            var map = {};
+
+            for (var key in FIELDS) {
+                var list = FIELDS[key],
+                    len = list.length;
+
+                for (var i = 0; i < len; i++) {
+                    map[list[i]] = true;
+                }
+            }
+
+            unique = Object.keys(map);
+        } else {
+            unique = FIELDS[source];
+        }
+
+        unique.sort();
+
         // For each item in the array...
-        for (var i = 0; i < FIELDS.length; i++) {
+        for (const field of unique) {
             // Check if the item starts with the same letters as the field value,
             // exclude item which already completes current field
-            if (FIELDS[i].substr(0, word.length).toUpperCase() === word.toUpperCase() && FIELDS[i] !== word) {
+            if (field.substr(0, word.length).toUpperCase() === word.toUpperCase() && field !== word) {
                 // Create a DIV element for each matching element
                 let option = document.createElement('div');
 
                 // Make the matching letters bold
-                option.innerHTML = '<strong>' + FIELDS[i].substr(0, word.length) + '</strong>';
-                option.innerHTML += FIELDS[i].substr(word.length);
+                option.innerHTML = '<strong>' + field.substr(0, word.length) + '</strong>';
+                option.innerHTML += field.substr(word.length);
 
                 // Insert a data attribute that will hold the current array item's value
-                option.dataset.field = FIELDS[i];
+                option.dataset.field = field;
 
                 // Execute a function when someone clicks on the item value (DIV element)
                 option.addEventListener('click', (e) => {
@@ -73,6 +100,7 @@ class SQLAutocomplete {
                     // Close the list of autocompleted values,
                     // or any other open lists of autocompleted values
                     this.closeList();
+                    this.currentFocus = -1;
                 });
 
                 this.container.appendChild(option);

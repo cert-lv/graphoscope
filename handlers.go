@@ -33,7 +33,7 @@ type TemplateData struct {
 	Formats string
 
 	// A list of all known data sources fields for the Web GUI autocomplete
-	Fields []string
+	Fields map[string][]string
 
 	// Built-in documentation content, N sections
 	Docs [3]string

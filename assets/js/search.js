@@ -18,7 +18,7 @@ class Search {
         this.searchBtn =  $('.ui.search.button');
 
         // SQL autocomplete
-        this.autocomplete = new SQLAutocomplete(this, this.input);
+        this.autocomplete = new SQLAutocomplete(this.input);
 
         // Amount of currently running searches
         this.jobs = 0;
@@ -50,11 +50,12 @@ class Search {
             // or select autocompleted field
             if (e.key === 'Enter') {
                 // Simulate a click on the "active" autocomplete item
-                // Or run the search query
-                if (this.autocomplete.currentFocus > -1)
+                // or run the search query
+                if (this.autocomplete.currentFocus > -1) {
                     if (list.length !== 0) list[this.autocomplete.currentFocus].click();
-                else
+                } else {
                     this.run();
+                }
 
             // Data sources fields autocomplete
             } else if (e.key === 'Tab') {

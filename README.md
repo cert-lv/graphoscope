@@ -168,8 +168,6 @@ Response example for the first query:
 
 ## TODO & ideas
 
-- [ ] Display available data source's fields
----
 - [ ] Generate DEB and RPM packages
 - [ ] In `graph.js` remove custom zoom limiting
       when https://github.com/visjs/vis-network/pull/629 or similar is merged & new version released
@@ -191,7 +189,7 @@ Response example for the first query:
   - [ ] Poland malware Sandbox API
   - [ ] General TCP
   - [ ] ipinfo.io
-- [ ] Middle plugins:
+- [ ] Processing plugins:
   - [ ] Taxonomy
   - [ ] Modify
   - [ ] Filter

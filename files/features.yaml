@@ -1,6 +1,6 @@
 [
-    "03.01.2023",
+    "04.01.2023",
 
     "An option to <strong>export</strong>/<strong>import</strong> graph's visible data (in Web GUI only, not into a database)",
-    "Field names <strong>autocomplete</strong> now takes into account a chosen data source. Type at least one character and press Tab",
+    "Field names <strong>autocomplete</strong> now takes into account a chosen data source. Press <strong>Tab</strong> with empty value to show all the possible fields",
 ]

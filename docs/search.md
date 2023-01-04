@@ -89,13 +89,15 @@ Some data sources support single `field=value` queries only, but if connected pr
 
 ## Field names autocomplete
 
-Any query have to contain at least one field to search the given value in. Autocomplete makes it easier to find and type the correct data source's field name. In a search bar type at least one character and press a `Tab` key, all fields from all data sources that start with the given characters will make a dropdown:
+Any query have to contain at least one field to search the given value in. Autocomplete makes it easier to find and type the correct data source's field name. In a search bar type at least one character and press a `Tab` key, all fields from all data sources that start with the given characters will make a dropdown (or type nothing to get all the possible fields):
 
 ![autocomplete](assets/img/autocomplete.png)
 
 Use arrow keys and `Enter` or mouse to choose the needed item.
 
 Autocomplete works even if the field is not at the end of the query. Simply place a cursor at some place, where field name is incomplete and press a `Tab` key. When needed item is selected a word under a cursor will be replaced.
+
+When there is a need to get all the possible fields - make sure there is no text on both sides of the cursor, so there is no attempt to autocomplete it.
 
 
 ## Common fields

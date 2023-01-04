@@ -36,13 +36,10 @@ class SQLAutocomplete {
             source = this.source.dropdown('get value'),
             left = res[0],
             right = res[1],
-            word = res[2];
+            word = res[2].trim();
 
         // Close any already open lists of autocompleted values
         this.closeList();
-
-        if (word === '')
-            return false;
 
         // An array of unique fields
         var unique = [];
@@ -101,6 +98,9 @@ class SQLAutocomplete {
                     // or any other open lists of autocompleted values
                     this.closeList();
                     this.currentFocus = -1;
+
+                    // Set caret position at the end of the selected field name
+                    this.setCaretPosition((this.input.value.substring(0, left) + value).length);
                 });
 
                 this.container.appendChild(option);
@@ -109,6 +109,25 @@ class SQLAutocomplete {
 
         if (this.container.children.length > 0)
             this.container.style.display = 'block';
+    }
+
+    /*
+     * Set caret position at the end of the selected field name
+     */
+    setCaretPosition(pos) {
+        // Modern browsers
+        if (this.input.setSelectionRange) {
+            this.input.focus();
+            this.input.setSelectionRange(pos, pos);
+
+        // IE8 and below
+        } else if (this.input.createTextRange) {
+            var range = this.input.createTextRange();
+            range.collapse(true);
+            range.moveEnd('character', pos);
+            range.moveStart('character', pos);
+            range.select();
+        }
     }
 
     /*
@@ -153,9 +172,14 @@ class SQLAutocomplete {
         // Perform type conversions
         pos = Number(pos) >>> 0;
 
-        // Search for the word's beginning and end
+        // Search for the word's beginning and the end
         var left = this.input.value.slice(0, pos).search(/[\w\.]+$/),
             right = this.input.value.slice(pos).search(/[^\w.]/);
+
+        // If no field name beginning is given -
+        // 'Tab' was pressed to get all the possible fields
+        if (left === -1)
+            left = pos;
 
         // The last word in the string is a special case
         if (right < 0)

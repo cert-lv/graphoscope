@@ -386,12 +386,24 @@ class Search {
             nodeFrom.options.neighbors[nodeTo.options.group] = true;
             nodeTo.options.neighbors[nodeFrom.options.group] = true;
 
+            // Define attributes, which may not come from data sources
+            entry.edge = entry.edge || {};
+            entry.edge.attributes = entry.edge.attributes || {};
+            entry.edge.attributes['source'] = entry.source;
+
             // Update the edge if already exists
             if (existingEdge) {
                 // Merge attributes.
                 // Forced to use 'get()' to access the attributes
                 const edge = this.application.graph.network.body.data.edges.get(from.id + '-' + to.id);
-                edge.attributes = this.merge(edge.attributes, entry.edge);
+                edge.attributes = this.merge(edge.attributes, entry.edge.attributes);
+
+                // Merge labels
+                var list = edge.label.split(',\n');
+                if (list.indexOf(entry.edge.label) === -1)
+                    list.push(entry.edge.label);
+
+                existingEdge.options.label = list.join(',\n');
 
                 // Increase edge size
                 const size = existingEdge.options.width;
@@ -402,13 +414,12 @@ class Search {
                 const edge = {};
 
                 // Additional merge to convert all values to strings
-                edge.attributes = this.merge({}, entry.edge)
-                //edge.attributes = entry.edge || {};
-                edge.attributes.source = entry.source;
+                edge.attributes = this.merge({}, entry.edge.attributes);
+                edge.attributes.source = [entry.source];
                 edge.id =    from.id + '-' + to.id;
                 edge.from =  from.id;
                 edge.to =    to.id;
-                edge.label = edge.attributes.label || '';
+                edge.label = entry.edge.label || '';
 
                 // TODO: Set edge's style
                 // Config file can be used when a feature request is implemented:
@@ -467,7 +478,7 @@ class Search {
         } else {
             // Additional merge to convert all values to strings
             data.attributes = this.merge({}, data.attributes)
-            data.attributes[data.group] = data.id;
+            data.attributes[data.group] = [data.id];
 
             data.neighbors = {};
             data.id =    data.id.toString();
@@ -514,20 +525,28 @@ class Search {
 
         // Join 'target' and modified 'source'
         for (const key in source) {
+            var els = source[key],
+                elt = target[key];
+
             if (target.hasOwnProperty(key)) {
-                if (!target[key].match(new RegExp('(^|\\W)'+this.escapeRegex(source[key].toString())+'(\\W|$)'))) {
-                    if (Array.isArray(source[key]))
-                        target[key] += ', ' + source[key].join(', ');
-                    else
-                        target[key] += ', ' + source[key].toString();
+                if (Array.isArray(els)) {
+                    var len = els.length;
+
+                    for (var i=0; i < len; i++) {
+                        if (elt.findIndex(item => els[i].toString().toLowerCase() === item.toString().toLowerCase()) === -1)
+                            elt.push(els[i].toString());
+                    }
+                } else {
+                    if (elt.findIndex(item => els.toString().toLowerCase() === item.toString().toLowerCase()) === -1)
+                        elt.push(els.toString());
                 }
 
-            } else if (source[key]) {  // Value sometimes is Null
+            } else if (els) {  // Value sometimes is Null
                 // Separate arrays and strings
-                if (Array.isArray(source[key]))
-                    target[key] = source[key].join(', ');
+                if (Array.isArray(els))
+                    target[key] = els;
                 else
-                    target[key] = source[key].toString();
+                    target[key] = [els.toString()];
             }
         }
 

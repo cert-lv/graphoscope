@@ -614,7 +614,7 @@ class Graph {
      */
     group(name, id) {
         //console.log('Group', name, 'of', id);
-        var children = '';
+        var children = [];
 
         const clusterOptions = {
             joinCondition: (childOptions) => {
@@ -630,7 +630,7 @@ class Graph {
                     const e = node.edges[i];
 
                     if (e.fromId === id || e.toId === id) {
-                        children += childOptions.id + '\n';
+                        children.push(childOptions.id);
                         return true;
                     }
                 }
@@ -870,7 +870,7 @@ class Graph {
             if (attr === 'source')
                 continue;
 
-            var value = attrs[attr].toString();
+            var value = attrs[attr].join(', ');
 
             if (value instanceof Array) {
                 for (var i = 0; i < value.length; i++) {
@@ -890,7 +890,7 @@ class Graph {
 
         // Add source at the end of attributes table
         if (attrs['source'])
-            $('.ui.attributes.table').append('<tr><td>source</td><td>' + attrs['source'] + '</td></tr>');
+            $('.ui.attributes.table').append('<tr><td>source</td><td>' + attrs['source'].join(', ') + '</td></tr>');
 
         // Search for selected element's notes
         this.showNotes(id);

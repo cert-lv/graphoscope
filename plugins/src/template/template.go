@@ -270,7 +270,8 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 					}
 
 					if len(relation.Edge.Attributes) > 0 {
-						pdk.CopyPresentValues(entry, result["edge"].(map[string]interface{}), relation.Edge.Attributes)
+						result["edge"].(map[string]interface{})["attributes"] = make(map[string]interface{})
+						pdk.CopyPresentValues(entry, result["edge"].(map[string]interface{})["attributes"].(map[string]interface{}), relation.Edge.Attributes)
 					}
 				}
 

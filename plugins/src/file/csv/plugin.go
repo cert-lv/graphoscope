@@ -11,7 +11,7 @@ import (
  */
 var (
 	Name    = "file-csv"
-	Version = "1.0.3"
+	Version = "1.0.4"
 	Plugin  plugin
 )
 

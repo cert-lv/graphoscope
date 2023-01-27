@@ -118,9 +118,9 @@ func (p *plugin) Fields() ([]string, error) {
 		}
 
 		for field, data := range entry {
-			switch data.(type) {
+			switch d := data.(type) {
 			case map[string]interface{}:
-				p.getFields(data.(map[string]interface{}), field, fieldsMap)
+				p.getFields(d, field, fieldsMap)
 			default:
 				fieldsMap[field] = true
 			}
@@ -129,7 +129,7 @@ func (p *plugin) Fields() ([]string, error) {
 
 	// Convert map to the slice
 	fields := make([]string, 0, len(fieldsMap))
-	for value, _ := range fieldsMap {
+	for value := range fieldsMap {
 		fields = append(fields, value)
 	}
 
@@ -138,9 +138,9 @@ func (p *plugin) Fields() ([]string, error) {
 
 func (p *plugin) getFields(data map[string]interface{}, field string, fields map[string]bool) {
 	for f, m := range data {
-		switch m.(type) {
+		switch t := m.(type) {
 		case map[string]interface{}:
-			p.getFields(m.(map[string]interface{}), field+"."+f, fields)
+			p.getFields(t, field+"."+f, fields)
 		default:
 			fields[field+"."+f] = true
 		}

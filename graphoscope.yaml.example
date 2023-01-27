@@ -1,10 +1,31 @@
-# IP address and port to listen to
-host: 0.0.0.0
-port: 443
+#
+# HTTP service
+#
 
-# HTTPS files
-certFile: /etc/graphoscope/certs/graphoscope.crt
-keyFile:  /etc/graphoscope/certs/graphoscope.key
+server:
+    # IP address and port to listen to
+    host: 0.0.0.0
+    port: 443
+
+    # HTTPS files
+    certFile: /etc/graphoscope/certs/graphoscope.crt
+    keyFile:  /etc/graphoscope/certs/graphoscope.key
+
+    # Maximum duration for reading the entire request, including the body.
+    # A zero or negative value means there will be no timeout.
+    # Because ReadTimeout does not let Handlers make per-request decisions
+    # on each request body's acceptable deadline or upload rate, most users
+    # will prefer to use ReadHeaderTimeout. It is valid to use them both.
+    # In seconds.
+    readTimeout: 60
+
+    # The amount of time allowed to read request headers. The connection's
+    # read deadline is reset after reading the headers and the Handler can
+    # decide what is considered too slow for the body. If ReadHeaderTimeout
+    # is zero, the value of ReadTimeout is used. If both are zero,
+    # there is no timeout. In seconds.
+    readHeaderTimeout: 60
+
 
 # Environment.
 # If development - all users have admin rights, useful during the initial setup.

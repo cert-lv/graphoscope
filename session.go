@@ -60,7 +60,10 @@ type Session struct {
  */
 func setupSessions() error {
 	// Drop old TTL index
-	_, err := db.Sessions.Indexes().DropAll(db.newContext())
+	ctx, cancel := db.newContext()
+	defer cancel()
+
+	_, err := db.Sessions.Indexes().DropAll(ctx)
 	if err != nil {
 		// Ignore namespace not found errors
 		commandErr, ok := err.(mongo.CommandError)
@@ -119,7 +122,10 @@ func (s *Sessions) exists(w http.ResponseWriter, r *http.Request) (string, error
 	if len(session.Values) == 0 {
 		// Check a database connection.
 		// 's.Get' doesn't return an error if connection was lost
-		err = s.Collection.Database().Client().Ping(db.newContext(), nil)
+		ctx, cancel := db.newContext()
+		defer cancel()
+
+		err = s.Collection.Database().Client().Ping(ctx, nil)
 		if err != nil {
 			return "", fmt.Errorf("Can't ping a database: " + err.Error())
 		}
@@ -175,8 +181,11 @@ func signupHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	account := &Account{}
-	err = db.Users.FindOne(db.newContext(), bson.M{"username": username}).Decode(account)
 
+	ctx, cancel := db.newContext()
+	defer cancel()
+
+	err = db.Users.FindOne(ctx, bson.M{"username": username}).Decode(account)
 	if err != nil {
 		/*
 		 * Create a new account
@@ -335,7 +344,10 @@ func signinHandler(w http.ResponseWriter, r *http.Request) {
 
 	account := &Account{}
 
-	err = db.Users.FindOne(db.newContext(), bson.M{"username": username}).Decode(account)
+	ctx, cancel := db.newContext()
+	defer cancel()
+
+	err = db.Users.FindOne(ctx, bson.M{"username": username}).Decode(account)
 	if err != nil {
 		log.Error().
 			Str("ip", ip).

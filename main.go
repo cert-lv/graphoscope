@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"time"
 
 	//_ "net/http/pprof"
 
@@ -26,10 +27,9 @@ var (
  * Use recommended TLS settings
  */
 func setupTLSserver() *http.Server {
-	cfg := &tls.Config{}
-
-	// At least TLS v1.2 is recommended
-	cfg.MinVersion = tls.VersionTLS12
+	cfg := &tls.Config{
+		MinVersion: tls.VersionTLS12, // At least TLS v1.2 is recommended
+	}
 
 	// Enable secure ciphers only
 	for _, cipherSuite := range tls.CipherSuites() {
@@ -37,8 +37,10 @@ func setupTLSserver() *http.Server {
 	}
 
 	return &http.Server{
-		Addr:      config.Host + ":" + config.Port,
-		TLSConfig: cfg,
+		Addr:              config.Server.Host + ":" + config.Server.Port,
+		TLSConfig:         cfg,
+		ReadTimeout:       time.Duration(config.Server.ReadTimeout) * time.Second,
+		ReadHeaderTimeout: time.Duration(config.Server.ReadHeaderTimeout) * time.Second,
 	}
 }
 
@@ -123,10 +125,10 @@ func main() {
 	 */
 	http.HandleFunc("/api", apiHandler)
 
-	log.Info().Msgf("Graphoscope v%s. Starting the service listening on %s:%s", version, config.Host, config.Port)
+	log.Info().Msgf("Graphoscope v%s. Starting the service listening on %s:%s", version, config.Server.Host, config.Server.Port)
 	server := setupTLSserver()
 
-	err = server.ListenAndServeTLS(config.CertFile, config.KeyFile)
+	err = server.ListenAndServeTLS(config.Server.CertFile, config.Server.KeyFile)
 	if err != nil {
 		log.Fatal().Msg("Can't ListenAndServeTLS: " + err.Error())
 	}

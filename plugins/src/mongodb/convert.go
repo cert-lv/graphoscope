@@ -39,7 +39,7 @@ func (p *plugin) convert(sel *sqlparser.Select, fields []string) (bson.M, *optio
 	// Include required fields only
 	projection := bson.D{}
 	for _, field := range fields {
-		projection = append(projection, bson.E{field, 1})
+		projection = append(projection, bson.E{Key: field, Value: 1})
 	}
 
 	// Pass these options to the Find method

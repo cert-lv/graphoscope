@@ -67,7 +67,7 @@ func CopyPresentValues(source, target map[string]interface{}, keys []string) {
  * contain identical attributes
  */
 func attributesAreIdentical(source, target interface{}, keys []string) bool {
-	if keys == nil || len(keys) == 0 {
+	if len(keys) == 0 {
 		return true
 	}
 

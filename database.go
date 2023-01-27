@@ -122,7 +122,10 @@ func (d *Database) prepare() {
 	settings := &GraphSettings{}
 	filter := bson.M{"_id": "graph"}
 
-	err := d.Settings.FindOne(d.newContext(), filter).Decode(settings)
+	ctx, cancel := d.newContext()
+	defer cancel()
+
+	err := d.Settings.FindOne(ctx, filter).Decode(settings)
 	if err == mongo.ErrNoDocuments {
 		settings = &GraphSettings{
 			ID: "graph",
@@ -144,7 +147,7 @@ func (d *Database) prepare() {
 			HideEdgesOnDrag: false,
 		}
 
-		_, err := d.Settings.InsertOne(d.newContext(), settings)
+		_, err := d.Settings.InsertOne(ctx, settings)
 		if err != nil {
 			log.Error().Msg("Can't prepare graph UI settings: " + err.Error())
 			return
@@ -165,7 +168,10 @@ func (d *Database) getAccount(name string) (*Account, error) {
 	account := &Account{}
 	filter := bson.M{"username": name}
 
-	err := d.Users.FindOne(d.newContext(), filter).Decode(account)
+	ctx, cancel := d.newContext()
+	defer cancel()
+
+	err := d.Users.FindOne(ctx, filter).Decode(account)
 	if err != nil {
 		return nil, err
 	}
@@ -192,7 +198,10 @@ func (d *Database) getAccountByUUID(uuid string) (*Account, error) {
 	account := &Account{}
 	filter := bson.M{"uuid": uuid}
 
-	err := d.Users.FindOne(d.newContext(), filter).Decode(account)
+	ctx, cancel := d.newContext()
+	defer cancel()
+
+	err := d.Users.FindOne(ctx, filter).Decode(account)
 	if err != nil {
 		return nil, err
 	}
@@ -219,14 +228,17 @@ func (d *Database) getAccounts() ([]*Account, error) {
 	accounts := []*Account{}
 
 	// Find all entries
-	cursor, err := d.Users.Find(d.newContext(), bson.M{})
+	ctx, cancel := d.newContext()
+	defer cancel()
+
+	cursor, err := d.Users.Find(ctx, bson.M{})
 	if err != nil {
 		return nil, err
 	}
-	defer cursor.Close(d.newContext())
+	defer cursor.Close(ctx)
 
 	// Decode results one by one
-	for cursor.Next(d.newContext()) {
+	for cursor.Next(ctx) {
 		account := &Account{}
 
 		err := cursor.Decode(&account)
@@ -263,7 +275,10 @@ func (d *Database) getAccounts() ([]*Account, error) {
 func (d *Database) deleteAccount(username string) error {
 	filter := bson.M{"username": username}
 
-	res, err := d.Users.DeleteOne(d.newContext(), filter)
+	ctx, cancel := d.newContext()
+	defer cancel()
+
+	res, err := d.Users.DeleteOne(ctx, filter)
 
 	if res.DeletedCount == 0 {
 		log.Error().
@@ -284,7 +299,10 @@ func (d *Database) deleteSession(username string, w http.ResponseWriter, r *http
 	// Delete from a database
 	filter := bson.M{"data": bson.M{"username": username}}
 
-	res, err := d.Sessions.DeleteOne(d.newContext(), filter)
+	ctx, cancel := d.newContext()
+	defer cancel()
+
+	res, err := d.Sessions.DeleteOne(ctx, filter)
 	if res.DeletedCount == 0 {
 		log.Debug().
 			Str("username", username).
@@ -326,14 +344,17 @@ func (d *Database) getSharedDashboards() (map[string]*Dashboard, error) {
 	dashboards := make(map[string]*Dashboard)
 
 	// Find all entries
-	cursor, err := d.Dashboards.Find(d.newContext(), bson.M{})
+	ctx, cancel := d.newContext()
+	defer cancel()
+
+	cursor, err := d.Dashboards.Find(ctx, bson.M{})
 	if err != nil {
 		return dashboards, err
 	}
-	defer cursor.Close(d.newContext())
+	defer cursor.Close(ctx)
 
 	// Decode results one by one
-	for cursor.Next(d.newContext()) {
+	for cursor.Next(ctx) {
 		result := &Dashboard{}
 
 		err := cursor.Decode(&result)
@@ -361,7 +382,10 @@ func (d *Database) getNotes(id string) (string, error) {
 	note := make(map[string]string)
 	filter := bson.M{"_id": id}
 
-	err := d.Notes.FindOne(d.newContext(), filter).Decode(&note)
+	ctx, cancel := d.newContext()
+	defer cancel()
+
+	err := d.Notes.FindOne(ctx, filter).Decode(&note)
 	if err == mongo.ErrNoDocuments {
 		log.Debug().
 			Str("id", id).
@@ -406,7 +430,10 @@ func (d *Database) setNotes(id, value string) error {
 			Upsert: &upsert,
 		}
 
-		_, err := d.Notes.UpdateOne(d.newContext(), filter, update, opts)
+		ctx, cancel := d.newContext()
+		defer cancel()
+
+		_, err := d.Notes.UpdateOne(ctx, filter, update, opts)
 		if err != nil {
 			return err
 		}
@@ -421,7 +448,10 @@ func (d *Database) setNotes(id, value string) error {
 func (d *Database) delNotes(id string) error {
 	filter := bson.M{"_id": id}
 
-	res, err := d.Notes.DeleteOne(d.newContext(), filter)
+	ctx, cancel := d.newContext()
+	defer cancel()
+
+	res, err := d.Notes.DeleteOne(ctx, filter)
 	if err != nil {
 		return err
 	}
@@ -448,7 +478,10 @@ func (d *Database) getCache(query string) (*Cache, error) {
 	cache := &Cache{}
 	filter := bson.M{"_id": reDatetimeLimit.ReplaceAllString(query, "$1..$2..$3$4")}
 
-	err := d.Cache.FindOne(d.newContext(), filter).Decode(cache)
+	ctx, cancel := d.newContext()
+	defer cancel()
+
+	err := d.Cache.FindOne(ctx, filter).Decode(cache)
 	if err == mongo.ErrNoDocuments {
 		log.Debug().
 			Str("query", query).
@@ -483,7 +516,10 @@ func (d *Database) setCache(query string, relations []map[string]interface{}, st
 
 	// Sometimes identical operations happen concurrently and
 	// the same MongoDB key may appear again, so use "UpdateOne" instead of "InsertOne"
-	_, err := d.Cache.UpdateOne(d.newContext(), filter, update, opts)
+	ctx, cancel := d.newContext()
+	defer cancel()
+
+	_, err := d.Cache.UpdateOne(ctx, filter, update, opts)
 	if err != nil {
 		log.Error().Msgf("Can't save '%s' relations data in cache: %s", query, err.Error())
 	} else {
@@ -499,7 +535,10 @@ func (d *Database) setCache(query string, relations []map[string]interface{}, st
 func (d *Database) setCacheTTL() {
 	// Drop old index first.
 	// Otherwise TTL param won't be updated
-	_, err := d.Cache.Indexes().DropAll(d.newContext())
+	ctx, cancel := d.newContext()
+	defer cancel()
+
+	_, err := d.Cache.Indexes().DropAll(ctx)
 	if err != nil {
 		// Ignore namespace not found errors
 		commandErr, ok := err.(mongo.CommandError)
@@ -527,7 +566,7 @@ func (d *Database) setCacheTTL() {
 			},
 		}
 
-		_, err = d.Cache.Indexes().CreateOne(d.newContext(), index, opts)
+		_, err = d.Cache.Indexes().CreateOne(ctx, index, opts)
 		if err != nil {
 			log.Error().Msg("Can't create cache coll's index: " + err.Error())
 		} else {
@@ -553,7 +592,10 @@ func (d *Database) setGraphSettings(opt *GraphSettings) error {
 		Upsert: &upsert,
 	}
 
-	_, err := d.Settings.UpdateOne(d.newContext(), filter, update, opts)
+	ctx, cancel := d.newContext()
+	defer cancel()
+
+	_, err := d.Settings.UpdateOne(ctx, filter, update, opts)
 	if err != nil {
 		log.Error().Msg("Can't update graph UI settings: " + err.Error())
 		return err
@@ -569,7 +611,10 @@ func (d *Database) getGraphSettings() (*GraphSettings, error) {
 	settings := &GraphSettings{}
 	filter := bson.M{"_id": "graph"}
 
-	err := d.Settings.FindOne(d.newContext(), filter).Decode(settings)
+	ctx, cancel := d.newContext()
+	defer cancel()
+
+	err := d.Settings.FindOne(ctx, filter).Decode(settings)
 
 	return settings, err
 }
@@ -578,7 +623,7 @@ func (d *Database) getGraphSettings() (*GraphSettings, error) {
  * Create a new context with expiration.
  * Should be used for all database operations
  */
-func (d *Database) newContext() context.Context {
-	ctx, _ := context.WithTimeout(context.Background(), time.Duration(config.Database.Timeout)*time.Second)
-	return ctx
+func (d *Database) newContext() (context.Context, context.CancelFunc) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(config.Database.Timeout)*time.Second)
+	return ctx, cancel
 }

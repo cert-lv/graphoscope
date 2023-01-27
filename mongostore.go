@@ -217,7 +217,7 @@ func (s *MongoStore) insertTTL() error {
 		}
 	}
 
-	//https://docs.mongodb.com/manual/core/index-ttl/
+	// https://docs.mongodb.com/manual/core/index-ttl/
 	//
 	// TTL indexes are special single-field indexes that MongoDB can use to automatically
 	// remove documents from a collection after a certain amount of time or at a specific
@@ -245,7 +245,6 @@ func (s *MongoStore) insertTTL() error {
 					},
 				},
 				Options: options.Index().
-					SetBackground(true).
 					SetSparse(true).
 					SetExpireAfterSeconds(int32(s.defaultCookie.MaxAge)),
 			},

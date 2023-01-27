@@ -142,7 +142,11 @@ func querySources(source, sql string, includeDebug bool, username string) *APIre
 			response.Error = err.Error()
 
 		} else {
-			for _, query := range queries {
+			for i := range queries {
+				// Additional variable to prevent "govet" tool's warning:
+				// loopclosure: loop variable query captured by func literal
+				query := queries[i]
+
 				log.Info().
 					Str("username", username).
 					Str("sql", sql).
@@ -198,7 +202,11 @@ func querySources(source, sql string, includeDebug bool, username string) *APIre
 				response.Error = err.Error()
 
 			} else {
-				for _, query := range queries {
+				for i := range queries {
+					// Additional variable to prevent "govet" tool's warning:
+					// loopclosure: loop variable query captured by func literal
+					query := queries[i]
+
 					log.Info().
 						Str("username", username).
 						Str("sql", sql).
@@ -206,6 +214,7 @@ func querySources(source, sql string, includeDebug bool, username string) *APIre
 						Str("source", collector.Source().Name).
 						Msg("New global request")
 
+					// Run the search
 					group.Go(func() error {
 						result, stat, debug, err := collector.Search(query)
 						if err != nil {
@@ -214,7 +223,6 @@ func querySources(source, sql string, includeDebug bool, username string) *APIre
 
 						if stat != nil {
 							response.Stats = stat
-							//return nil
 						}
 
 						response.Lock()

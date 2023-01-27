@@ -23,9 +23,6 @@ type Account struct {
 	// Unique auth ID to use in API requests
 	UUID string `bson:"uuid"`
 
-	// Whether user has admin rights
-	Admin bool `bson:"admin"`
-
 	// A list of current filters.
 	// Not 'string' to prevent the value to be quoted in a HTML template.
 	// Is a map of "SQL query" -> filter's state
@@ -45,6 +42,11 @@ type Account struct {
 
 	// A list of uploaded and processed files with indicators
 	Uploads *Uploads `bson:"uploads"`
+
+	// Whether user has admin rights.
+	// Moved down here because of the "maligned" tool warning:
+	// "struct of size 184 bytes could be of size 176 bytes"
+	Admin bool `bson:"admin"`
 
 	// Whether to show a debug info of the queries
 	Debug bool `bson:"debug"`
@@ -122,7 +124,10 @@ func newAccount(w http.ResponseWriter, r *http.Request) error {
 		LastActive:    time.Now(),
 	}
 
-	_, err = db.Users.InsertOne(db.newContext(), account)
+	ctx, cancel := db.newContext()
+	defer cancel()
+
+	_, err = db.Users.InsertOne(ctx, account)
 	if err != nil {
 		return fmt.Errorf("Error while inserting user: " + err.Error())
 	}
@@ -321,7 +326,10 @@ func (a *Account) update(field string, value interface{}) error {
 		field: value,
 	}}
 
-	result, err := db.Users.UpdateOne(db.newContext(), filter, update)
+	ctx, cancel := db.newContext()
+	defer cancel()
+
+	result, err := db.Users.UpdateOne(ctx, filter, update)
 	if result.ModifiedCount == 0 {
 		log.Error().Msgf("'%s' was not updated for any account", field)
 		return err

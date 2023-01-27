@@ -128,7 +128,7 @@ func (p *plugin) Fields() ([]string, error) {
 
 	// Convert map to the slice
 	fields := make([]string, 0, len(fieldsMap))
-	for value, _ := range fieldsMap {
+	for value := range fieldsMap {
 		fields = append(fields, value)
 	}
 

@@ -52,7 +52,7 @@ func TestConvert(t *testing.T) {
 		}
 
 		// Executed by the plugin
-		filter, options, err := c.convert(stmt)
+		filter, options, err := c.convert(stmt, nil)
 		if err != nil {
 			t.Errorf("Can't convert '%s': %s", table.sql, err.Error())
 			continue

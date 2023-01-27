@@ -288,7 +288,7 @@ func (a *Account) commonHandler(data string, datetime string) {
 	// contains relations, stats and error
 	response := &APIresponse{}
 	// A list of unique neighbours to display on a Web GUI right panel
-	response_neighbors := [][2]interface{}{}
+	responseNeighbors := [][2]interface{}{}
 
 	if len(queries) > 1 {
 		nodes := []string{}
@@ -344,8 +344,8 @@ func (a *Account) commonHandler(data string, datetime string) {
 						for _, node := range nodes {
 							if node == edgeFrom {
 								// Skip dublicate entries
-								if !a.commonNeighborsInclude(response_neighbors, edgeTo) {
-									response_neighbors = append(response_neighbors, [2]interface{}{edge["to"].(map[string]interface{})["group"], edgeTo})
+								if !a.commonNeighborsInclude(responseNeighbors, edgeTo) {
+									responseNeighbors = append(responseNeighbors, [2]interface{}{edge["to"].(map[string]interface{})["group"], edgeTo})
 									includes = true
 									break
 								}
@@ -356,8 +356,8 @@ func (a *Account) commonHandler(data string, datetime string) {
 							for _, node := range nodes {
 								if node == edgeTo {
 									// Skip dublicate entries
-									if !a.commonNeighborsInclude(response_neighbors, edgeFrom) {
-										response_neighbors = append(response_neighbors, [2]interface{}{edge["from"].(map[string]interface{})["group"], edgeFrom})
+									if !a.commonNeighborsInclude(responseNeighbors, edgeFrom) {
+										responseNeighbors = append(responseNeighbors, [2]interface{}{edge["from"].(map[string]interface{})["group"], edgeFrom})
 										break
 									}
 								}
@@ -370,7 +370,7 @@ func (a *Account) commonHandler(data string, datetime string) {
 	}
 
 	// Send common nodes back
-	b, _ := json.Marshal(response_neighbors)
+	b, _ := json.Marshal(responseNeighbors)
 	a.send("common", response.format("json"), string(b))
 }
 
@@ -383,7 +383,7 @@ func (a *Account) queriesInclude(queries []string, from, to interface{}) bool {
 
 	for _, query := range queries {
 		if query == from || query == to {
-			i += 1
+			i++
 
 			if i == 2 {
 				return true

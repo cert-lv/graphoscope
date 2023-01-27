@@ -75,7 +75,11 @@ func (a *Account) saveDashboardHandler(data string) {
 	if dashboard.Shared {
 		// Check whether already exists first
 		existing := &Dashboard{}
-		err = db.Dashboards.FindOne(db.newContext(), bson.M{"_id": dashboard.Name}).Decode(existing)
+
+		ctx, cancel := db.newContext()
+		defer cancel()
+
+		err = db.Dashboards.FindOne(ctx, bson.M{"_id": dashboard.Name}).Decode(existing)
 		if err != nil && err != mongo.ErrNoDocuments {
 			// Replace some characters as the error may contain:
 			// got <invalid reflect.Value>
@@ -92,7 +96,7 @@ func (a *Account) saveDashboardHandler(data string) {
 
 		if err == mongo.ErrNoDocuments {
 			// Save in a database
-			_, err = db.Dashboards.InsertOne(db.newContext(), dashboard)
+			_, err = db.Dashboards.InsertOne(ctx, dashboard)
 			if err != nil {
 				log.Error().
 					Str("ip", a.Session.IP).
@@ -174,7 +178,10 @@ func (a *Account) delDashboardHandler(name, shared string) {
 	 * Delete shared dashboard
 	 */
 	if shared == "true" {
-		_, err := db.Dashboards.DeleteOne(db.newContext(), bson.M{"_id": name})
+		ctx, cancel := db.newContext()
+		defer cancel()
+
+		_, err := db.Dashboards.DeleteOne(ctx, bson.M{"_id": name})
 		if err != nil {
 			a.send("error", err.Error(), "")
 

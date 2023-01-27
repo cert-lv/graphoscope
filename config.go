@@ -13,15 +13,14 @@ import (
  * Check "graphoscope.yaml.example" file for a detailed all fields description
  */
 type Config struct {
-
-	/*
-	 * Common settings
-	 */
-	Host string `yaml:"host"`
-	Port string `yaml:"port"`
-
-	CertFile string `yaml:"certFile"`
-	KeyFile  string `yaml:"keyFile"`
+	Server *struct {
+		Host              string `yaml:"host"`
+		Port              string `yaml:"port"`
+		CertFile          string `yaml:"certFile"`
+		KeyFile           string `yaml:"keyFile"`
+		ReadTimeout       int    `yaml:"readTimeout"`
+		ReadHeaderTimeout int    `yaml:"readHeaderTimeout"`
+	} `yaml:"server"`
 
 	Environment       string `yaml:"environment"`
 	Sources           string `yaml:"sources"`
@@ -45,9 +44,6 @@ type Config struct {
 		DeleteExpiration int    `yaml:"deleteExpiration"`
 	} `yaml:"upload"`
 
-	/*
-	 * Web GUI related settings
-	 */
 	Groups   string `yaml:"groups"`
 	Formats  string `yaml:"formats"`
 	Features string `yaml:"features"`

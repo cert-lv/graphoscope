@@ -400,7 +400,7 @@ class Search {
 
                 // Merge labels
                 var list = edge.label.split(',\n');
-                if (list.indexOf(entry.edge.label) === -1)
+                if (entry.edge.label && list.indexOf(entry.edge.label) === -1)
                     list.push(entry.edge.label);
 
                 existingEdge.options.label = list.join(',\n');
@@ -433,6 +433,8 @@ class Search {
                     edge.color = { color: '#d93' };
                 else if (entry.source === 'pass')
                     edge.color = { color: '#086' };
+                else if (entry.source === 'taxonomy')
+                    edge.color = { color: '#f75' };
 
                 this.application.graph.network.body.data.edges.add(edge);
             }

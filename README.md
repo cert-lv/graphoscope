@@ -47,6 +47,7 @@ At the end of `IP address -> Institution -> Contact person's email -> Password` 
 - **Format** comma or space separated values into a valid search query
 - **Upload indicators list** and wait for the report
 - If enabled, query **debug info** is returned to the user to see what happens in a background
+- **Background processing** of the data collectors responses for graph enrichment, etc.
 - **Personal graph settings**
 - **Global graph settings** for administrators
 - **User management**
@@ -70,15 +71,29 @@ Additional information is available in a Web GUI built-in documentation (also av
 - Administration and connecting your own data sources in `Administration`
 
 
-## Plugins for the external data sources
+## Plugins for the data sources
 
-By default available plugins are in [plugins/src](plugins/src).
-3rd party compiled `*.so` plugins should go to the [plugins](plugins) directory.
+Available plugins are in [plugins/src](plugins/src):
 
-In general there are 3 types of objects:
-- **plugin**    - technically knows how to use a data source (e.g. database or API)
-- **source**    - a named set of parameters describing how to access and interpret a particular data source (using a **plugin**)
-- **collector** - actually uses a data source according to the parameters in the **source**
+- Elasticsearch
+- CSV file
+- HTTP API
+- MongoDB
+- MySQL
+- Pastelyzer
+- PostgreSQL
+- SQLite
+
+3rd party compiled `*.so` plugins should be placed in [plugins/sources](plugins/sources) directory.
+
+
+## Plugins for the background processing of the data sources response
+
+Available plugins are in [plugins/src](plugins/src):
+
+- Taxonomy
+
+3rd party compiled `*.so` plugins should be placed in [plugins/processors](plugins/processors) directory.
 
 
 ## Plugins development
@@ -175,7 +190,7 @@ Response example for the first query:
 - [ ] Generate PDF documentation from the existing `*.md` files
 - [ ] Video tutorials series
 - [ ] Implement other SQL features, like `NOT BETWEEN`
-- [ ] Input plugins:
+- [ ] Data source plugins:
   - [ ] RTIR
   - [ ] Redis
   - [ ] MS SQL
@@ -189,8 +204,7 @@ Response example for the first query:
   - [ ] Poland malware Sandbox API
   - [ ] General TCP
   - [ ] ipinfo.io
-- [ ] Processing plugins:
-  - [ ] Taxonomy
+- [ ] Processor plugins:
   - [ ] Modify
   - [ ] Filter
 - [ ] Output plugins:

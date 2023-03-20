@@ -7,22 +7,18 @@ import (
 )
 
 /*
- * Test SQL conversion to the data source's expected format
+ * STEP 17.
+ *
+ * Test plugin's functionality
  */
+
 func TestConvert(t *testing.T) {
 
 	// Empty plugin's instance to test
 	c := plugin{}
 
-	/*
-	 * STEP 13.
-	 *
-	 * Test whether example SQL queries are correctly converted to the expected format.
-	 * Sometimes it's easier to compare textual representation of the object,
-	 * rather than all it's child objects & content
-	 */
-
-	// Pairs of SQLs and the expected results
+	// Test whether example SQL queries are correctly converted to the expected format.
+	// Pairs of SQLs and the expected results:
 	tables := []struct {
 		sql       string
 		converted string

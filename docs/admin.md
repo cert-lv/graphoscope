@@ -51,8 +51,8 @@ On `Actions` tab some actions can be made without restarting the service. For ex
 
 After a production environment installation is completed it includes a CSV file as a first demo data source:
 
-- CSV file with all the data included, headers in the first line - `/opt/graphoscope/files/demo.csv` (`files/demo.csv` in sources)
-- Graphoscope data source definition - `/opt/graphoscope/sources/demo.yaml`
+- CSV file with all the data included, headers in the first line - `/opt/graphoscope/files/demo.csv`
+- Graphoscope data source definition - `/opt/graphoscope/definitions/sources/demo.yaml`
 
 ... simple list of 10 people and their friends. The first query could be requesting all people with an age over **30**:
 ```sql
@@ -73,7 +73,7 @@ At this point users can continue reading **UI** and **Search** documentation sec
 
 ## New data source
 
-To add a new data source the only thing that is required is to add its definition in `sources/` directory. Definition step by step:
+To add a new data source the only thing that is required is to add its definition in `definitions/sources/` directory. Definition step by step:
 
 Data source name to query by users, its Web GUI display label and icon:
 
@@ -135,7 +135,7 @@ relations:
         search: name
 ```
 
-For more parameters and details check example file `sources/source.yaml.example`.
+For more parameters and details check example file `definitions/sources/source.yaml.example`.
 
 
 ## Fields autocomplete
@@ -301,43 +301,64 @@ mv template_test.go <plugin-name>_test.go
 4. Follow the steps in the source files:
 
 Edit `<plugin-name>.go`
-  - **STEP 1** - validate required parameters or settings, given by the user
-  - **STEP 2** - create a connection to the data source if needed, check whether it is established. For example, `MongoDB` requires an established connection, while `HTTP REST API` does not
-  - **STEP 3** - store plugin settings, like "client" object, URL, database name, etc.
-  - **STEP 4** - get a list of all known data source's fields for the Web GUI autocomplete
-  - **STEP 5** - when new query is launched - an SQL statement conversion must be done, so the data source can understand what client is searching for. Created query should be added to the debug info, so admin or developer can see what happens in a background.
+  - **STEP 1** - choose plugin type - data collector or processor
+  - **STEP 2** - validate required parameters or settings, given by the user
+  - **STEP 3** - create a connection to the data source if needed, check whether it is established. For example, `MongoDB` requires an established connection, while `HTTP REST API` does not
+  - **STEP 4** - store plugin settings, like "client" object, URL, database name, etc.
+  - **STEP 5** - get a list of all known data source's fields for the Web GUI autocomplete. Remove method for processor plugin!
+  - **STEP 6** - choose and leave only one method - `Search()` for the collector or `Process()` for the processor
+
+In case data source plugin type was chosen (steps 7-10):
+  - **STEP 7** - when new query is launched - an SQL statement conversion must be done, so the data source can understand what client is searching for. Created query should be added to the debug info, so admin or developer can see what happens in a background.
 
 Edit `convert.go`
-  - **STEP 6** - do the SQL conversion. Check, for example, a `MongoDB` plugin to see how SQL can be converted to the hierarchical object or an `HTTP` plugin where you get just a list of requested `field/value` pairs
+  - **STEP 8** - do the SQL conversion. Check, for example, a `MongoDB` plugin to see how SQL can be converted to the hierarchical object or an `HTTP` plugin where you get just a list of requested `field/value` pairs. File not needed for the processor plugin!
 
 Edit `<plugin-name>.go`
-  - **STEP 7** - run the query and get the results. Implementation depends on the data source's methods. In an `HTTP` plugin it's just a GET/POST request
-  - **STEP 8** - process data returned by the data source. Most of this loop content you shouldn't modify at all
-  - **STEP 9** - gracefully stop the plugin when main service stops, drop all connections correctly
+  - **STEP 9** - run the query and get the results. Implementation depends on the data source's methods. In an `HTTP` plugin it's just a GET/POST request
+  - **STEP 10** - process data returned by the data source. Most of this loop content you shouldn't modify at all
+
+In case processor plugin type was chosen:
+  - **STEP 11** - process data received from the data source plugins
+
+  - **STEP 12** - gracefully stop the plugin when main service stops, drop all connections correctly
 
 Edit `plugin.go`
-  - **STEP 10** - define all the custom fields needed by the plugin, such as "client" object, database/collection name, etc. See the `STEP 3`
-  - **STEP 11** - set plugin name and version
+  - **STEP 13** - inherit default configuration fields for the data source or processor plugin
+  - **STEP 14** - define all the custom fields needed by the plugin, such as "client" object, database/collection name, etc. See the `STEP 3`
+  - **STEP 15** - set plugin name and version
 
 Edit `README.md`
-  - **STEP 12** - white plugin description and documentation if needed
+  - **STEP 16** - white plugin description and documentation if needed
 
 Edit `<plugin-name>_test.go`
-  - **STEP 13** - test whether example SQL queries are correctly converted to the expected format
+  - **STEP 17** - test plugin's functionality
 
 During all these steps you can use existing plugins as the working examples.
 
 
-Now test and compile the source code:
+Now test the source code:
 ```sh
 cd $GOPATH/src/github.com/cert-lv/graphoscope
 go test plugins/src/<plugin-name>/*.go
-go build -buildmode=plugin -ldflags="-w" -o plugins/<plugin-name>.so plugins/src/<plugin-name>/*.go
 ```
+Compile in case of data source plugin:
+```sh
+go build -buildmode=plugin -ldflags="-w" -o plugins/sources/<plugin-name>.so plugins/src/<plugin-name>/*.go
+```
+or in case of processor plugin:
+```sh
+go build -buildmode=plugin -ldflags="-w" -o plugins/processors/<plugin-name>.so plugins/src/<plugin-name>/*.go
+```
+
 
 For a prod. environment make sure `Makefile` is edited according to your needs (`REMOTE` variable) and append to the `Dockerfile`'s section `STEP 1`:
 ```sh
-RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/<plugin-name>.so plugins/src/<plugin-name>/*.go
+RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/<plugin-name>.so plugins/src/<plugin-name>/*.go
+```
+or for processor plugin:
+```sh
+RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/processors/<plugin-name>.so plugins/src/<plugin-name>/*.go
 ```
 ... real plugin name should be instead of `<plugin-name>`, and run:
 ```sh

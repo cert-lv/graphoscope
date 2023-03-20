@@ -24,10 +24,19 @@ func (p *plugin) Source() *pdk.Source {
 	return p.source
 }
 
+/*
+ * STEP 1.
+ *
+ * Choose plugin type:
+ *   - Processor to process received data
+ *   - Collector to query data source
+ */
+
+// func (p *plugin) Setup(processor *pdk.Processor) error {
 func (p *plugin) Setup(source *pdk.Source, limit int) error {
 
 	/*
-	 * STEP 1.
+	 * STEP 2.
 	 *
 	 * Validate required parameters from the YAML config file
 	 */
@@ -39,7 +48,7 @@ func (p *plugin) Setup(source *pdk.Source, limit int) error {
 	// }
 
 	/*
-	 * STEP 2.
+	 * STEP 3.
 	 *
 	 * Create a connection to the data source if needed,
 	 * check whether it is established
@@ -56,9 +65,10 @@ func (p *plugin) Setup(source *pdk.Source, limit int) error {
 	// }
 
 	/*
-	 * STEP 3.
+	 * STEP 4.
 	 *
-	 * Store plugin settings
+	 * Store plugin settings.
+	 * For processors, most probably, only storing instance definition will be necessary
 	 */
 
 	p.source = source
@@ -76,23 +86,35 @@ func (p *plugin) Setup(source *pdk.Source, limit int) error {
 		}
 	}
 
+	//p.processor = processor
+
 	return nil
 }
 
 func (p *plugin) Fields() ([]string, error) {
 	/*
-	 * STEP 4.
+	 * STEP 5.
 	 *
 	 * Get a list of all known data source's fields for the Web GUI autocomplete.
 	 *
 	 * Use "p.source.QueryFields" if there is no way to get automatically
 	 * all the possible fields to query and the list will be filled manually.
 	 *
-	 * Query data source otherwise. Check MySQL plugin for an example
+	 * Query data source otherwise. Check MySQL plugin for an example.
+	 *
+	 * Remove method for processor plugin!
 	 */
 
 	return p.source.QueryFields, nil
 }
+
+/*
+ * STEP 6.
+ *
+ * Choose and leave only one method from:
+ *   - Search()  - for the data source plugin
+ *   - Process() - for the data processor plugin
+ */
 
 func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[string]interface{}, map[string]interface{}, error) {
 
@@ -100,7 +122,7 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 	results := []map[string]interface{}{}
 
 	/*
-	 * STEP 5.
+	 * STEP 7.
 	 *
 	 * Convert SQL statement
 	 * so the data source can understand what client is searching for.
@@ -125,7 +147,7 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 	// defer cancel()
 
 	/*
-	 * STEP 7.
+	 * STEP 9.
 	 *
 	 * Run the query and get the results.
 	 * Here we just create an empty slice for a demo
@@ -151,7 +173,7 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 	}
 
 	/*
-	 * STEP 8.
+	 * STEP 10.
 	 *
 	 * Process data returned by the data source.
 	 * Most of this loop content you shouldn't modify at all.
@@ -297,9 +319,30 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 	return results, nil, debug, nil
 }
 
+func (p *plugin) Process(relations []map[string]interface{}) ([]map[string]interface{}, error) {
+
+	/*
+	 * STEP 11.
+	 *
+	 * Process data received from the data source plugins. Method receives
+	 * a list of graph relations in a JSON form '{"from": ..., "to" ... }'
+	 */
+
+	// Do something with each single graph relation
+	// for _, relation := range relations {
+	// 	...
+	// }
+
+	// Build new relations if needed, check "taxonomy" plugin for the example.
+	// Could look something like:
+	//relations = append(relations, newRelation)
+
+	return relations, nil
+}
+
 func (p *plugin) Stop() error {
 	/*
-	 * STEP 9.
+	 * STEP 12.
 	 *
 	 * Stop the plugin when main service stops,
 	 * drop all connections correctly. Check the existence first in case

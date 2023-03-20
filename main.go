@@ -96,6 +96,14 @@ func main() {
 	}
 
 	/*
+	 * Setup processors of the data sources received data
+	 */
+	err = setupProcessors()
+	if err != nil {
+		log.Fatal().Msg("Can't load processors: " + err.Error())
+	}
+
+	/*
 	 * Stop collectors on service exit
 	 */
 	defer func() {

@@ -500,13 +500,14 @@ func (a *Account) usersHandler(data string) {
 }
 
 /*
- * Reload collectors.
+ * Reload collectors and processors.
  *
  * This allows:
- *   - To recreate dropped connections to the data sources
+ *   - To reload definition files
+ *   - To recreate dropped connections
  *   - To refresh the list of fields to query for the Web GUI autocomplete
  */
-func (a *Account) reloadCollectorsHandler() {
+func (a *Account) reloadHandler() {
 	err := setupCollectors()
 	if err != nil {
 		a.send("error", "Can't reload collectors: "+err.Error(), "Error!")
@@ -518,10 +519,21 @@ func (a *Account) reloadCollectorsHandler() {
 		return
 	}
 
+	err = setupProcessors()
+	if err != nil {
+		a.send("error", "Can't reload processors: "+err.Error(), "Error!")
+
+		log.Info().
+			Str("ip", a.Session.IP).
+			Str("username", a.Username).
+			Msg("Can't reload processors: " + err.Error())
+		return
+	}
+
 	a.send("ok", "", "")
 
 	log.Info().
 		Str("ip", a.Session.IP).
 		Str("username", a.Username).
-		Msg("Collectors reloaded")
+		Msg("Collectors and processors reloaded")
 }

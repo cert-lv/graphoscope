@@ -16,14 +16,14 @@ class AdminActions {
     bind() {
         // Refresh the list of fields to query for the Web GUI autocomplete
         $('.ui.reload.button').on('click', (e) => {
-            this.refreshFields();
+            this.reloadPlugins();
         });
     }
 
     /*
-     * Refresh the list of fields to query for the Web GUI autocomplete
+     * Reload collectors and processors
      */
-    refreshFields() {
-        this.admin.websocket.send('reload-collectors');
+    reloadPlugins() {
+        this.admin.websocket.send('reload');
     }
 }

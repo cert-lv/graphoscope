@@ -91,9 +91,9 @@
                             </div>
 
                             {{ range .Collectors }}
-                                {{ if eq .Source.InGlobal true }}
-                                <div class="item" data-value="{{ .Source.Name }}">
-                                    <i class="{{ .Source.Icon }} icon"></i> {{ .Source.Label }}
+                                {{ if eq .Conf.InGlobal true }}
+                                <div class="item" data-value="{{ .Conf.Name }}">
+                                    <i class="{{ .Conf.Icon }} icon"></i> {{ .Conf.Label }}
                                 </div>
                                 {{ end }}
                             {{ end }}
@@ -102,9 +102,9 @@
                                 <div class="item disabled">Non-global</div>
 
                                 {{ range .Collectors }}
-                                    {{ if eq .Source.InGlobal false }}
-                                    <div class="item" data-value="{{ .Source.Name }}">
-                                        <i class="{{ .Source.Icon }} icon"></i> {{ .Source.Label }}
+                                    {{ if eq .Conf.InGlobal false }}
+                                    <div class="item" data-value="{{ .Conf.Name }}">
+                                        <i class="{{ .Conf.Icon }} icon"></i> {{ .Conf.Label }}
                                     </div>
                                     {{ end }}
                                 {{ end }}
@@ -241,10 +241,10 @@
             <a class="item hr"></a>
 
             {{ range .Collectors }}
-                {{ if eq .Source.InGlobal true }}
-                <a class="item expand" data-action="{{ .Source.Name }}">
-                    <i class="{{ .Source.Icon }} icon"></i>
-                    Search <strong>{{ .Source.Label }}</strong>
+                {{ if eq .Conf.InGlobal true }}
+                <a class="item expand" data-action="{{ .Conf.Name }}">
+                    <i class="{{ .Conf.Icon }} icon"></i>
+                    Search <strong>{{ .Conf.Label }}</strong>
                 </a>
                 {{ end }}
             {{ end }}
@@ -252,10 +252,10 @@
             <a class="item expand disabled">Non-global</a>
 
             {{ range .Collectors }}
-                {{ if eq .Source.InGlobal false }}
-                <a class="item expand" data-action="{{ .Source.Name }}">
-                    <i class="{{ .Source.Icon }} icon"></i>
-                    Search <strong>{{ .Source.Label }}</strong>
+                {{ if eq .Conf.InGlobal false }}
+                <a class="item expand" data-action="{{ .Conf.Name }}">
+                    <i class="{{ .Conf.Icon }} icon"></i>
+                    Search <strong>{{ .Conf.Label }}</strong>
                 </a>
                 {{ end }}
             {{ end }}

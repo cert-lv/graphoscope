@@ -15,7 +15,7 @@ import (
 type TemplateData struct {
 	// A list of connected data sources,
 	// will be used to generate sources dropdowns
-	Collectors map[string]pdk.Plugin
+	Collectors map[string]pdk.SourcePlugin
 
 	// A list of shared dashboards to be loaded
 	Shared map[string]*Dashboard

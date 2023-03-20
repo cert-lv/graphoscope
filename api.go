@@ -137,7 +137,7 @@ func querySources(source, sql string, includeDebug bool, username string) *APIre
 	if collector, ok := collectors[source]; ok {
 
 		// Parse textual SQL into a syntax tree object
-		queries, err := parseSQL(sql, collector.Source().IncludeDatetime, collector.Source().IncludeFields, collector.Source().ReplaceFields, collector.Source().SupportsSQL)
+		queries, err := parseSQL(sql, collector.Conf().IncludeDatetime, collector.Conf().IncludeFields, collector.Conf().ReplaceFields, collector.Conf().SupportsSQL)
 		if err != nil {
 			response.Error = err.Error()
 
@@ -168,7 +168,7 @@ func querySources(source, sql string, includeDebug bool, username string) *APIre
 					response.Relations = append(response.Relations, result...)
 
 					if includeDebug {
-						response.Debug[collector.Source().Name] = debug
+						response.Debug[collector.Conf().Name] = debug
 					}
 
 					response.Unlock()
@@ -192,12 +192,12 @@ func querySources(source, sql string, includeDebug bool, username string) *APIre
 
 			// Skip some collectors,
 			// for example very slow or without full featured query possibilities
-			if !collector.Source().InGlobal {
+			if !collector.Conf().InGlobal {
 				continue
 			}
 
 			// Parse textual SQL into syntax tree object
-			queries, err := parseSQL(sql, collector.Source().IncludeDatetime, collector.Source().IncludeFields, collector.Source().ReplaceFields, collector.Source().SupportsSQL)
+			queries, err := parseSQL(sql, collector.Conf().IncludeDatetime, collector.Conf().IncludeFields, collector.Conf().ReplaceFields, collector.Conf().SupportsSQL)
 			if err != nil {
 				response.Error = err.Error()
 
@@ -211,14 +211,14 @@ func querySources(source, sql string, includeDebug bool, username string) *APIre
 						Str("username", username).
 						Str("sql", sql).
 						Str("modified", sqlparser.String(query)).
-						Str("source", collector.Source().Name).
+						Str("source", collector.Conf().Name).
 						Msg("New global request")
 
 					// Run the search
 					group.Go(func() error {
 						result, stat, debug, err := collector.Search(query)
 						if err != nil {
-							return fmt.Errorf("%s - %s", collector.Source().Name, err.Error())
+							return fmt.Errorf("%s - %s", collector.Conf().Name, err.Error())
 						}
 
 						if stat != nil {
@@ -229,7 +229,7 @@ func querySources(source, sql string, includeDebug bool, username string) *APIre
 						response.Relations = append(response.Relations, result...)
 
 						if includeDebug {
-							response.Debug[collector.Source().Name] = debug
+							response.Debug[collector.Conf().Name] = debug
 						}
 
 						response.Unlock()
@@ -249,7 +249,8 @@ func querySources(source, sql string, includeDebug bool, username string) *APIre
 	}
 
 	// Check whether any goroutines failed
-	if err := group.Wait(); err != nil {
+	err := group.Wait()
+	if err != nil {
 		response.Error = err.Error()
 	}
 
@@ -281,6 +282,14 @@ func querySources(source, sql string, includeDebug bool, username string) *APIre
 	// Cache results to make the identical future requests faster
 	if config.Database.CacheTTL != 0 {
 		db.setCache(sql, response.Relations, response.Stats)
+	}
+
+	// Process received data by the processor plugins
+	for _, processor := range processors {
+		response.Relations, err = processor.Process(response.Relations)
+		if err != nil {
+			response.Error = fmt.Sprintf("<span class=\"red_fg\">\"%s\" error</span>: %s", processor.Conf().Name, err.Error())
+		}
 	}
 
 	// Return the request results

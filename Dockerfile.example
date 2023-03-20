@@ -25,14 +25,18 @@ RUN go get -d ./plugins/src/...
 ENV CGO_ENABLED=1 GOOS=linux GOARCH=amd64
 
 # Build plugins
-RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/elasticsearch.v7.so plugins/src/elasticsearch.v7/*.go
-RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/http.so             plugins/src/http/*.go
-RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/mongodb.so          plugins/src/mongodb/*.go
-RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/pastelyzer.so       plugins/src/pastelyzer/*.go
-RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/postgresql.so       plugins/src/postgresql/*.go
-RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/mysql.so            plugins/src/mysql/*.go
-RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/file-csv.so         plugins/src/file/csv/*.go
-RUN CGO_CFLAGS="-g -O2 -Wno-return-local-addr" go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sqlite.so plugins/src/sqlite/*.go
+RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/elasticsearch.v7.so plugins/src/elasticsearch.v7/*.go
+RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/http.so             plugins/src/http/*.go
+RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/mongodb.so          plugins/src/mongodb/*.go
+RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/pastelyzer.so       plugins/src/pastelyzer/*.go
+RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/postgresql.so       plugins/src/postgresql/*.go
+RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/mysql.so            plugins/src/mysql/*.go
+RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/file-csv.so         plugins/src/file/csv/*.go
+RUN CGO_CFLAGS="-g -O2 -Wno-return-local-addr" go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/sqlite.so plugins/src/sqlite/*.go
+
+RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/processors/taxonomy.so      plugins/src/taxonomy/*.go
+
+RUN mkdir /go/plugins/outputs
 
 
 ################################################################################

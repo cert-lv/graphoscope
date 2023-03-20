@@ -9,7 +9,7 @@ import (
  */
 var (
 	/*
-	 * STEP 11.
+	 * STEP 15.
 	 *
 	 * Set plugin name and version
 	 */
@@ -24,11 +24,18 @@ var (
  */
 type plugin struct {
 
-	// Inherit default configuration fields
+	/*
+	 * STEP 13.
+	 *
+	 * Inherit default configuration fields for the data source or
+	 * processor plugin
+	 */
+
 	source *pdk.Source
+	//processor *pdk.Processor
 
 	/*
-	 * STEP 10.
+	 * STEP 14.
 	 *
 	 * Define all the custom fields needed by the plugin,
 	 * such as "client" object, database/collection name, etc..

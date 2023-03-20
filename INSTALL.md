@@ -15,11 +15,10 @@ systemctl enable mongod
 
 MongoDB setup:
 
-1. Run a database client:
+1. Run a database shell:
 ```sh
-mongo
+mongosh
 ```
-Make sure its version is **4.2** or later.
 
 2. Create a new database:
 ```
@@ -57,7 +56,7 @@ Create directories and copy the source in there:
 mkdir -p /opt/go/src/github.com/cert-lv
 cd /opt/go/src/github.com/cert-lv
 git clone https://github.com/cert-lv/graphoscope
-mkdir -p build/plugins
+mkdir -p graphoscope/build/plugins
 ```
 
 
@@ -74,12 +73,12 @@ and edit `Makefile`s according to your needs: set a `REMOTE` variable to your re
 
 ## Development host setup
 
-> :warning: To simplify things here we use the same database. Recommendation is to use a different MongoDB instance. A local one, for example.
+> :warning: To simplify things here we use the same database for everything.
 
 Configure a Graphoscope service:
 ```sh
 cd /opt/go/src/github.com/cert-lv/graphoscope/
-cp sources/demo.yaml.example sources/demo.yaml
+cp definitions/sources/demo.yaml.example definitions/sources/demo.yaml
 cp files/groups.json.example files/groups.json
 cp files/formats.yaml.example files/formats.yaml
 cp graphoscope.yaml.example graphoscope.yaml
@@ -105,7 +104,7 @@ Open in a browser: `https://server:443`, where **server** is your host IP.
 
 ## Production server setup
 
-Dev. host can be used to deploy the necessary files on a prod. server, local installation also is possible. On the prod. server install a musl, C standard library.
+Dev. host can be used to deploy the necessary files on a prod. server, local installation also is possible. On the prod. server install a **musl**, C standard library.
 
 On DEB based systems:
 ```sh

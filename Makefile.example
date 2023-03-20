@@ -12,13 +12,13 @@ VERSION     := $(shell cat VERSION)
 
 # Build plugins and binary file to deploy
 compile:
-	rm -f build/plugins/* build/$(IMAGE_NAME)
+	rm -rf build/plugins/* build/$(IMAGE_NAME)
 
 	docker build --target plugins-builder -t $(IMAGE_NAME)-plugins:$(VERSION) -f Dockerfile .
 	docker run --rm --entrypoint sh \
 	           -v $(shell pwd)/build/plugins:/opt/mount:Z \
 	           $(IMAGE_NAME)-plugins:$(VERSION) \
-	           -c "cp /go/plugins/*.so /opt/mount/"
+	           -c "cp -r /go/plugins/* /opt/mount/"
 
 	docker build -t $(IMAGE_NAME):$(VERSION) -f Dockerfile .
 	docker run --rm --entrypoint sh \
@@ -43,12 +43,12 @@ install:
 	mkdir -p /var/log/$(IMAGE_NAME)
 
 	# Copy the content
-	cp graphoscope.yaml.example   /etc/$(IMAGE_NAME)/graphoscope.yaml
-	cp certs/graphoscope.*        /etc/$(IMAGE_NAME)/certs/
-	cp sources/demo.yaml.example  $(REMOTE_PATH)/sources/demo.yaml
-	cp files/groups.json.example  $(REMOTE_PATH)/files/groups.json
-	cp files/formats.yaml.example $(REMOTE_PATH)/files/formats.yaml
-	cp files/demo.csv             $(REMOTE_PATH)/files/
+	cp graphoscope.yaml.example              /etc/$(IMAGE_NAME)/graphoscope.yaml
+	cp certs/graphoscope.*                   /etc/$(IMAGE_NAME)/certs/
+	cp definitions/sources/demo.yaml.example $(REMOTE_PATH)/definitions/sources/demo.yaml
+	cp files/groups.json.example             $(REMOTE_PATH)/files/groups.json
+	cp files/formats.yaml.example            $(REMOTE_PATH)/files/formats.yaml
+	cp files/demo.csv                        $(REMOTE_PATH)/files/
 
 	chmod 600 /etc/$(IMAGE_NAME)/graphoscope.yaml
 	chmod 600 /etc/$(IMAGE_NAME)/certs/*
@@ -74,16 +74,17 @@ install-remote:
 
 	# Prepare needed folders
 	ssh $(REMOTE) mkdir -p /etc/$(IMAGE_NAME)/certs
-	ssh $(REMOTE) mkdir -p $(REMOTE_PATH)/{files,plugins,sources,upload}
+	ssh $(REMOTE) mkdir -p $(REMOTE_PATH)/{files,plugins,upload}
+	ssh $(REMOTE) mkdir -p $(REMOTE_PATH)/definitions/{outputs,processors,sources}
 	ssh $(REMOTE) mkdir -p /var/log/$(IMAGE_NAME)
 
 	# Copy the content
-	scp graphoscope.yaml.example   $(REMOTE):/etc/$(IMAGE_NAME)/graphoscope.yaml
-	scp certs/graphoscope.*        $(REMOTE):/etc/$(IMAGE_NAME)/certs/
-	scp sources/demo.yaml.example  $(REMOTE):$(REMOTE_PATH)/sources/demo.yaml
-	scp files/groups.json.example  $(REMOTE):$(REMOTE_PATH)/files/groups.json
-	scp files/formats.yaml.example $(REMOTE):$(REMOTE_PATH)/files/formats.yaml
-	scp files/demo.csv             $(REMOTE):$(REMOTE_PATH)/files/
+	scp graphoscope.yaml.example              $(REMOTE):/etc/$(IMAGE_NAME)/graphoscope.yaml
+	scp certs/graphoscope.*                   $(REMOTE):/etc/$(IMAGE_NAME)/certs/
+	scp definitions/sources/demo.yaml.example $(REMOTE):$(REMOTE_PATH)/definitions/sources/demo.yaml
+	scp files/groups.json.example             $(REMOTE):$(REMOTE_PATH)/files/groups.json
+	scp files/formats.yaml.example            $(REMOTE):$(REMOTE_PATH)/files/formats.yaml
+	scp files/demo.csv                        $(REMOTE):$(REMOTE_PATH)/files/
 
 	ssh $(REMOTE) chmod 600 /etc/$(IMAGE_NAME)/graphoscope.yaml
 	ssh $(REMOTE) chmod 600 /etc/$(IMAGE_NAME)/certs/*
@@ -91,7 +92,7 @@ install-remote:
 	# Updatable content, sync with the "update-remote" block
 	scp -r assets           $(REMOTE):$(REMOTE_PATH)/
 	scp -r docs             $(REMOTE):$(REMOTE_PATH)/
-	scp build/plugins/*.so  $(REMOTE):$(REMOTE_PATH)/plugins/
+	scp -r build/plugins    $(REMOTE):$(REMOTE_PATH)/
 	scp build/$(IMAGE_NAME) $(REMOTE):$(REMOTE_PATH)/
 	scp files/features.yaml $(REMOTE):$(REMOTE_PATH)/files/
 	scp VERSION             $(REMOTE):$(REMOTE_PATH)/
@@ -125,12 +126,11 @@ update-remote:
 
 	# Clear old data
 	ssh $(REMOTE) rm -rf    $(REMOTE_PATH)/{assets,docs,plugins}
-	ssh $(REMOTE) mkdir -p  $(REMOTE_PATH)/plugins
 
 	# Copy new content
 	scp -r assets           $(REMOTE):$(REMOTE_PATH)/
 	scp -r docs             $(REMOTE):$(REMOTE_PATH)/
-	scp build/plugins/*.so  $(REMOTE):$(REMOTE_PATH)/plugins/
+	scp -r build/plugins    $(REMOTE):$(REMOTE_PATH)/
 	scp build/$(IMAGE_NAME) $(REMOTE):$(REMOTE_PATH)/
 	scp files/features.yaml $(REMOTE):$(REMOTE_PATH)/files/
 	scp VERSION             $(REMOTE):$(REMOTE_PATH)/
@@ -157,15 +157,18 @@ uninstall-remote:
 
 # Build plugins locally, mainly for development
 plugins-local:
-	go build -buildmode=plugin -ldflags="-w" -o plugins/elasticsearch.v7.so plugins/src/elasticsearch.v7/*.go
-	go build -buildmode=plugin -ldflags="-w" -o plugins/http.so             plugins/src/http/*.go
-	go build -buildmode=plugin -ldflags="-w" -o plugins/mongodb.so          plugins/src/mongodb/*.go
-	go build -buildmode=plugin -ldflags="-w" -o plugins/pastelyzer.so       plugins/src/pastelyzer/*.go
-	go build -buildmode=plugin -ldflags="-w" -o plugins/postgresql.so       plugins/src/postgresql/*.go
-	go build -buildmode=plugin -ldflags="-w" -o plugins/mysql.so            plugins/src/mysql/*.go
-	go build -buildmode=plugin -ldflags="-w" -o plugins/file-csv.so         plugins/src/file/csv/*.go
-	CGO_CFLAGS="-g -O2 -Wno-return-local-addr" go build -buildmode=plugin -ldflags="-w" -o plugins/sqlite.so plugins/src/sqlite/*.go
-	go build -buildmode=plugin -ldflags="-w" -o plugins/template.so         plugins/src/template/*.go
+	go build -buildmode=plugin -ldflags="-w" -o plugins/sources/elasticsearch.v7.so plugins/src/elasticsearch.v7/*.go
+	go build -buildmode=plugin -ldflags="-w" -o plugins/sources/http.so             plugins/src/http/*.go
+	go build -buildmode=plugin -ldflags="-w" -o plugins/sources/mongodb.so          plugins/src/mongodb/*.go
+	go build -buildmode=plugin -ldflags="-w" -o plugins/sources/pastelyzer.so       plugins/src/pastelyzer/*.go
+	go build -buildmode=plugin -ldflags="-w" -o plugins/sources/postgresql.so       plugins/src/postgresql/*.go
+	go build -buildmode=plugin -ldflags="-w" -o plugins/sources/mysql.so            plugins/src/mysql/*.go
+	go build -buildmode=plugin -ldflags="-w" -o plugins/sources/file-csv.so         plugins/src/file/csv/*.go
+	CGO_CFLAGS="-g -O2 -Wno-return-local-addr" go build -buildmode=plugin -ldflags="-w" -o plugins/sources/sqlite.so plugins/src/sqlite/*.go
+
+	go build -buildmode=plugin -ldflags="-w" -o plugins/processors/taxonomy.so plugins/src/taxonomy/*.go
+
+	go build -buildmode=plugin -ldflags="-w" -o /dev/null plugins/src/template/*.go
 
 # Test Go code
 test:
@@ -177,6 +180,8 @@ test:
 	go test plugins/src/mysql/*.go
 	go test plugins/src/file/csv/*.go
 	CGO_CFLAGS="-g -O2 -Wno-return-local-addr" go test plugins/src/sqlite/*.go
+
+	go test plugins/src/taxonomy/*.go
 
 # Check for Golang errors & inefficient code. Install with:
 # curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh

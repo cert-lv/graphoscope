@@ -19,7 +19,7 @@ import (
  * Check "pdk/plugin.go" for the built-in plugin functions description
  */
 
-func (p *plugin) Source() *pdk.Source {
+func (p *plugin) Conf() *pdk.Source {
 	return p.source
 }
 

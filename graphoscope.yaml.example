@@ -35,8 +35,8 @@ server:
 #   prod -> log events to the file only
 environment: dev
 
-# Data sources definitions directory
-sources: sources
+# Data sources, processors and outputs definitions directory
+definitions: definitions
 
 # Plugins directory
 plugins: plugins

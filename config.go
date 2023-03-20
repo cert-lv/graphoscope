@@ -23,7 +23,7 @@ type Config struct {
 	} `yaml:"server"`
 
 	Environment       string `yaml:"environment"`
-	Sources           string `yaml:"sources"`
+	Definitions       string `yaml:"definitions"`
 	Plugins           string `yaml:"plugins"`
 	Limit             int    `yaml:"limit"`
 	StabilizationTime int    `yaml:"stabilizationTime"`

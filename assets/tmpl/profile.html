@@ -248,9 +248,9 @@
                                     </div>
 
                                     {{ range .Collectors }}
-                                        {{ if eq .Source.InGlobal true }}
-                                        <div class="item" data-value="{{ .Source.Name }}">
-                                            <i class="{{ .Source.Icon }} icon"></i> {{ .Source.Label }}
+                                        {{ if eq .Conf.InGlobal true }}
+                                        <div class="item" data-value="{{ .Conf.Name }}">
+                                            <i class="{{ .Conf.Icon }} icon"></i> {{ .Conf.Label }}
                                         </div>
                                         {{ end }}
                                     {{ end }}
@@ -259,9 +259,9 @@
                                         <div class="item disabled">Non-global</div>
 
                                         {{ range .Collectors }}
-                                            {{ if eq .Source.InGlobal false }}
-                                            <div class="item" data-value="{{ .Source.Name }}">
-                                                <i class="{{ .Source.Icon }} icon"></i> {{ .Source.Label }}
+                                            {{ if eq .Conf.InGlobal false }}
+                                            <div class="item" data-value="{{ .Conf.Name }}">
+                                                <i class="{{ .Conf.Icon }} icon"></i> {{ .Conf.Label }}
                                             </div>
                                             {{ end }}
                                         {{ end }}

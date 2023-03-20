@@ -1,7 +1,6 @@
 certs
 definitions
-plugins/*.so
-plugins/*.so~
+plugins/*.so*
 files
 graphoscope*
 upload

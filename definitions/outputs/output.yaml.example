@@ -1,0 +1,9 @@
+# Name of the data output
+name: application
+
+# Plugin to use
+plugin: example
+
+# Acceptable actions (connecting, search, etc.) timeout.
+# String type, not integer. 60s if not specified
+timeout: 60s

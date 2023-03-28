@@ -236,7 +236,7 @@ Here we describe both groups - shapes and all kinds of colors. `cluster` is a bu
 
 Possible shapes and more styling options at [https://visjs.github.io/vis-network/docs/network/nodes.html](https://visjs.github.io/vis-network/docs/network/nodes.html).
 
-Font icons and images also can represent nodes. A JavaScript framework that is being used includes a complete port of **Font Awesome 5.13.0**. `groups.json` content example to use both image and font icon:
+Font icons and images also can represent nodes. A JavaScript framework that is being used includes a complete port of **Font Awesome**. `groups.json` content example to use both image and font icon:
 ```json
 ...
 "name": {

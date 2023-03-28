@@ -135,7 +135,7 @@ Response example for the first query:
         {
             "from": {
                 "id": "Monica",
-                "params": {
+                "attributes": {
                     "age": 35
                 },
                 "search": "name",

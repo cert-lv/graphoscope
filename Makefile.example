@@ -1,5 +1,6 @@
 # Makefile example.
 # Check the installation manual about the changes needed before using it
+SHELL=/usr/bin/bash
 
 # Import Go env variables
 export PATH := $(PATH):$(GOROOT)/bin:$(GOPATH)/bin
@@ -39,7 +40,8 @@ install:
 
 	# Prepare needed folders
 	mkdir -p /etc/$(IMAGE_NAME)/certs
-	mkdir -p $(REMOTE_PATH)/files $(REMOTE_PATH)/sources $(REMOTE_PATH)/upload
+	mkdir -p $(REMOTE_PATH)/{files,upload}
+	mkdir -p $(REMOTE_PATH)/definitions/{outputs,processors,sources}
 	mkdir -p /var/log/$(IMAGE_NAME)
 
 	# Copy the content

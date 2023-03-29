@@ -188,7 +188,7 @@ Response example for the first query:
       when https://github.com/visjs/vis-network/pull/629 or similar is merged & new version released
 - [ ] Edges groups styling. **TODO** from `search.js`. Implement https://github.com/visjs/vis-network/issues/1229
 - [ ] Generate PDF documentation from the existing `*.md` files
-- [ ] Video tutorials series
+- [ ] Generate a direct link to the saved dashboard
 - [ ] Implement other SQL features, like `NOT BETWEEN`
 - [ ] Data source plugins:
   - [ ] RTIR

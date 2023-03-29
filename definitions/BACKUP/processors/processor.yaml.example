@@ -1,0 +1,15 @@
+# Name of the data processor
+name: application
+
+# Plugin to use
+plugin: taxonomy
+
+# Acceptable actions (connecting, search, etc.) timeout.
+# String type, not integer. 60s if not specified
+timeout: 60s
+
+
+# Unique data needed by the current processor.
+# Can be a map of any types, as plugins can be very different
+data:
+    ...

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"path/filepath"
 	"regexp"
+	"strings"
 	"sync"
 
 	"github.com/blastrain/vitess-sqlparser/sqlparser"
@@ -101,6 +102,9 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 	}
 
 	query := "SELECT " + sqlparser.String(stmt.SelectExprs) + " FROM `" + p.base + "` WHERE " + filter
+	// Avoid triple ` which sometimes appear around reserved SQL keywords
+	// used as fieldnames
+	query = strings.Replace(query, "```", "`", -1)
 
 	// Debug info
 	debug := make(map[string]interface{})

@@ -421,8 +421,8 @@ class Graph {
         const queries = [],
               attributes = [],
               selected = this.network.getSelectedNodes(),
-              startTime = $('#rangestart').calendar('get date').toISOString().substr(0, 19) + '.000Z',
-              endTime =   $('#rangeend').calendar(  'get date').toISOString().substr(0, 19) + '.000Z';
+              startTime = this.application.calendar.rangeStart.calendar('get date').toISOString().substr(0, 19) + '.000Z',
+              endTime =   this.application.calendar.rangeEnd.calendar(  'get date').toISOString().substr(0, 19) + '.000Z';
 
         for (var i = 0; i < selected.length; i++) {
             const node = this.application.graph.network.body.nodes[selected[i]];
@@ -860,6 +860,7 @@ class Graph {
     showAttributes(id, attrs) {
         //console.log('attrs:', id, attrs);
 
+        $('.attributes-header').show();
         this.attributes.style.display = 'block';
         this.common.style.display = 'none';
         this.notes.value = '';

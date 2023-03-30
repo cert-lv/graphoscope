@@ -404,11 +404,13 @@ input:-webkit-autofill:active {
 }
 
 /* Selected items attributes */
+.datetime-header,
+.dashboard-header,
 .attributes-header {
     display: block;
     font-weight: bold;
 }
-.attributes-header:first-child {
+.datetime-header {
     margin-bottom: 3px;
 }
 

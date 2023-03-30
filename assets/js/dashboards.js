@@ -48,8 +48,8 @@ class Dashboards {
                 name:     this.name.value,
                 shared:   this.shared.checkbox('is checked'),
                 filters:  [this.application.filters.greenFilters, this.application.filters.redFilters],
-                datetime: $('#rangestart').calendar('get date').toISOString().substr(0, 19) + '.000Z' + '..' +
-                          $('#rangeend').calendar(  'get date').toISOString().substr(0, 19) + '.000Z'
+                datetime: this.application.calendar.rangeStart.calendar('get date').toISOString().substr(0, 19) + '.000Z' + '..' +
+                          this.application.calendar.rangeEnd.calendar(  'get date').toISOString().substr(0, 19) + '.000Z'
               }
 
         this.application.websocket.send('dashboard-save', JSON.stringify(data));
@@ -95,8 +95,9 @@ class Dashboards {
         this.application.graph.position();
 
         // Restore datetime range
-        $('#rangestart').calendar('set date', new Date(ts[0]));
-        $('#rangeend').calendar(  'set date', new Date(ts[1]));
+        this.application.calendar.rangeStart.calendar('set date', new Date(ts[0]));
+        this.application.calendar.rangeEnd.calendar(  'set date', new Date(ts[1]));
+        this.application.calendar.setDatetimeRangeStr();
     }
 
     /*

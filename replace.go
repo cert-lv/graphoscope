@@ -16,6 +16,7 @@ package main
 import (
 	"reflect"
 	"runtime"
+	"strings"
 
 	"github.com/blastrain/vitess-sqlparser/sqlparser"
 )
@@ -76,14 +77,20 @@ func (c *Cursor) postFunc() {
 	switch n := c.node.(type) {
 	case *sqlparser.ColName:
 		if sqlparser.String(n) != "" {
+			// Remove backticks for now to avoid
+			// conversion `field` to the ```field``` later
+			// of the reserved SQL keywords used as fieldnames
+			field := strings.Trim(sqlparser.String(n), "`")
+
 			colName := &sqlparser.ColName{
-				Name: sqlparser.NewColIdent(c.replaceField(sqlparser.String(n))),
+				Name: sqlparser.NewColIdent(c.replaceField(field)),
 			}
 
 			// replace current node in the parent field with a new object.
 			// The use needs to make sure to not replace the object with something
 			// of the wrong type, or the visitor will panic
 			c.replacer(colName, c.parent)
+
 			n = colName
 		}
 	// Handle internal groups like "in", "like", () recursively

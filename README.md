@@ -197,6 +197,7 @@ Response example for the first query:
   - [ ] MS SQL
   - [ ] Oracle SQL
   - [ ] Apache Cassandra
+  - [ ] Hashlookup
   - [ ] Genji
   - [ ] Presto
   - [ ] MISP

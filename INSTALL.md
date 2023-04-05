@@ -49,7 +49,7 @@ systemctl restart mongod
 ```
 
 
-## Get the source code
+## Get the source code for the dev. environment
 
 Create directories and copy the source in there:
 ```sh
@@ -59,10 +59,7 @@ git clone https://github.com/cert-lv/graphoscope
 mkdir -p graphoscope/build/plugins
 ```
 
-
-## Scripted building
-
-`Makefile` and `Docker` are used to test, build and deploy Graphoscope on a remote server. Make sure to install the latest version.
+`Makefile` and `Docker` are used to test, build and deploy Graphoscope on a remote server.
 
 ```sh
 cd /opt/go/src/github.com/cert-lv/graphoscope/
@@ -104,11 +101,11 @@ Open in a browser: `https://server:443`, where **server** is your host IP.
 
 ## Production server setup
 
-Dev. host can be used to deploy the necessary files on a prod. server, local installation also is possible. On the prod. server install a **musl**, C standard library.
+Dev. host can be used to deploy the necessary files on a prod. server, local installation from a release archive also is possible. On the prod. server install a **musl**, C standard library.
 
 On DEB based systems:
 ```sh
-apt install musl-dev
+apt install musl-dev make
 ln -s /usr/lib/x86_64-linux-musl/libc.so /lib/libc.musl-x86_64.so.1
 ```
 <!-- On RPM based systems:
@@ -123,11 +120,15 @@ cd $GOPATH/src/github.com/cert-lv/graphoscope
 make compile
 make install-remote
 ```
-With a local installation copy a source directory to the remote host, switch to it and run:
+With a local installation download the latest release from https://github.com/cert-lv/graphoscope/releases to the remote host and run:
 ```sh
+mkdir graphoscope
+tar xf graphoscope-linux-amd64-*.tar.gz -C graphoscope
+cd graphoscope
+cp Makefile.example Makefile
 make install
 ```
-Edit remote `/etc/graphoscope/graphoscope.yaml` according to your needs and paths:
+Edit `/etc/graphoscope/graphoscope.yaml` according to your needs and paths:
 
 - database's `url: mongodb://localhost:27017`, `user/password` from the previous steps
 - unique `authenticationKey`, `encryptionKey ` in a `sessions` section. The last one must be exactly **18** characters long
@@ -152,21 +153,24 @@ docker volume prune
 ```
 
 
-# Updating
+## Updating
 
-Run from a source directory to update a local installation:
+Download the latest release from https://github.com/cert-lv/graphoscope/releases to update a local installation and run:
 ```sh
-make compile
+mkdir graphoscope
+tar xf graphoscope-linux-amd64-*.tar.gz -C graphoscope
+cd graphoscope
+cp Makefile.example Makefile
 make update
 systemctl start graphoscope
 ```
-or to update a remote server:
+or update a remote server from a dev. environment:
 ```sh
 make compile
 make update-remote
 ssh root@<server-ip> systemctl start graphoscope
 ```
-... where `<server-ip>` is a remote host.
+... where `<server-ip>` is a remote host. Copy `graphoscope.yaml` if its structure was changed.
 
 
 ## Postinstallation setup

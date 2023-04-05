@@ -18,6 +18,5 @@ profile*.svg
 *.sublime-workspace
 .buildconfig
 tags.*
-dist
 assets
 docs

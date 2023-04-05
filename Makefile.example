@@ -13,7 +13,7 @@ VERSION     := $(shell cat VERSION)
 
 # Build plugins and binary file to deploy
 compile:
-	rm -rf build/plugins/* build/$(IMAGE_NAME)
+	rm -rf build/plugins/* build/$(IMAGE_NAME)*
 
 	docker build --target plugins-builder -t $(IMAGE_NAME)-plugins:$(VERSION) -f Dockerfile .
 	docker run --rm --entrypoint sh \
@@ -27,7 +27,20 @@ compile:
 	           $(IMAGE_NAME):$(VERSION) \
 	           -c "cp /go/graphoscope /opt/mount/"
 
-	tar -czvf dist/graphoscope.tar.gz -C build plugins graphoscope
+	tar -czvf build/$(IMAGE_NAME)-linux-amd64-v$(VERSION).tar.gz \
+	          assets \
+	          certs/graphoscope.* \
+	          definitions/{outputs,processors,sources}/*.yaml.example \
+	          docs \
+	          files/graphoscope.service \
+	          files/*.example \
+	          files/demo.csv \
+	          files/features.yaml \
+	          graphoscope.yaml.example \
+	          Makefile.example \
+	          VERSION \
+	          -C build plugins graphoscope
+
 	docker rmi $(IMAGE_NAME):$(VERSION) $(IMAGE_NAME)-plugins:$(VERSION)
 
 # Run local installation
@@ -55,12 +68,11 @@ install:
 	chmod 600 /etc/$(IMAGE_NAME)/graphoscope.yaml
 	chmod 600 /etc/$(IMAGE_NAME)/certs/*
 
-	# Updatable content, sync with the "update" block
-	tar -xvf dist/graphoscope.tar.gz -C $(REMOTE_PATH)
-	chmod 744 $(REMOTE_PATH)/$(IMAGE_NAME)
-
+	# Updatable assets, sync with the "update" target
+	cp -r plugins          $(REMOTE_PATH)/
 	cp -r assets           $(REMOTE_PATH)/
 	cp -r docs             $(REMOTE_PATH)/
+	cp graphoscope         $(REMOTE_PATH)/
 	cp files/features.yaml $(REMOTE_PATH)/files/
 	cp VERSION             $(REMOTE_PATH)/
 
@@ -91,7 +103,7 @@ install-remote:
 	ssh $(REMOTE) chmod 600 /etc/$(IMAGE_NAME)/graphoscope.yaml
 	ssh $(REMOTE) chmod 600 /etc/$(IMAGE_NAME)/certs/*
 
-	# Updatable content, sync with the "update-remote" block
+	# Updatable assets, sync with the "update-remote" target
 	scp -r assets           $(REMOTE):$(REMOTE_PATH)/
 	scp -r docs             $(REMOTE):$(REMOTE_PATH)/
 	scp -r build/plugins    $(REMOTE):$(REMOTE_PATH)/
@@ -110,11 +122,10 @@ update:
 	rm -rf $(REMOTE_PATH)/assets $(REMOTE_PATH)/docs $(REMOTE_PATH)/plugins
 
 	# Copy new content
-	tar -xvf dist/graphoscope.tar.gz -C $(REMOTE_PATH)
-	chmod 744 $(REMOTE_PATH)/$(IMAGE_NAME)
-
+	cp -r plugins          $(REMOTE_PATH)/
 	cp -r assets           $(REMOTE_PATH)/
 	cp -r docs             $(REMOTE_PATH)/
+	cp graphoscope         $(REMOTE_PATH)/
 	cp files/features.yaml $(REMOTE_PATH)/files/
 	cp VERSION             $(REMOTE_PATH)/
 

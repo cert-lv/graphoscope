@@ -189,6 +189,7 @@ Response example for the first query:
 - [ ] Edges groups styling. **TODO** from `search.js`. Implement https://github.com/visjs/vis-network/issues/1229
 - [ ] Generate PDF documentation from the existing `*.md` files
 - [ ] Generate a direct link to the saved dashboard
+- [ ] Data sourcess access based on user groups permissions
 - [ ] Implement other SQL features, like `NOT BETWEEN`
 - [ ] Data source plugins:
   - [ ] RTIR
@@ -201,7 +202,7 @@ Response example for the first query:
   - [ ] MISP
   - [ ] VirusTotal
   - [ ] Shodan
-  - [ ] Poland malware Sandbox API
+  - [ ] Poland malware Sandbox / mwdb
   - [ ] General TCP
   - [ ] ipinfo.io
 - [ ] Processor plugins:

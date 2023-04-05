@@ -205,6 +205,8 @@ Response example for the first query:
   - [ ] Poland malware Sandbox / mwdb
   - [ ] General TCP
   - [ ] ipinfo.io
+  - [ ] phishtank.org
+  - [ ] abuseipdb.com
 - [ ] Processor plugins:
   - [ ] Modify
   - [ ] Filter

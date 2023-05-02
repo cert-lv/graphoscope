@@ -25,7 +25,10 @@ func TestProcess(t *testing.T) {
 		},
 	}
 
-	c.Setup(processor)
+	err := c.Setup(processor)
+	if err != nil {
+		t.Errorf("Can't setup a taxonomy plugin: %s", err.Error())
+	}
 
 	// Pairs of data source plugins responses and the expected processing results
 	table := []struct {

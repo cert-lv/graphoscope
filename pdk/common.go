@@ -1,6 +1,7 @@
 package pdk
 
 import (
+	"fmt"
 	"strings"
 )
 
@@ -92,14 +93,25 @@ func attributesAreIdentical(source, target interface{}, keys []string) bool {
 		// Otherwise compare all the values
 		switch sts := s[key].(type) {
 		case []interface{}:
-			if len(sts) != len(t[key].([]interface{})) {
-				return false
-			}
-			for _, st := range sts {
-				if !InterfaceSliceContains(t[key].([]interface{}), st) {
+			switch tts := t[key].(type) {
+			case []interface{}:
+				if len(sts) != len(tts) {
 					return false
 				}
+
+				for _, st := range sts {
+					if !InterfaceSliceContains(tts, st) {
+						return false
+					}
+				}
+
+			default:
+				if len(sts) == 1 && fmt.Sprintf("%v", sts[0]) == fmt.Sprintf("%v", tts) {
+					return true
+				}
+				return false
 			}
+
 		default:
 			if s[key] != t[key] {
 				return false

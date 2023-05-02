@@ -9,26 +9,6 @@ import (
 )
 
 /*
- * If the where is empty, need to check whether to agg or not
- */
-func checkNeedAgg(sqlSelect sqlparser.SelectExprs) bool {
-	for _, v := range sqlSelect {
-		expr, ok := v.(*sqlparser.AliasedExpr)
-		if !ok {
-			// No need to handle, star expression * just skip is ok
-			continue
-		}
-
-		// TODO: more precise
-		if _, ok := expr.Expr.(*sqlparser.FuncExpr); ok {
-			return true
-		}
-	}
-
-	return false
-}
-
-/*
  * Handle single "field operator value" expression.
  *
  * Receives:
@@ -86,10 +66,10 @@ func handleSelectWhereAndExpr(expr *sqlparser.Expr, topLevel bool, parent *sqlpa
 		return nil, err
 	}
 
+	// Not toplevel
+	// if the parent node is also AND, then the result can be merged
+
 	fields := append(leftStr, rightStr...)
-	if topLevel {
-		fields = append(fields, [2]string{"operator", "and"})
-	}
 
 	return fields, nil
 }
@@ -118,67 +98,6 @@ func handleSelectWhereOrExpr(expr *sqlparser.Expr, topLevel bool, parent *sqlpar
 	}
 
 	fields := append(leftStr, rightStr...)
-	if topLevel {
-		fields = append(fields, [2]string{"operator", "or"})
-	}
-
-	return fields, nil
-}
-
-/*
- * Between a and b.
- * The meaning is equal to range query
- *
- * Receives:
- *     expr     - SQL expression to process
- *     topLevel - whether it's a top level expression
- */
-func handleSelectWhereBetweenExpr(expr *sqlparser.Expr, topLevel bool) ([][2]string, error) {
-	rangeCond := (*expr).(*sqlparser.RangeCond)
-	colName, ok := rangeCond.Left.(*sqlparser.ColName)
-
-	if !ok {
-		return nil, errors.New("Range column name missing")
-	}
-
-	//colNameStr := sqlparser.String(colName)
-	colNameStr := strings.Trim(sqlparser.String(colName), "`")
-	//fromStr := strings.Trim(sqlparser.String(rangeCond.From), "'")
-	//toStr := strings.Trim(sqlparser.String(rangeCond.To), "'")
-
-	var from string
-	var to string
-
-	// Prepare a 'From' value
-	switch expr := rangeCond.From.(type) {
-	case *sqlparser.SQLVal:
-		switch expr.Type {
-		case sqlparser.IntVal, sqlparser.FloatVal, sqlparser.StrVal:
-			from = string(expr.Val)
-		default:
-			return nil, fmt.Errorf("Invalid BETWEEN 'from' value: %v (type %v)", string(expr.Val), expr.Type)
-		}
-	default:
-		return nil, fmt.Errorf("Invalid BETWEEN 'from' value: %v", strings.Trim(sqlparser.String(rangeCond.From), "'"))
-	}
-
-	// Prepare a 'To' value
-	switch expr := rangeCond.To.(type) {
-	case *sqlparser.SQLVal:
-		switch expr.Type {
-		case sqlparser.IntVal, sqlparser.FloatVal, sqlparser.StrVal:
-			to = string(expr.Val)
-		default:
-			return nil, fmt.Errorf("Invalid BETWEEN 'to' value: %v (type %v)", string(expr.Val), expr.Type)
-		}
-	default:
-		return nil, fmt.Errorf("Invalid BETWEEN 'to' value: %v", strings.Trim(sqlparser.String(rangeCond.To), "'"))
-	}
-
-	// Build resulting fields list
-	var fields [][2]string
-	fields = append(fields, [2]string{colNameStr + "_from", from})
-	fields = append(fields, [2]string{colNameStr + "_to", to})
 
 	return fields, nil
 }
@@ -284,8 +203,11 @@ func handleSelectWhere(expr *sqlparser.Expr, topLevel bool, parent *sqlparser.Ex
 	case *sqlparser.NotExpr:
 		return nil, errors.New("'not' expression currently not supported")
 
+	// Ignore 'BETWEEN' operator, which is used al least to select datetime period
 	case *sqlparser.RangeCond:
-		return handleSelectWhereBetweenExpr(expr, topLevel)
+		return [][2]string{}, nil
+		// return nil, errors.New("Range expression currently not supported")
+		// return handleSelectWhereBetweenExpr(expr, topLevel)
 
 	case *sqlparser.ParenExpr:
 		return handleSelectWhereParenExpr(expr, topLevel, parent)

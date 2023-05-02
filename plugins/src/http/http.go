@@ -286,7 +286,7 @@ func (p *plugin) request(searchFields [][2]string) (*bytes.Buffer, map[string]in
 	} else {
 		req, err = http.NewRequest("GET", p.url, nil)
 		if err != nil {
-			return nil, debug, fmt.Errorf("Can't create a POST request: %s", err.Error())
+			return nil, debug, fmt.Errorf("Can't create a GET request: %s", err.Error())
 		}
 
 		req.Header.Add("Content-Type", "application/x-www-form-urlencoded; param=value")
@@ -303,7 +303,7 @@ func (p *plugin) request(searchFields [][2]string) (*bytes.Buffer, map[string]in
 	// Declare an HTTP client to execute the request
 	client := http.Client{Timeout: p.source.Timeout}
 
-	// Send an HTTP using `req` object
+	// Send an HTTP request using a 'req' object
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, debug, fmt.Errorf("Can't do an HTTP request: %s", err.Error())

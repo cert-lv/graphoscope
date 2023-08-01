@@ -207,7 +207,6 @@ Response example for the first query:
   - [ ] General TCP
   - [ ] ipinfo.io
   - [ ] phishtank.org
-  - [ ] abuseipdb.com
 - [ ] Processor plugins:
   - [ ] Modify
   - [ ] Filter

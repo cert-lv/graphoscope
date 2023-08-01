@@ -54,16 +54,15 @@ func (p *plugin) convert(sel *sqlparser.Select, fields []string) (string, error)
 		resultMap["size"] = sqlparser.String(sel.Limit.Rowcount)
 	}
 
-	// Fields of the JSON to return.
-	// Keep the traversal in order, avoid unpredicted JSON
-	keySlice := []string{"query", "from", "size", "sort", "fields", "_source"}
-
 	if len(fields) != 0 {
-		resultMap["fields"] = "[\"" + strings.Join(fields, "\",\"") + "\"]"
-		resultMap["_source"] = false
+		resultMap["_source"] = "[\"" + strings.Join(fields, "\",\"") + "\"]"
 	}
 
+	// Fields of the JSON to return.
+	// Keep the traversal in order, avoid unpredicted JSON
+	keySlice := []string{"query", "from", "size", "sort", "_source"}
 	resultArr := []string{}
+
 	for _, mapKey := range keySlice {
 		if val, ok := resultMap[mapKey]; ok {
 			resultArr = append(resultArr, fmt.Sprintf(`"%v" : %v`, mapKey, val))

@@ -10,7 +10,7 @@ import (
  */
 var (
 	Name    = "elasticsearch.v7"
-	Version = "1.0.5"
+	Version = "1.0.6"
 	Plugin  plugin
 )
 

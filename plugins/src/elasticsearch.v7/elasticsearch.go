@@ -214,16 +214,9 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 
 		// Deserialize
 		entry := make(map[string]interface{})
-
-		if len(p.source.IncludeFields) != 0 {
-			for key, value := range hit.Fields {
-				entry[key] = value.([]interface{})[0]
-			}
-		} else {
-			err := json.Unmarshal(hit.Source, &entry)
-			if err != nil {
-				return nil, nil, debug, err
-			}
+		err := json.Unmarshal(hit.Source, &entry)
+		if err != nil {
+			return nil, nil, debug, err
 		}
 
 		// Update stats

@@ -99,11 +99,11 @@ func handleSelectWhereComparisonExpr(expr *sqlparser.Expr, topLevel bool, parent
 
 	case "like":
 		rightStr := strings.Replace(rightIntf.(string), `%`, `*`, -1)
-		resultStr = fmt.Sprintf(`{"query_string": { "default_field": "%v", "query": "%v" }}`, colNameStr, rightStr)
+		resultStr = fmt.Sprintf(`{"query_string": { "default_field": "%v.keyword", "query": "%v" }}`, colNameStr, rightStr)
 		//resultStr = fmt.Sprintf(`{"match_phrase" : {"%v" : "%v"}}`, colNameStr, rightStr)
 	case "not like":
 		rightStr := strings.Replace(rightIntf.(string), `%`, `*`, -1)
-		resultStr = fmt.Sprintf(`{"bool" : {"must_not" : {"query_string": { "default_field": "%v", "query": "%v" }}}}`, colNameStr, rightStr)
+		resultStr = fmt.Sprintf(`{"bool" : {"must_not" : {"query_string": { "default_field": "%v.keyword", "query": "%v" }}}}`, colNameStr, rightStr)
 		//resultStr = fmt.Sprintf(`{"bool" : {"must_not" : {"match_phrase" : {"%v" : "%v"}}}}`, colNameStr, rightStr)
 	}
 

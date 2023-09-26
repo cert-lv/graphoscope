@@ -181,6 +181,7 @@ plugins-local:
 	CGO_CFLAGS="-g -O2 -Wno-return-local-addr" go build -buildmode=plugin -ldflags="-w" -o plugins/sources/sqlite.so plugins/src/sqlite/*.go
 
 	go build -buildmode=plugin -ldflags="-w" -o plugins/processors/taxonomy.so plugins/src/taxonomy/*.go
+	go build -buildmode=plugin -ldflags="-w" -o plugins/processors/modify.so   plugins/src/modify/*.go
 
 	go build -buildmode=plugin -ldflags="-w" -o /dev/null plugins/src/template/*.go
 

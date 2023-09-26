@@ -7,7 +7,7 @@ import (
 )
 
 /*
- * Test processing the data source's response
+ * Test taxonomy nodes creating
  */
 func TestProcess(t *testing.T) {
 

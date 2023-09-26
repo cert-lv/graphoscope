@@ -7,7 +7,7 @@ import (
 )
 
 /*
- * Test processing the data source's response
+ * Test attributes modifications
  */
 func TestProcess(t *testing.T) {
 
@@ -16,71 +16,69 @@ func TestProcess(t *testing.T) {
 
 	processor := &pdk.Processor{
 		Data: map[string]interface{}{
-			"field": "id",
-			"group": "type",
+			"group": "name",
 
-			"taxonomy": map[string]interface{}{
-				"brute-force": "intrusion-attempts",
+			"modify": []interface{}{
+				map[string]interface{}{
+					"field":       "age",
+					"regex":       "\\d*",
+					"replacement": "***",
+				},
 			},
 		},
 	}
 
 	err := c.Setup(processor)
 	if err != nil {
-		t.Errorf("Can't setup a taxonomy plugin: %s", err.Error())
+		t.Errorf("Can't setup a modify plugin: %s", err.Error())
 	}
 
 	// Pairs of data source plugins responses and the expected processing results
 	table := []struct {
 		entry    map[string]interface{}
-		inserted map[string]interface{}
+		modified map[string]interface{}
 	}{
-		// New relation should be added because "id" == "brute-force"
+		// No modifications should be made, because group is different
 		{map[string]interface{}{
 			"from": map[string]interface{}{
-				"id":     "brute-force",
-				"group":  "type",
-				"search": "type",
-			},
-		}, map[string]interface{}{
-			"id":     "intrusion-attempts",
-			"group":  "taxonomy",
-			"search": "taxonomy",
-		}},
-
-		// New relation should be added because "attributes.id" == "brute-force"
-		{map[string]interface{}{
-			"from": map[string]interface{}{
-				"id":     "malware",
-				"group":  "type",
-				"search": "type",
+				"id":     "John",
+				"group":  "neighbor",
+				"search": "name",
 				"attributes": map[string]interface{}{
-					"id": "brute-force",
+					"age": "25",
 				},
 			},
 		}, map[string]interface{}{
-			"id":     "intrusion-attempts",
-			"group":  "taxonomy",
-			"search": "taxonomy",
+			"from": map[string]interface{}{
+				"id":     "John",
+				"group":  "name",
+				"search": "name",
+				"attributes": map[string]interface{}{
+					"age": "25",
+				},
+			},
 		}},
 
-		// New relation should NOT be added because "id" value is not mentioned in processor.Data["taxonomy"]
+		// Age should be anonymized
 		{map[string]interface{}{
 			"from": map[string]interface{}{
-				"id":     "ddos",
-				"group":  "type",
-				"search": "type",
+				"id":     "John",
+				"group":  "name",
+				"search": "name",
+				"attributes": map[string]interface{}{
+					"age": "25",
+				},
 			},
-		}, nil},
-
-		// New relation should NOT be added because "group" value is not equal to processor.Data["group"]
-		{map[string]interface{}{
+		}, map[string]interface{}{
 			"from": map[string]interface{}{
-				"id":     "brute-force",
-				"group":  "address",
-				"search": "type",
+				"id":     "John",
+				"group":  "name",
+				"search": "name",
+				"attributes": map[string]interface{}{
+					"age": "***",
+				},
 			},
-		}, nil},
+		}},
 	}
 
 	for _, row := range table {
@@ -90,19 +88,20 @@ func TestProcess(t *testing.T) {
 			continue
 		}
 
-		if row.inserted == nil && len(result) > 1 {
-			t.Errorf("Unwanted relation added for \"%s\": \"%s\"", row.entry["from"], result[1])
+		modified := row.modified["from"].(map[string]interface{})
+		from := result[0]["from"].(map[string]interface{})
 
-		} else if len(result) == 1 && row.inserted != nil {
-			t.Errorf("No new relations added for \"%s\": \"%s\", expected: \"%s\"", row.entry["from"], result, row.inserted)
+		if from["id"] != modified["id"] {
+			t.Errorf("Invalid modification of ID in \"%v\": \"%v\", expected: \"%v\"",
+				row.entry["from"], from, modified)
+			break
+		}
 
-		} else if len(result) > 1 && row.inserted != nil {
-			for k, v := range result[1]["to"].(map[string]interface{}) {
-				if row.inserted[k] != v {
-					t.Errorf("Invalid taxonomy added for \"%s\": \"%s\", expected: \"%s\"",
-						row.entry["from"], result[1]["to"], row.inserted)
-					break
-				}
+		for k, v := range from["attributes"].(map[string]interface{}) {
+			if modified["attributes"].(map[string]interface{})[k] != v {
+				t.Errorf("Invalid modification of \"%v\": \"%v\", expected: \"%v\"",
+					row.entry["from"], from, modified)
+				break
 			}
 		}
 	}

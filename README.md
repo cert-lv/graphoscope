@@ -82,6 +82,7 @@ Available plugins are in [plugins/src](plugins/src):
 - MySQL
 - Pastelyzer
 - PostgreSQL
+- Redis
 - SQLite
 - AbuseIPDB
 
@@ -195,7 +196,6 @@ Response example for the first query:
 - [ ] Implement other SQL features, like `NOT BETWEEN`
 - [ ] Data source plugins:
   - [ ] RTIR
-  - [ ] Redis
   - [ ] MS SQL
   - [ ] Oracle SQL
   - [ ] Apache Cassandra

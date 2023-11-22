@@ -207,7 +207,12 @@ func splitQuery(expr *sqlparser.Select) ([]*sqlparser.Select, error) {
 		// Handle:
 		//     (field='...' OR field=...')
 		//     (field IN ('...','...'))
+		//     (field='...' AND param='...')
 	} else if paren, ok := where.(*sqlparser.ParenExpr); ok {
+		if _, ok := paren.Expr.(*sqlparser.AndExpr); ok {
+			return selects, nil
+		}
+
 		lefts, err = splitOrIn(fields, paren.Expr, nil)
 		if err != nil {
 			return nil, err

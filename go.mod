@@ -23,6 +23,7 @@ require (
 	github.com/montanaflynn/stats v0.7.0 // indirect
 	github.com/olekukonko/tablewriter v0.0.5
 	github.com/olivere/elastic/v7 v7.0.22
+	github.com/redis/go-redis/v9 v9.3.0 // indirect
 	github.com/rivo/uniseg v0.4.4 // indirect
 	github.com/rs/zerolog v1.29.0
 	github.com/umpc/go-sortedmap v0.0.0-20180422175548-64ab94c482f4

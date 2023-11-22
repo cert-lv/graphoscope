@@ -30,6 +30,7 @@ RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/http.so     
 RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/mongodb.so          plugins/src/mongodb/*.go
 RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/pastelyzer.so       plugins/src/pastelyzer/*.go
 RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/postgresql.so       plugins/src/postgresql/*.go
+RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/redis.so            plugins/src/redis/*.go
 RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/mysql.so            plugins/src/mysql/*.go
 RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/file-csv.so         plugins/src/file/csv/*.go
 RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/abuseipdb.so        plugins/src/abuseipdb/*.go

@@ -175,13 +175,14 @@ plugins-local:
 	go build -buildmode=plugin -ldflags="-w" -o plugins/sources/mongodb.so          plugins/src/mongodb/*.go
 	go build -buildmode=plugin -ldflags="-w" -o plugins/sources/pastelyzer.so       plugins/src/pastelyzer/*.go
 	go build -buildmode=plugin -ldflags="-w" -o plugins/sources/postgresql.so       plugins/src/postgresql/*.go
+	go build -buildmode=plugin -ldflags="-w" -o plugins/sources/redis.so            plugins/src/redis/*.go
 	go build -buildmode=plugin -ldflags="-w" -o plugins/sources/mysql.so            plugins/src/mysql/*.go
 	go build -buildmode=plugin -ldflags="-w" -o plugins/sources/file-csv.so         plugins/src/file/csv/*.go
 	go build -buildmode=plugin -ldflags="-w" -o plugins/sources/abuseipdb.so        plugins/src/abuseipdb/*.go
 	CGO_CFLAGS="-g -O2 -Wno-return-local-addr" go build -buildmode=plugin -ldflags="-w" -o plugins/sources/sqlite.so plugins/src/sqlite/*.go
 
-	go build -buildmode=plugin -ldflags="-w" -o plugins/processors/taxonomy.so plugins/src/taxonomy/*.go
-	go build -buildmode=plugin -ldflags="-w" -o plugins/processors/modify.so   plugins/src/modify/*.go
+	go build -buildmode=plugin -ldflags="-w" -o plugins/processors/taxonomy.so      plugins/src/taxonomy/*.go
+	go build -buildmode=plugin -ldflags="-w" -o plugins/processors/modify.so        plugins/src/modify/*.go
 
 	go build -buildmode=plugin -ldflags="-w" -o /dev/null plugins/src/template/*.go
 
@@ -192,6 +193,7 @@ test:
 	go test plugins/src/mongodb/*.go
 	go test plugins/src/pastelyzer/*.go
 	go test plugins/src/postgresql/*.go
+	go test plugins/src/redis/*.go
 	go test plugins/src/mysql/*.go
 	go test plugins/src/file/csv/*.go
 	go test plugins/src/abuseipdb/*.go

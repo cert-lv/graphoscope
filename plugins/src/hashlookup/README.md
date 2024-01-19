@@ -20,3 +20,55 @@ Or use the Makefile command:
 Source YAML definition's `access` fields:
 - **url**: hashlookup API endpoint, for example - `https://hashlookup.circl.lu`
 - **apiKey**: optional hashlookup API key
+
+# Example definition file
+
+```yaml
+name: hashlookup
+label: Hashlookup
+icon: database
+
+plugin: hashlookup
+inGlobal: true
+includeDatetime: false
+supportsSQL: false
+
+access:
+    url: https://hashlookup.circl.lu
+    apiKey: .
+
+
+relations:
+  -
+    from:
+        id: SHA-1
+        group: identifier
+        search: sha1
+        attributes: ["FileName", "FileSize", "source-url","MD5" ,"SHA-512" , "SHA-256", "SHA-1", "SSDEEP", "TLSH", "insert-timestamp", "mimetype", "source", "hashlookup-parent-total", "snap-authority"]
+
+    to:
+        id: parent
+        group: identifier
+        search: sha1
+        attributes: ["FileName", "FileSize", "source-url","MD5" ,"SHA-512" , "SHA-256", "SHA-1", "SSDEEP", "TLSH", "insert-timestamp", "mimetype", "source", "hashlookup-parent-total", "snap-authority"]
+
+    edge:
+        label: ChildOf
+        attributes: []
+  -
+    from:
+      id: SHA-1
+      group: identifier
+      search: sha1
+      attributes: ["FileName", "FileSize", "source-url","MD5" ,"SHA-512" , "SHA-256", "SHA-1", "SSDEEP", "TLSH", "insert-timestamp", "mimetype", "source", "hashlookup-parent-total", "snap-authority"]
+
+    to:
+      id: children
+      group: identifier
+      search: sha1
+      attributes: ["FileName", "FileSize", "source-url","MD5" ,"SHA-512" , "SHA-256", "SHA-1", "SSDEEP", "TLSH", "insert-timestamp", "mimetype", "source", "hashlookup-parent-total", "snap-authority"]
+
+    edge:
+      label: ParentOf
+      attributes: []
+```

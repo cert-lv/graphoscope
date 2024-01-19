@@ -26,7 +26,7 @@ import (
  * Check "pdk/plugin.go" for the built-in plugin functions description
  */
 
-func (p *plugin) Source() *pdk.Source {
+func (p *plugin) Conf() *pdk.Source {
 	return p.source
 }
 
@@ -55,18 +55,22 @@ func (p *plugin) Setup(source *pdk.Source, limit int) error {
 		}
 	}
 
+	// TODO check that
 	fmt.Printf("HTTP %s: %#v\n\n", source.Name, p)
 	return nil
 }
 
-func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[string]interface{}, error) {
+func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[string]interface{}, map[string]interface{}, error) {
 
 	// Storage for the results to return
 	results := []map[string]interface{}{}
 
+	// Debug info
+	debug := make(map[string]interface{})
+
 	searchFields, err := p.convert(stmt)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, debug, err
 	}
 
 	var bodies []*bytes.Buffer
@@ -77,7 +81,7 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 	bodies, err = p.request(searchFields)
 	var unpacked []string
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, debug, err
 	}
 
 	/*
@@ -88,7 +92,7 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 	for _, body := range bodies {
 		jsonParsed, err := gabs.ParseJSONBuffer(body)
 		if err != nil {
-			return nil, nil, err
+			return nil, nil, debug, err
 		}
 		childM := jsonParsed.ChildrenMap()
 		// If SHA-1 is present, this is not an array
@@ -120,7 +124,7 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 
 		jsonParsed, err := gabs.ParseJSON([]byte(body))
 		if err != nil {
-			return nil, nil, err
+			return nil, nil, debug, err
 		}
 
 		entryObj := gabs.New()
@@ -135,12 +139,12 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 
 		if jsonParsed.Exists("children") {
 			if err != nil {
-				return nil, nil, err
+				return nil, nil, debug, err
 			}
 			// Here we run the new query
 			gabsChildren, err := p.getRelated("children", jsonParsed.S("SHA-1").Data().(string), p.limit)
 			if err != nil {
-				return nil, nil, err
+				return nil, nil, debug, err
 			}
 			children = gabsChildren.Path("children")
 			for _, child := range children.Children() {
@@ -159,11 +163,11 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 			// Here we run the new query
 			gabsParents, err := p.getRelated("parents", jsonParsed.S("SHA-1").Data().(string), p.limit)
 			if err != nil {
-				return nil, nil, err
+				return nil, nil, debug, err
 			}
 			parents = gabsParents.Path("parents")
 			if err != nil {
-				return nil, nil, err
+				return nil, nil, debug, err
 			}
 			for _, child := range parents.Children() {
 				// Create an object from the parent
@@ -185,7 +189,7 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 
 	err = json.NewDecoder(strings.NewReader(finalJSONParsed.S("entries").String())).Decode(&entries)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, debug, err
 	}
 
 	mx := sync.Mutex{}
@@ -210,10 +214,10 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 
 			top, err := stats.ToJSON(p.source.Name)
 			if err != nil {
-				return nil, nil, err
+				return nil, nil, debug, err
 			}
 
-			return nil, top, nil
+			return nil, top, nil, nil
 		}
 
 		// Update stats
@@ -326,7 +330,7 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 		}
 	}
 
-	return results, nil, nil
+	return results, nil, debug, nil
 }
 
 // request connects to the HTTP access point and returns the response
@@ -489,4 +493,9 @@ func (p *plugin) query(url string) (*bytes.Buffer, error) {
 	}
 
 	return body, err
+}
+
+// New method for Web GUI field names autocomplete:
+func (p *plugin) Fields() ([]string, error) {
+        return p.source.QueryFields, nil
 }

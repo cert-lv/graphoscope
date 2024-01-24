@@ -31,12 +31,16 @@ icon: database
 plugin: hashlookup
 inGlobal: true
 includeDatetime: false
-supportsSQL: false
+supportsSQL: true
 
 access:
     url: https://hashlookup.circl.lu
     apiKey: .
 
+queryFields:
+    - md5
+    - sha1
+    - sha256
 
 relations:
   -
@@ -71,4 +75,38 @@ relations:
     edge:
       label: ParentOf
       attributes: []
+
+  -
+    from:
+        id: SHA-1
+        group: identifier
+        search: sha1
+        attributes: ["FileName", "FileSize", "source-url","MD5" ,"SHA-
+512" , "SHA-256", "SHA-1", "SSDEEP", "TLSH", "insert-timestamp",
+"mimetype", "source", "hashlookup-parent-total", "snap-authority"]
+
+    to:
+        id: MD5
+        group: identifier
+        search: md5
+        attributes: ["FileName", "FileSize", "source-url","MD5" ,"SHA-
+512" , "SHA-256", "SHA-1", "SSDEEP", "TLSH", "insert-timestamp",
+"mimetype", "source", "hashlookup-parent-total", "snap-authority"]
+
+  -
+    from:
+        id: SHA-1
+        group: identifier
+        search: sha1
+        attributes: ["FileName", "FileSize", "source-url","MD5" ,"SHA-
+512" , "SHA-256", "SHA-1", "SSDEEP", "TLSH", "insert-timestamp",
+"mimetype", "source", "hashlookup-parent-total", "snap-authority"]
+
+    to:
+        id: SHA-256
+        group: identifier
+        search: sha256
+        attributes: ["FileName", "FileSize", "source-url","MD5" ,"SHA-
+512" , "SHA-256", "SHA-1", "SSDEEP", "TLSH", "insert-timestamp",
+"mimetype", "source", "hashlookup-parent-total", "snap-authority"]
 ```

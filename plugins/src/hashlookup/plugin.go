@@ -21,10 +21,8 @@ type plugin struct {
 	// Inherit default configuration fields
 	source *pdk.Source
 
-	//client *package.Client
-	limit int
-
 	// Custom fields
 	url    string
 	apiKey string
+	limit  int
 }

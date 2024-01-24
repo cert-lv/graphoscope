@@ -1,8 +1,3 @@
-/*
- * Template to develop new plugins.
- * Check GUI documentation section "Administration" for a step-by-step workflow
- */
-
 package main
 
 import (
@@ -10,16 +5,17 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/Jeffail/gabs/v2"
-	"github.com/blastrain/vitess-sqlparser/sqlparser"
-	"github.com/cert-lv/graphoscope/pdk"
-	"github.com/umpc/go-sortedmap"
-	"github.com/umpc/go-sortedmap/desc"
 	"net/http"
 	"net/url"
 	"regexp"
 	"strings"
 	"sync"
+
+	"github.com/Jeffail/gabs/v2"
+	"github.com/blastrain/vitess-sqlparser/sqlparser"
+	"github.com/cert-lv/graphoscope/pdk"
+	"github.com/umpc/go-sortedmap"
+	"github.com/umpc/go-sortedmap/desc"
 )
 
 /*
@@ -55,9 +51,12 @@ func (p *plugin) Setup(source *pdk.Source, limit int) error {
 		}
 	}
 
-	// TODO check that
-	fmt.Printf("HTTP %s: %#v\n\n", source.Name, p)
+	// fmt.Printf("Hashplugin %s: %#v\n\n", source.Name, p)
 	return nil
+}
+
+func (p *plugin) Fields() ([]string, error) {
+	return p.source.QueryFields, nil
 }
 
 func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[string]interface{}, map[string]interface{}, error) {
@@ -95,6 +94,7 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 			return nil, nil, debug, err
 		}
 		childM := jsonParsed.ChildrenMap()
+
 		// If SHA-1 is present, this is not an array
 		if _, ok := childM["SHA-1"]; ok {
 			unpacked = append(unpacked, jsonParsed.String())
@@ -107,10 +107,11 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 		}
 	}
 
-	// variable holding the Json values for the merge
+	// Variable holding the JSON values for the merge
 	var finalJSONParsed = gabs.New()
 	finalJSONParsed.Array("entries")
-	// variable used to convert back to go
+
+	// Variable used to convert back to go
 	var entries []map[string]interface{}
 
 	for _, body := range unpacked {
@@ -141,49 +142,60 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 			if err != nil {
 				return nil, nil, debug, err
 			}
+
 			// Here we run the new query
 			gabsChildren, err := p.getRelated("children", jsonParsed.S("SHA-1").Data().(string), p.limit)
 			if err != nil {
 				return nil, nil, debug, err
 			}
+
 			children = gabsChildren.Path("children")
+
 			for _, child := range children.Children() {
 				// Create an object from the child
 				jsonObj := gabs.New()
+
 				// Add a reference to the parent
 				jsonObj.Set(jsonParsed.S("SHA-1").Data(), "parent")
 				jsonObj.Set(child.Data().(string), "SHA-1")
+
 				// Add the children to the list of entries
 				entryObj.ArrayAppend(jsonObj, "entries")
 			}
-			// Remove the children for the main received object
+
+			// Remove children for the main received object
 			jsonParsed.Delete("children")
 		}
+
 		if jsonParsed.Exists("parents") {
 			// Here we run the new query
 			gabsParents, err := p.getRelated("parents", jsonParsed.S("SHA-1").Data().(string), p.limit)
 			if err != nil {
 				return nil, nil, debug, err
 			}
+
 			parents = gabsParents.Path("parents")
 			if err != nil {
 				return nil, nil, debug, err
 			}
+
 			for _, child := range parents.Children() {
 				// Create an object from the parent
 				jsonObj := gabs.New()
+
 				// Add a reference to the children
 				jsonObj.Set(jsonParsed.S("SHA-1").Data(), "children")
 				jsonObj.Set(child.Data().(string), "SHA-1")
+
 				// Add the children to the list of entries
 				entryObj.ArrayAppend(jsonObj, "entries")
 			}
-			// Remove the parents for the main received object
+
+			// Remove parents for the main received object
 			jsonParsed.Delete("parents")
 		}
 
 		entryObj.ArrayAppend(jsonParsed, "entries")
-
 		finalJSONParsed.Merge(entryObj)
 	}
 
@@ -209,9 +221,6 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 
 		// Stop when results count is over the limit
 		if counter >= p.limit {
-			// Uncomment in real plugin
-			//cancel()
-
 			top, err := stats.ToJSON(p.source.Name)
 			if err != nil {
 				return nil, nil, debug, err
@@ -340,6 +349,7 @@ func (p *plugin) request(searchFields [][2]string) ([]*bytes.Buffer, error) {
 
 	// List of possible Hashlookup fields
 	possibleFields := []string{"md5", "sha1", "sha256"}
+
 	// List of requests we will have to make
 	requests := make([]*http.Request, 0, 3)
 	responses := make([]*bytes.Buffer, 0, 3)
@@ -360,14 +370,17 @@ func (p *plugin) request(searchFields [][2]string) ([]*bytes.Buffer, error) {
 				tmpMap := make(map[string][]string)
 				tmpMap["hashes"] = data[possibleSearchField]
 				tmpBody, errm := json.Marshal(tmpMap)
+
 				if errm != nil {
 					return nil, fmt.Errorf("Could not serialize: %s", err.Error())
 				}
 				tmpReq, err = http.NewRequest("POST", tmpUrl, bytes.NewReader(tmpBody))
+
 			} else {
 				tmpUrl = p.url + "/lookup/" + possibleSearchField + "/" + data.Get(possibleSearchField)
 				tmpReq, err = http.NewRequest("GET", tmpUrl, nil)
 			}
+
 			requests = append(requests, tmpReq)
 
 			if err != nil {
@@ -375,6 +388,7 @@ func (p *plugin) request(searchFields [][2]string) ([]*bytes.Buffer, error) {
 			}
 		}
 	}
+
 	// If no possible search field, exit
 	if len(requests) == 0 {
 		return nil, fmt.Errorf("%s", errors.New("No compatible hashlookup search field."))
@@ -386,8 +400,10 @@ func (p *plugin) request(searchFields [][2]string) ([]*bytes.Buffer, error) {
 			req.SetBasicAuth(p.source.Access["apiKey"], "")
 		}
 		req.Header.Add("Content-Type", "application/json")
+
 		// Declare an HTTP client to execute the request
 		client := http.Client{Timeout: p.source.Timeout}
+
 		// Send an HTTP using `req` object
 		tmpResp, err := client.Do(req)
 		if err != nil {
@@ -401,6 +417,7 @@ func (p *plugin) request(searchFields [][2]string) ([]*bytes.Buffer, error) {
 			return nil, fmt.Errorf("Can't read an HTTP response: %s", err.Error())
 		}
 		tmpResp.Body.Close()
+
 		// Check the response
 		if tmpResp.StatusCode != http.StatusOK {
 			return nil, fmt.Errorf("Bad response StatusCode: %s", tmpResp.Status)
@@ -413,8 +430,6 @@ func (p *plugin) request(searchFields [][2]string) ([]*bytes.Buffer, error) {
 
 // getChildren connect to the HTTP endpoints and retrieve children
 func (p *plugin) getRelated(relation string, parent string, limit int) (*gabs.Container, error) {
-	fmt.Println(relation)
-
 	// Do everything as float64 as shortcut because it's gabs's default
 	var nbElements, total, spoon float64
 	gabsBuffer := gabs.New()
@@ -428,17 +443,18 @@ func (p *plugin) getRelated(relation string, parent string, limit int) (*gabs.Co
 	total = spoon
 
 	for (nbElements < float64(limit)) && (nbElements < total) {
-		fmt.Println(nbElements)
 		url = p.url + "/" + relation + "/" + parent + "/" + fmt.Sprint(spoon) + "/" + cursor
-		fmt.Println(url)
 		body, err := p.query(url)
+
 		if err != nil {
 			return nil, fmt.Errorf("Can't query %s", err.Error())
 		}
+
 		tmp, err := gabs.ParseJSONBuffer(body)
 		if err != nil {
 			return nil, fmt.Errorf("Can't parse: %s", err.Error())
 		}
+
 		gabsBuffer.Merge(tmp)
 		cursor = tmp.Path("cursor").Data().(string)
 		total, _ = tmp.Path("total").Data().(float64)
@@ -446,21 +462,6 @@ func (p *plugin) getRelated(relation string, parent string, limit int) (*gabs.Co
 	}
 
 	return gabsBuffer, err
-}
-
-func (p *plugin) Stop() error {
-	/*
-	 * STEP 8.
-	 *
-	 * Stop the plugin when main service stops,
-	 * drop all connections correctly
-	 */
-
-	// ctx, cancel := context.WithTimeout(context.Background(), p.source.Timeout)
-	// defer cancel()
-
-	// return p.client.Disconnect(ctx)
-	return nil
 }
 
 func (p *plugin) query(url string) (*bytes.Buffer, error) {
@@ -472,8 +473,10 @@ func (p *plugin) query(url string) (*bytes.Buffer, error) {
 		req.SetBasicAuth(p.source.Access["apiKey"], "")
 	}
 	req.Header.Add("Content-Type", "application/json")
+
 	// Declare an HTTP client to execute the request
 	client := http.Client{Timeout: p.source.Timeout}
+
 	// Send an HTTP using `req` object
 	response, err := client.Do(req)
 	if err != nil {
@@ -487,6 +490,7 @@ func (p *plugin) query(url string) (*bytes.Buffer, error) {
 		return nil, fmt.Errorf("Can't read an HTTP response: %s", err.Error())
 	}
 	response.Body.Close()
+
 	// Check the response
 	if response.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("Bad response StatusCode: %s", response.Status)
@@ -495,7 +499,6 @@ func (p *plugin) query(url string) (*bytes.Buffer, error) {
 	return body, err
 }
 
-// New method for Web GUI field names autocomplete:
-func (p *plugin) Fields() ([]string, error) {
-        return p.source.QueryFields, nil
+func (p *plugin) Stop() error {
+	return nil
 }

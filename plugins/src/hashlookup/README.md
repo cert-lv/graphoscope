@@ -15,11 +15,13 @@ go build -buildmode=plugin -ldflags="-w" -o hashlookup.so ./*.go
 Or use the Makefile command:
 `make plugins-local`
 
+
 # Access details
 
 Source YAML definition's `access` fields:
 - **url**: hashlookup API endpoint, for example - `https://hashlookup.circl.lu`
 - **apiKey**: optional hashlookup API key
+
 
 # Example definition file
 
@@ -31,7 +33,7 @@ icon: database
 plugin: hashlookup
 inGlobal: true
 includeDatetime: false
-supportsSQL: true
+supportsSQL: false
 
 access:
     url: https://hashlookup.circl.lu
@@ -41,6 +43,7 @@ queryFields:
     - md5
     - sha1
     - sha256
+
 
 relations:
   -
@@ -58,55 +61,46 @@ relations:
 
     edge:
         label: ChildOf
-        attributes: []
-  -
-    from:
-      id: SHA-1
-      group: identifier
-      search: sha1
-      attributes: ["FileName", "FileSize", "source-url","MD5" ,"SHA-512" , "SHA-256", "SHA-1", "SSDEEP", "TLSH", "insert-timestamp", "mimetype", "source", "hashlookup-parent-total", "snap-authority"]
-
-    to:
-      id: children
-      group: identifier
-      search: sha1
-      attributes: ["FileName", "FileSize", "source-url","MD5" ,"SHA-512" , "SHA-256", "SHA-1", "SSDEEP", "TLSH", "insert-timestamp", "mimetype", "source", "hashlookup-parent-total", "snap-authority"]
-
-    edge:
-      label: ParentOf
-      attributes: []
 
   -
     from:
         id: SHA-1
         group: identifier
         search: sha1
-        attributes: ["FileName", "FileSize", "source-url","MD5" ,"SHA-
-512" , "SHA-256", "SHA-1", "SSDEEP", "TLSH", "insert-timestamp",
-"mimetype", "source", "hashlookup-parent-total", "snap-authority"]
+        attributes: ["FileName", "FileSize", "source-url","MD5" ,"SHA-512" , "SHA-256", "SHA-1", "SSDEEP", "TLSH", "insert-timestamp", "mimetype", "source", "hashlookup-parent-total", "snap-authority"]
+
+    to:
+        id: children
+        group: identifier
+        search: sha1
+        attributes: ["FileName", "FileSize", "source-url","MD5" ,"SHA-512" , "SHA-256", "SHA-1", "SSDEEP", "TLSH", "insert-timestamp", "mimetype", "source", "hashlookup-parent-total", "snap-authority"]
+
+    edge:
+        label: ParentOf
+
+  -
+    from:
+        id: SHA-1
+        group: identifier
+        search: sha1
+        attributes: ["FileName", "FileSize", "source-url","MD5" ,"SHA-512" , "SHA-256", "SHA-1", "SSDEEP", "TLSH", "insert-timestamp", "mimetype", "source", "hashlookup-parent-total", "snap-authority"]
 
     to:
         id: MD5
         group: identifier
         search: md5
-        attributes: ["FileName", "FileSize", "source-url","MD5" ,"SHA-
-512" , "SHA-256", "SHA-1", "SSDEEP", "TLSH", "insert-timestamp",
-"mimetype", "source", "hashlookup-parent-total", "snap-authority"]
+        attributes: ["FileName", "FileSize", "source-url","MD5" ,"SHA-512" , "SHA-256", "SHA-1", "SSDEEP", "TLSH", "insert-timestamp", "mimetype", "source", "hashlookup-parent-total", "snap-authority"]
 
   -
     from:
         id: SHA-1
         group: identifier
         search: sha1
-        attributes: ["FileName", "FileSize", "source-url","MD5" ,"SHA-
-512" , "SHA-256", "SHA-1", "SSDEEP", "TLSH", "insert-timestamp",
-"mimetype", "source", "hashlookup-parent-total", "snap-authority"]
+        attributes: ["FileName", "FileSize", "source-url","MD5" ,"SHA-512" , "SHA-256", "SHA-1", "SSDEEP", "TLSH", "insert-timestamp", "mimetype", "source", "hashlookup-parent-total", "snap-authority"]
 
     to:
         id: SHA-256
         group: identifier
         search: sha256
-        attributes: ["FileName", "FileSize", "source-url","MD5" ,"SHA-
-512" , "SHA-256", "SHA-1", "SSDEEP", "TLSH", "insert-timestamp",
-"mimetype", "source", "hashlookup-parent-total", "snap-authority"]
+        attributes: ["FileName", "FileSize", "source-url","MD5" ,"SHA-512" , "SHA-256", "SHA-1", "SSDEEP", "TLSH", "insert-timestamp", "mimetype", "source", "hashlookup-parent-total", "snap-authority"]
 ```

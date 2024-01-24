@@ -85,6 +85,7 @@ Available plugins are in [plugins/src](plugins/src):
 - Redis
 - SQLite
 - AbuseIPDB
+- Hashlookup
 
 3rd party compiled `*.so` plugins should be placed in [plugins/sources](plugins/sources) directory.
 
@@ -194,12 +195,12 @@ Response example for the first query:
 - [ ] Generate a direct link to the saved dashboard
 - [ ] Data sources access based on user groups permissions
 - [ ] Implement other SQL features, like `NOT BETWEEN`
+- [ ] Filters `Edit` button doesn't work if data source is not available any more
 - [ ] Data source plugins:
   - [ ] RTIR
   - [ ] MS SQL
   - [ ] Oracle SQL
   - [ ] Apache Cassandra
-  - [ ] Hashlookup
   - [ ] Genji
   - [ ] Presto
   - [ ] MISP
@@ -251,6 +252,13 @@ Response example for the first query:
 - Pretty table renderers:<br/>
   https://github.com/olekukonko/tablewriter<br/>
   https://github.com/jedib0t/go-pretty
+
+
+## Acknowledgment
+
+![](assets/img/cef.png)
+
+From 01/09/2021 to 30/06/2024 development of Graphoscope is being co-funded by European Commission through the Connecting Europe Facility action entitled "Joint Threat Analysis Network", action number 2020-EU-IA-0260.
 
 
 ## License

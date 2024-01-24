@@ -3,6 +3,7 @@ module github.com/cert-lv/graphoscope
 go 1.16
 
 require (
+	github.com/Jeffail/gabs/v2 v2.7.0 // indirect
 	github.com/blastrain/vitess-sqlparser v0.0.0-20201030050434-a139afbb1aba
 	github.com/georgysavva/scany v0.2.7
 	github.com/go-sql-driver/mysql v1.6.0

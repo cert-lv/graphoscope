@@ -219,8 +219,6 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 
 	for _, entry := range entries {
 
-		fmt.Printf("1 %#v \n", entry)
-
 		// Stop when results count is over the limit
 		if counter >= p.limit {
 			top, err := stats.ToJSON(p.source.Name)

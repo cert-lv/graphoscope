@@ -49,15 +49,15 @@ relations:
   -
     from:
         id: SHA-1
-        group: identifier
+        group: sha1
         search: sha1
-        attributes: ["FileName", "FileSize", "source-url","MD5" ,"SHA-512" , "SHA-256", "SHA-1", "SSDEEP", "TLSH", "insert-timestamp", "mimetype", "source", "hashlookup-parent-total", "snap-authority"]
+        attributes: ["FileName", "FileSize", "source-url", "MD5", "SHA-512", "SHA-256", "SSDEEP", "TLSH", "insert-timestamp", "mimetype", "source", "hashlookup-parent-total", "snap-authority", "hashlookup:trust"]
 
     to:
         id: parent
-        group: identifier
+        group: sha1
         search: sha1
-        attributes: ["FileName", "FileSize", "source-url","MD5" ,"SHA-512" , "SHA-256", "SHA-1", "SSDEEP", "TLSH", "insert-timestamp", "mimetype", "source", "hashlookup-parent-total", "snap-authority"]
+        attributes: ["FileName", "FileSize", "source-url", "MD5", "SHA-512", "SHA-256", "SSDEEP", "TLSH", "insert-timestamp", "mimetype", "source", "hashlookup-parent-total", "snap-authority", "hashlookup:trust"]
 
     edge:
         label: ChildOf
@@ -65,15 +65,15 @@ relations:
   -
     from:
         id: SHA-1
-        group: identifier
+        group: sha1
         search: sha1
-        attributes: ["FileName", "FileSize", "source-url","MD5" ,"SHA-512" , "SHA-256", "SHA-1", "SSDEEP", "TLSH", "insert-timestamp", "mimetype", "source", "hashlookup-parent-total", "snap-authority"]
+        attributes: ["FileName", "FileSize", "source-url", "MD5", "SHA-512", "SHA-256", "SSDEEP", "TLSH", "insert-timestamp", "mimetype", "source", "hashlookup-parent-total", "snap-authority", "hashlookup:trust"]
 
     to:
         id: children
-        group: identifier
+        group: sha1
         search: sha1
-        attributes: ["FileName", "FileSize", "source-url","MD5" ,"SHA-512" , "SHA-256", "SHA-1", "SSDEEP", "TLSH", "insert-timestamp", "mimetype", "source", "hashlookup-parent-total", "snap-authority"]
+        attributes: ["FileName", "FileSize", "source-url", "MD5", "SHA-512", "SHA-256", "SSDEEP", "TLSH", "insert-timestamp", "mimetype", "source", "hashlookup-parent-total", "snap-authority", "hashlookup:trust"]
 
     edge:
         label: ParentOf
@@ -81,26 +81,26 @@ relations:
   -
     from:
         id: SHA-1
-        group: identifier
+        group: sha1
         search: sha1
-        attributes: ["FileName", "FileSize", "source-url","MD5" ,"SHA-512" , "SHA-256", "SHA-1", "SSDEEP", "TLSH", "insert-timestamp", "mimetype", "source", "hashlookup-parent-total", "snap-authority"]
+        attributes: ["FileName", "FileSize", "source-url", "SHA-512", "SHA-256", "SSDEEP", "TLSH", "insert-timestamp", "mimetype", "source", "hashlookup-parent-total", "snap-authority", "hashlookup:trust"]
 
     to:
         id: MD5
-        group: identifier
+        group: md5
         search: md5
-        attributes: ["FileName", "FileSize", "source-url","MD5" ,"SHA-512" , "SHA-256", "SHA-1", "SSDEEP", "TLSH", "insert-timestamp", "mimetype", "source", "hashlookup-parent-total", "snap-authority"]
+        attributes: ["FileName", "FileSize", "source-url", "SHA-512", "SHA-256", "SSDEEP", "TLSH", "insert-timestamp", "mimetype", "source", "hashlookup-parent-total", "snap-authority", "hashlookup:trust"]
 
   -
     from:
         id: SHA-1
-        group: identifier
+        group: sha1
         search: sha1
-        attributes: ["FileName", "FileSize", "source-url","MD5" ,"SHA-512" , "SHA-256", "SHA-1", "SSDEEP", "TLSH", "insert-timestamp", "mimetype", "source", "hashlookup-parent-total", "snap-authority"]
+        attributes: ["FileName", "FileSize", "source-url", "MD5", "SHA-512", "SSDEEP", "TLSH", "insert-timestamp", "mimetype", "source", "hashlookup-parent-total", "snap-authority", "hashlookup:trust"]
 
     to:
         id: SHA-256
-        group: identifier
+        group: sha256
         search: sha256
-        attributes: ["FileName", "FileSize", "source-url","MD5" ,"SHA-512" , "SHA-256", "SHA-1", "SSDEEP", "TLSH", "insert-timestamp", "mimetype", "source", "hashlookup-parent-total", "snap-authority"]
+        attributes: ["FileName", "FileSize", "source-url", "MD5", "SHA-512", "SSDEEP", "TLSH", "insert-timestamp", "mimetype", "source", "hashlookup-parent-total", "snap-authority", "hashlookup:trust"]
 ```

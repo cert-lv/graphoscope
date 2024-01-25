@@ -86,6 +86,45 @@
             "border": "#ca2"
         }
     },
+    "md5": {
+        "shape": "icon",
+        "icon": {
+          "face": "Icons",
+          "weight": "bold",
+          "code": "\uf0fd",
+          "size": "30",
+          "color": "#f65"
+        },
+        "font": {
+            "color": "#833"
+        }
+    },
+    "sha1": {
+        "shape": "icon",
+        "icon": {
+          "face": "Icons",
+          "weight": "bold",
+          "code": "\uf0fd",
+          "size": "30",
+          "color": "#58f"
+        },
+        "font": {
+            "color": "#037"
+        }
+    },
+    "sha256": {
+        "shape": "icon",
+        "icon": {
+          "face": "Icons",
+          "weight": "bold",
+          "code": "\uf0fd",
+          "size": "30",
+          "color": "#a7f"
+        },
+        "font": {
+            "color": "#537"
+        }
+    },
     "cluster": {
         "shape": "hexagon",
         "size": 25,

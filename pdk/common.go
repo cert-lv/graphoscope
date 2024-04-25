@@ -237,21 +237,14 @@ func CreateRelations(source *Source, entry map[string]interface{}, unique map[st
 
 			// Check FROM type & searching fields
 			if len(relation.From.VarTypes) > 0 {
-				isVarType := false
-
 				for _, t := range relation.From.VarTypes {
 					if t.RegexCompiled.MatchString(fmt.Sprintf("%v", entry[relation.From.ID])) {
 						from["group"] = t.Group
 						from["search"] = t.Search
 						from["label"] = t.Label
 
-						isVarType = true
 						break
 					}
-				}
-
-				if !isVarType {
-					continue
 				}
 			}
 
@@ -271,21 +264,14 @@ func CreateRelations(source *Source, entry map[string]interface{}, unique map[st
 
 			// Check FROM type & searching fields
 			if len(relation.To.VarTypes) > 0 {
-				isVarType := false
-
 				for _, t := range relation.To.VarTypes {
 					if t.RegexCompiled.MatchString(fmt.Sprintf("%v", entry[relation.To.ID])) {
 						to["group"] = t.Group
 						to["search"] = t.Search
 						to["label"] = t.Label
 
-						isVarType = true
 						break
 					}
-				}
-
-				if !isVarType {
-					continue
 				}
 			}
 

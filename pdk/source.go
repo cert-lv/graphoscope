@@ -48,5 +48,6 @@ type Node struct {
 		RegexCompiled *regexp.Regexp `yaml:"-"`
 		Group         string         `yaml:"group"`
 		Search        string         `yaml:"search"`
+		Label         string         `yaml:"label"`
 	} `yaml:"varTypes"`
 }

@@ -3,7 +3,7 @@
 ################################################################################
 
 # Golang alpine, version must match main service's version
-FROM golang:1.18.1-alpine AS plugins-builder
+FROM golang:1.22.2-alpine AS plugins-builder
 
 # Install git + SSL ca certificates.
 # Git is required for fetching the dependencies.
@@ -27,6 +27,7 @@ ENV CGO_ENABLED=1 GOOS=linux GOARCH=amd64
 # Build plugins
 RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/elasticsearch.v7.so plugins/src/elasticsearch.v7/*.go
 RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/http.so             plugins/src/http/*.go
+RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/rest.so             plugins/src/rest/*.go
 RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/mongodb.so          plugins/src/mongodb/*.go
 RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/pastelyzer.so       plugins/src/pastelyzer/*.go
 RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/postgresql.so       plugins/src/postgresql/*.go
@@ -46,7 +47,7 @@ RUN mkdir /go/plugins/outputs
 ################################################################################
 #                     STEP 2. Build the executable binary                      #
 ################################################################################
-FROM golang:1.18.1-alpine
+FROM golang:1.22.2-alpine
 
 # Install git + SSL ca certificates.
 # Git is required for fetching the dependencies.

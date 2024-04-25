@@ -77,7 +77,8 @@ Available plugins are in [plugins/src](plugins/src):
 
 - Elasticsearch
 - CSV file
-- HTTP API
+- HTTP GET/POST
+- REST API
 - MongoDB
 - MySQL
 - Pastelyzer
@@ -196,6 +197,7 @@ Response example for the first query:
 - [ ] Data sources access based on user groups permissions
 - [ ] Implement other SQL features, like `NOT BETWEEN`
 - [ ] Filters `Edit` button doesn't work if data source is not available any more
+- [ ] API can return an image instead of JSON
 - [ ] Data source plugins:
   - [ ] RTIR
   - [ ] MS SQL
@@ -206,7 +208,6 @@ Response example for the first query:
   - [ ] MISP
   - [ ] VirusTotal
   - [ ] Shodan
-  - [ ] Poland malware Sandbox / mwdb
   - [ ] General TCP
   - [ ] ipinfo.io
   - [ ] phishtank.org

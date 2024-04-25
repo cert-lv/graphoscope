@@ -172,6 +172,7 @@ uninstall-remote:
 plugins-local:
 	go build -buildmode=plugin -ldflags="-w" -o plugins/sources/elasticsearch.v7.so plugins/src/elasticsearch.v7/*.go
 	go build -buildmode=plugin -ldflags="-w" -o plugins/sources/http.so             plugins/src/http/*.go
+	go build -buildmode=plugin -ldflags="-w" -o plugins/sources/rest.so             plugins/src/rest/*.go
 	go build -buildmode=plugin -ldflags="-w" -o plugins/sources/mongodb.so          plugins/src/mongodb/*.go
 	go build -buildmode=plugin -ldflags="-w" -o plugins/sources/pastelyzer.so       plugins/src/pastelyzer/*.go
 	go build -buildmode=plugin -ldflags="-w" -o plugins/sources/postgresql.so       plugins/src/postgresql/*.go
@@ -191,6 +192,7 @@ plugins-local:
 test:
 	go test plugins/src/elasticsearch.v7/*.go
 	go test plugins/src/http/*.go
+	go test plugins/src/rest/*.go
 	go test plugins/src/mongodb/*.go
 	go test plugins/src/pastelyzer/*.go
 	go test plugins/src/postgresql/*.go

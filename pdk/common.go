@@ -3,6 +3,7 @@ package pdk
 import (
 	"fmt"
 	"strings"
+	"sync"
 )
 
 /*
@@ -188,4 +189,149 @@ func InterfaceSliceContains(slice []interface{}, val interface{}) bool {
 	}
 
 	return false
+}
+
+/*
+ * Create relations from a data source response's single entry
+ */
+func CreateRelations(source *Source, entry map[string]interface{}, unique map[string]bool, counter *int, mx *sync.Mutex, results *[]map[string]interface{}) {
+	// Go through all the predefined relations and collect unique entries
+	for _, relation := range source.Relations {
+		if entry[relation.From.ID] != nil && entry[relation.To.ID] != nil {
+			mx.Lock()
+
+			// Use "Printf(...%v..." instead of "entry[relation.From.ID].(string)"
+			// as the value can be not a string only
+			if _, exists := unique[fmt.Sprintf("%v-%v-%v-%v", relation.From.ID, entry[relation.From.ID], relation.To.ID, entry[relation.To.ID])]; exists {
+				if ResultsContain(*results, entry, relation) {
+					mx.Unlock()
+					continue
+				}
+			}
+
+			*counter++
+
+			unique[fmt.Sprintf("%v-%v-%v-%v", relation.From.ID, entry[relation.From.ID], relation.To.ID, entry[relation.To.ID])] = true
+			mx.Unlock()
+
+			/*
+			 * Check if expected relation exists in received data.
+			 * This allows returned JSON objects to have dynamic schema
+			 */
+			if _, ok := entry[relation.From.ID]; !ok {
+				continue
+			}
+
+			if _, ok := entry[relation.To.ID]; !ok {
+				continue
+			}
+
+			/*
+			 * FROM node with attributes
+			 */
+			from := map[string]interface{}{
+				"id":     entry[relation.From.ID],
+				"group":  relation.From.Group,
+				"search": relation.From.Search,
+			}
+
+			// Check FROM type & searching fields
+			if len(relation.From.VarTypes) > 0 {
+				isVarType := false
+
+				for _, t := range relation.From.VarTypes {
+					if t.RegexCompiled.MatchString(fmt.Sprintf("%v", entry[relation.From.ID])) {
+						from["group"] = t.Group
+						from["search"] = t.Search
+						from["label"] = t.Label
+
+						isVarType = true
+						break
+					}
+				}
+
+				if !isVarType {
+					continue
+				}
+			}
+
+			if len(relation.From.Attributes) > 0 {
+				from["attributes"] = make(map[string]interface{})
+				CopyPresentValues(entry, from["attributes"].(map[string]interface{}), relation.From.Attributes)
+			}
+
+			/*
+			 * TO node
+			 */
+			to := map[string]interface{}{
+				"id":     entry[relation.To.ID],
+				"group":  relation.To.Group,
+				"search": relation.To.Search,
+			}
+
+			// Check FROM type & searching fields
+			if len(relation.To.VarTypes) > 0 {
+				isVarType := false
+
+				for _, t := range relation.To.VarTypes {
+					if t.RegexCompiled.MatchString(fmt.Sprintf("%v", entry[relation.To.ID])) {
+						to["group"] = t.Group
+						to["search"] = t.Search
+						to["label"] = t.Label
+
+						isVarType = true
+						break
+					}
+				}
+
+				if !isVarType {
+					continue
+				}
+			}
+
+			if len(relation.To.Attributes) > 0 {
+				to["attributes"] = make(map[string]interface{})
+				CopyPresentValues(entry, to["attributes"].(map[string]interface{}), relation.To.Attributes)
+			}
+
+			// Resulting graph entry to return
+			result := make(map[string]interface{})
+
+			/*
+			 * Edge between FROM and TO
+			 */
+			if relation.Edge != nil && (relation.Edge.Label != "" || len(relation.Edge.Attributes) > 0) {
+				result["edge"] = make(map[string]interface{})
+
+				if to["label"] != "" && to["label"] != nil {
+					result["edge"].(map[string]interface{})["label"] = to["label"]
+				} else if from["label"] != "" && from["label"] != nil {
+					result["edge"].(map[string]interface{})["label"] = from["label"]
+				} else if relation.Edge.Label != "" {
+					result["edge"].(map[string]interface{})["label"] = relation.Edge.Label
+				}
+
+				if len(relation.Edge.Attributes) > 0 {
+					result["edge"].(map[string]interface{})["attributes"] = make(map[string]interface{})
+					CopyPresentValues(entry, result["edge"].(map[string]interface{})["attributes"].(map[string]interface{}), relation.Edge.Attributes)
+				}
+			}
+
+			/*
+			 * Put it together
+			 */
+			result["from"] = from
+			result["to"] = to
+			result["source"] = source.Name
+
+			//fmt.Println("Edge:", from, to, source)
+
+			/*
+			 * Add current entry to the list to return
+			 */
+			mx.Lock()
+			*results = append(*results, result)
+			mx.Unlock()
+		}
+	}
 }

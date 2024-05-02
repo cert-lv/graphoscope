@@ -87,6 +87,7 @@ Available plugins are in [plugins/src](plugins/src):
 - SQLite
 - AbuseIPDB
 - Hashlookup
+- CIRCL Passive SSL
 
 3rd party compiled `*.so` plugins should be placed in [plugins/sources](plugins/sources) directory.
 

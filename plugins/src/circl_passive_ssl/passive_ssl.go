@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"net/http"
 	"regexp"
-	"strings"
 	"sync"
 
 	"github.com/blastrain/vitess-sqlparser/sqlparser"
@@ -32,6 +31,10 @@ func (p *plugin) Setup(source *pdk.Source, limit int) error {
 		return fmt.Errorf("'access.url' must start with 'http[s]://'")
 	}
 
+	if source.Access["username"] == "" || source.Access["password"] == "" {
+		return fmt.Errorf("Username or password are not defined")
+	}
+
 	// Store settings
 	p.source = source
 	p.limit = limit
@@ -50,7 +53,7 @@ func (p *plugin) Setup(source *pdk.Source, limit int) error {
 		}
 	}
 
-	// fmt.Printf("REST %s: %#v\n\n", source.Name, p)
+	// fmt.Printf("CIRCL Passive SSL %s: %#v\n\n", source.Name, p)
 	return nil
 }
 
@@ -80,7 +83,7 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 		return nil, nil, debug, err
 	}
 
-	//fmt.Printf("REST API response:\n%v\n", body)
+	//fmt.Printf("CIRCL Passive SSL response:\n%v\n", body)
 
 	// Struct to store statistics data
 	// when the amount of returned entries is too large
@@ -94,28 +97,51 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 	 * Receive hits and deserialize them
 	 */
 	var entries []map[string]interface{}
-
-	//API response is a list of JSONs not one JSON object. Prior unmarshaling it is needed to fix JSON format
-	s := body.String() // Byte array to string
-
-	dataRaw := strings.Split(s, "\n") // Slice from multiline string
-	data := dataRaw[:len(dataRaw)-1]  // Delete last empty line
-
-	//Adding JSON delimiters and comma separation
-	var buffer bytes.Buffer
-	buffer.WriteString("[") //starting JSON char
-	for i, rec := range data {
-		buffer.WriteString(rec) //trailing JSON char
-		if i < len(data)-1 {    //add comma delimiter except last iteration
-			buffer.WriteString(",")
-		}
-	}
-	buffer.WriteString("]")     //trailing JSON char
-	jsonData := buffer.String() //final valid JSON string ready for unmarshaling
-
-	err = json.Unmarshal([]byte(jsonData), &entries)
+	var data map[string]interface{}
+	err = json.Unmarshal(body.Bytes(), &data)
 	if err != nil {
 		return nil, nil, debug, err
+	}
+
+	if searchField[0] == "ip" || searchField[0] == "network" {
+		for ip, certificates := range data {
+			for _, certificate := range certificates.(map[string]interface{})["certificates"].([]interface{}) {
+				subjects := data[ip].(map[string]interface{})["subjects"].(map[string]interface{})
+				subject, ok := subjects[certificate.(string)].(map[string]interface{})
+
+				if ok {
+					values := subject["values"].([]interface{})
+
+					for _, value := range values {
+						entry := map[string]interface{}{
+							"ip":      ip,
+							"sha1":    certificate,
+							"subject": value,
+						}
+
+						entries = append(entries, entry)
+					}
+				} else {
+					entry := map[string]interface{}{
+						"ip":   ip,
+						"sha1": certificate,
+					}
+
+					entries = append(entries, entry)
+				}
+			}
+		}
+
+	} else if searchField[0] == "sha1" {
+		seen := data["seen"].([]interface{})
+		for _, ip := range seen {
+			entry := map[string]interface{}{
+				"ip":   ip,
+				"sha1": searchField[1],
+			}
+
+			entries = append(entries, entry)
+		}
 	}
 
 	mx := &sync.Mutex{}
@@ -149,12 +175,20 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 // request connects to the HTTP access point and returns the response
 func (p *plugin) request(searchField [2]string) (*bytes.Buffer, map[string]interface{}, error) {
 
+	// Some fields should be processed in a more complex way,
+	// so do it here instead of replacing in YAML
+	switch searchField[0] {
+	case "ip":
+		searchField[0] = "query"
+		searchField[1] += "/32"
+	case "network":
+		searchField[0] = "query"
+	case "sha1":
+		searchField[0] = "cquery"
+	}
+
 	// Debug info
 	debug := make(map[string]interface{})
-
-	// Declare an HTTP client to execute the request
-	client := http.Client{Timeout: p.source.Timeout}
-
 	debug["query"] = p.url + "/" + searchField[0] + "/" + searchField[1]
 
 	req, err := http.NewRequest(http.MethodGet, p.url+"/"+searchField[0]+"/"+searchField[1], nil)
@@ -166,7 +200,10 @@ func (p *plugin) request(searchField [2]string) (*bytes.Buffer, map[string]inter
 	if p.username != "" && p.password != "" {
 		req.SetBasicAuth(p.username, p.password)
 	}
-	req.Header.Set("User-Agent", "graphoscope") // Required parameter for some APIs
+	req.Header.Set("User-Agent", "graphoscope") // Required parameter
+
+	// Declare an HTTP client to execute the request
+	client := http.Client{Timeout: p.source.Timeout}
 
 	// Send an HTTP request using a 'req' object
 	resp, err := client.Do(req)

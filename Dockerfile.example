@@ -25,21 +25,22 @@ RUN go get -d ./plugins/src/...
 ENV CGO_ENABLED=1 GOOS=linux GOARCH=amd64
 
 # Build plugins
-RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/elasticsearch.v7.so plugins/src/elasticsearch.v7/*.go
-RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/http.so             plugins/src/http/*.go
-RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/rest.so             plugins/src/rest/*.go
-RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/mongodb.so          plugins/src/mongodb/*.go
-RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/pastelyzer.so       plugins/src/pastelyzer/*.go
-RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/postgresql.so       plugins/src/postgresql/*.go
-RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/redis.so            plugins/src/redis/*.go
-RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/mysql.so            plugins/src/mysql/*.go
-RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/file-csv.so         plugins/src/file/csv/*.go
-RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/abuseipdb.so        plugins/src/abuseipdb/*.go
-RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/hashlookup.so       plugins/src/hashlookup/*.go
+RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/elasticsearch.v7.so  plugins/src/elasticsearch.v7/*.go
+RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/http.so              plugins/src/http/*.go
+RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/rest.so              plugins/src/rest/*.go
+RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/mongodb.so           plugins/src/mongodb/*.go
+RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/pastelyzer.so        plugins/src/pastelyzer/*.go
+RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/postgresql.so        plugins/src/postgresql/*.go
+RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/redis.so             plugins/src/redis/*.go
+RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/mysql.so             plugins/src/mysql/*.go
+RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/file-csv.so          plugins/src/file/csv/*.go
+RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/abuseipdb.so         plugins/src/abuseipdb/*.go
+RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/hashlookup.so        plugins/src/hashlookup/*.go
+RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/circl_passive_ssl.so plugins/src/circl_passive_ssl/*.go
 RUN CGO_CFLAGS="-g -O2 -Wno-return-local-addr" go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/sqlite.so plugins/src/sqlite/*.go
 
-RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/processors/taxonomy.so      plugins/src/taxonomy/*.go
-RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/processors/modify.so        plugins/src/modify/*.go
+RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/processors/taxonomy.so       plugins/src/taxonomy/*.go
+RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/processors/modify.so         plugins/src/modify/*.go
 
 RUN mkdir /go/plugins/outputs
 

@@ -85,9 +85,9 @@ func (s *Stats) ToJSON(source string) (map[string]interface{}, error) {
 				// We want Top 10 here and started from i == 1
 				if i > 9 {
 					break
-				} else {
-					i++
 				}
+
+				i++
 			}
 
 			json[k] = group

@@ -572,8 +572,13 @@ class Graph {
 
         for (var i = 0; i < selected.length; i++) {
             const node = this.application.graph.network.body.nodes[selected[i]];
-            this.application.search.query('FROM ' + source + ' WHERE ' + node.options.search + '=\'' + node.options.attributes[node.options.group] + '\'');
 
+            if (node.options.search === '') {
+                this.application.modal.error('Can not expand graph!', 'Search for this node type is not supported yet!');
+                return;
+            }
+
+            this.application.search.query('FROM ' + source + ' WHERE ' + node.options.search + '=\'' + node.options.attributes[node.options.group] + '\'');
             console.log('Expanding by', node.options.search, '=', node.id, 'from', source);
         }
     }

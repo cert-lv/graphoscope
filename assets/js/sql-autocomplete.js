@@ -78,15 +78,15 @@ class SQLAutocomplete {
                 option.innerHTML = '<strong>' + field.substr(0, word.length) + '</strong>';
                 option.innerHTML += field.substr(word.length);
 
-                // Insert a data attribute that will hold the current array item's value
+                // Insert data attribute that will hold current array item's value
                 option.dataset.field = field;
 
                 // Execute a function when someone clicks on the item value (DIV element)
                 option.addEventListener('click', (e) => {
                     let value = option.dataset.field;
 
-                    // If field contains "-" character - backticks mush be added
-                    if (value.includes('-'))
+                    // If field name contains special characters - backticks must be added
+                    if (value.includes('-') || value.includes('|') || value.includes('/'))
                         value = '`' + value + '`';
 
                     // Insert the value for the autocomplete text field

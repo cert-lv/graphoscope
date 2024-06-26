@@ -88,6 +88,7 @@ Available plugins are in [plugins/src](plugins/src):
 - AbuseIPDB
 - Hashlookup
 - CIRCL Passive SSL
+- MISP
 
 3rd party compiled `*.so` plugins should be placed in [plugins/sources](plugins/sources) directory.
 
@@ -199,6 +200,7 @@ Response example for the first query:
 - [ ] Implement other SQL features, like `NOT BETWEEN`
 - [ ] Filters `Edit` button doesn't work if data source is not available any more
 - [ ] API can return an image instead of JSON
+- [ ] Use the official package for the Elasticsearch plugin
 - [ ] Data source plugins:
   - [ ] RTIR
   - [ ] MS SQL
@@ -206,7 +208,6 @@ Response example for the first query:
   - [ ] Apache Cassandra
   - [ ] Genji
   - [ ] Presto
-  - [ ] MISP
   - [ ] VirusTotal
   - [ ] Shodan
   - [ ] General TCP

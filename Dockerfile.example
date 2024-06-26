@@ -29,11 +29,12 @@ RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/elasticsearc
 RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/http.so              plugins/src/http/*.go
 RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/rest.so              plugins/src/rest/*.go
 RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/mongodb.so           plugins/src/mongodb/*.go
-RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/pastelyzer.so        plugins/src/pastelyzer/*.go
 RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/postgresql.so        plugins/src/postgresql/*.go
 RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/redis.so             plugins/src/redis/*.go
 RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/mysql.so             plugins/src/mysql/*.go
 RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/file-csv.so          plugins/src/file/csv/*.go
+RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/misp.so              plugins/src/misp/*.go
+RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/pastelyzer.so        plugins/src/pastelyzer/*.go
 RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/abuseipdb.so         plugins/src/abuseipdb/*.go
 RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/hashlookup.so        plugins/src/hashlookup/*.go
 RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/circl_passive_ssl.so plugins/src/circl_passive_ssl/*.go

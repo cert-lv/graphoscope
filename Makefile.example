@@ -171,6 +171,7 @@ uninstall-remote:
 # Build plugins locally, mainly for development
 plugins-local:
 	go build -buildmode=plugin -ldflags="-w" -o plugins/sources/elasticsearch.v7.so  plugins/src/elasticsearch.v7/*.go
+	go build -buildmode=plugin -ldflags="-w" -o plugins/sources/elasticsearch.v8.so  plugins/src/elasticsearch.v8/*.go
 	go build -buildmode=plugin -ldflags="-w" -o plugins/sources/http.so              plugins/src/http/*.go
 	go build -buildmode=plugin -ldflags="-w" -o plugins/sources/rest.so              plugins/src/rest/*.go
 	go build -buildmode=plugin -ldflags="-w" -o plugins/sources/mongodb.so           plugins/src/mongodb/*.go
@@ -193,6 +194,7 @@ plugins-local:
 # Test Go code
 test:
 	go test plugins/src/elasticsearch.v7/*.go
+	go test plugins/src/elasticsearch.v8/*.go
 	go test plugins/src/http/*.go
 	go test plugins/src/rest/*.go
 	go test plugins/src/mongodb/*.go
@@ -209,6 +211,11 @@ test:
 
 	go test plugins/src/taxonomy/*.go
 	go test plugins/src/modify/*.go
+
+# Update dependencies
+mod:
+	go get -u ./...
+	go mod tidy
 
 # Check for Golang errors & inefficient code. Install with:
 # curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh

@@ -26,6 +26,7 @@ ENV CGO_ENABLED=1 GOOS=linux GOARCH=amd64
 
 # Build plugins
 RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/elasticsearch.v7.so  plugins/src/elasticsearch.v7/*.go
+RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/elasticsearch.v8.so  plugins/src/elasticsearch.v8/*.go
 RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/http.so              plugins/src/http/*.go
 RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/rest.so              plugins/src/rest/*.go
 RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/mongodb.so           plugins/src/mongodb/*.go

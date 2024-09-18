@@ -1,13 +1,13 @@
 # Elasticsearch plugin
 
-Plugin to query Elasticsearch (https://www.elastic.co/elasticsearch) v7 as a data source.
+Plugin to query Elasticsearch (https://www.elastic.co/elasticsearch) v8 as a data source.
 
 SQl convertor's base: https://github.com/blastrain/vitess-sqlparser/tree/develop/sqlparser
 
 
 Compile with:
 ```sh
-go build -buildmode=plugin -ldflags="-w" -o elasticsearch.v7.so ./*.go
+go build -buildmode=plugin -ldflags="-w" -o elasticsearch.v8.so ./*.go
 ```
 
 # Access details

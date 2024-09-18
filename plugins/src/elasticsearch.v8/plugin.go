@@ -2,15 +2,15 @@ package main
 
 import (
 	"github.com/cert-lv/graphoscope/pdk"
-	"github.com/elastic/go-elasticsearch/v7"
+	"github.com/elastic/go-elasticsearch/v8"
 )
 
 /*
  * Export symbols
  */
 var (
-	Name    = "elasticsearch.v7"
-	Version = "1.0.7"
+	Name    = "elasticsearch.v8"
+	Version = "1.0.0"
 	Plugin  plugin
 )
 

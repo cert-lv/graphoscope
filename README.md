@@ -200,7 +200,8 @@ Response example for the first query:
 - [ ] Implement other SQL features, like `NOT BETWEEN`
 - [ ] Filters `Edit` button doesn't work if data source is not available any more
 - [ ] API can return an image instead of JSON
-- [ ] Use the official package for the Elasticsearch plugin
+- [ ] Option to show partial results when limit is triggered
+- [ ] Make JSON response more informative when limit is triggered, not just 'stats'
 - [ ] Data source plugins:
   - [ ] RTIR
   - [ ] MS SQL

@@ -190,12 +190,11 @@ class Filters {
         if (source) {
             if ($('.ui.source.dropdown').dropdown('get item', source[1])) {
                 // Data source is known
-                if (source !== null)
-                    $('.ui.source.dropdown').dropdown('set exactly', source[1]);
-
-                // Set search input bar value
-                this.application.search.input.value = query.replace(/FROM .* WHERE /g, '');
+                $('.ui.source.dropdown').dropdown('set exactly', source[1]);
             }
+
+            // Set search input bar value
+            this.application.search.input.value = query.replace(/FROM .* WHERE /g, '');
 
         // Data source is unknown and skip red filters
         } else {

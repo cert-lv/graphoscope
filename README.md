@@ -198,7 +198,6 @@ Response example for the first query:
 - [ ] Generate a direct link to the saved dashboard
 - [ ] Data sources access based on user groups permissions
 - [ ] Implement other SQL features, like `NOT BETWEEN`
-- [ ] Filters `Edit` button doesn't work if data source is not available any more
 - [ ] API can return an image instead of JSON
 - [ ] Option to show partial results when limit is triggered
 - [ ] Make JSON response more informative when limit is triggered, not just 'stats'

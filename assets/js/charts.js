@@ -47,7 +47,8 @@ class Charts {
         // Clear previous charts
         this.clear();
 
-        this.header.innerHTML = '<strong>' + data.source.toUpperCase() + '</strong> has too many results, add filters manually or use the charts (based on limited data) to reduce the amount of returned data. ' +
+        this.header.innerHTML = '<strong>' + data.source.toUpperCase() + '</strong> has too many results, ' +
+                                'add filters manually or use the charts (based on limited data) to reduce the amount of returned data. ' +
                                 'Or close the charts to see the possible data from the other sources';
         this.container.style.display = 'block';
 

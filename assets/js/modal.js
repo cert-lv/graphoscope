@@ -49,7 +49,7 @@ class Modal {
         //console.log(header, text);
 
         this.containerOk.find('.header').html('<i class="exclamation triangle icon"></i>' + header);
-        this.containerOk.find('.content').html(text);
+        this.containerOk.find('.content').html(text.replace(/^([\w -"']*):/, '<span class="red_fg">$1</span>:'));
         this.containerOk.modal('show');
     }
 

@@ -200,7 +200,6 @@ Response example for the first query:
 - [ ] Implement other SQL features, like `NOT BETWEEN`
 - [ ] API can return an image instead of JSON
 - [ ] Option to show partial results when limit is triggered
-- [ ] Make JSON response more informative when limit is triggered, not just 'stats'
 - [ ] Data source plugins:
   - [ ] RTIR
   - [ ] MS SQL

@@ -89,6 +89,14 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Query data sources for the new relations
 	response = querySources(source, sql, includeDebug, account.Username)
+
+	if len(response.Stats) != 0 {
+		if response.Error != "" {
+			response.Error += ". "
+		}
+		response.Error += "The amount of data has exceeded the limit"
+	}
+
 	response.send(w, ip, account.Username, format, sql)
 
 	// Allow OS to take memory back
@@ -262,7 +270,7 @@ func querySources(source, sql string, includeDebug bool, username string) *APIre
 			Str("sql", sql).
 			Msg("Search error: " + response.Error)
 
-		response.Error = fmt.Sprintf("<span class=\"red_fg\">\"%s\" error</span>: %s", source, response.Error)
+		response.Error = fmt.Sprintf("\"%s\" error: %s", source, response.Error)
 	}
 
 	if len(response.Relations) != 0 || len(response.Stats) != 0 {
@@ -288,7 +296,7 @@ func querySources(source, sql string, includeDebug bool, username string) *APIre
 	for _, processor := range processors {
 		response.Relations, err = processor.Process(response.Relations)
 		if err != nil {
-			response.Error = fmt.Sprintf("<span class=\"red_fg\">\"%s\" error</span>: %s", processor.Conf().Name, err.Error())
+			response.Error = fmt.Sprintf("\"%s\" error: %s", processor.Conf().Name, err.Error())
 		}
 	}
 

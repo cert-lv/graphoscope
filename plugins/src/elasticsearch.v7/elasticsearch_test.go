@@ -27,6 +27,7 @@ func TestConvert(t *testing.T) {
 		{`SELECT * WHERE name LIKE 's%'`, `{"query" : {"bool" : {"must" : [{"query_string": { "default_field": "name.keyword", "query": "s*" }}]}}}`},
 		{`SELECT * WHERE name NOT LIKE 's%'`, `{"query" : {"bool" : {"must" : [{"bool" : {"must_not" : {"query_string": { "default_field": "name.keyword", "query": "s*" }}}}]}}}`},
 		{`SELECT * WHERE size BETWEEN 100 AND 300`, `{"query" : {"bool" : {"must" : [{"range" : {"size" : {"from" : 100, "to" : 300}}}]}}}`},
+		{`SELECT * WHERE size NOT BETWEEN 1 AND 10`, `{"query" : {"bool" : {"must" : [{"bool" : {"must_not" : {"range" : {"size" : {"from" : 1, "to" : 10}}}}}]}}}`},
 		{`SELECT * WHERE size IN (100,300)`, `{"query" : {"bool" : {"must" : [{"terms" : {"size" : [100, 300]}}]}}}`},
 		{`SELECT * WHERE size NOT IN (100,300)`, `{"query" : {"bool" : {"must" : [{"bool" : {"must_not" : {"terms" : {"size" : [100, 300]}}}}]}}}`},
 		{`select * where name='sarah' and age!=40 and (country='LV' or country='AU') limit 0,1`, `{"query" : {"bool" : {"must" : [{"match_phrase" : {"name" : "sarah"}}, {"bool" : {"must_not" : [{"match_phrase" : {"age" : 40}}]}}, {"bool" : {"should" : [{"match_phrase" : {"country" : "LV"}}, {"match_phrase" : {"country" : "AU"}}]}}]}}, "from" : 0, "size" : 1}`},

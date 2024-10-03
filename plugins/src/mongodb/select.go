@@ -282,6 +282,10 @@ func handleSelectWhereBetweenExpr(expr *sqlparser.Expr, topLevel bool) (bson.M, 
 	// Build resulting query
 	resultStr := bson.M{colNameStr: bson.M{"$gte": fromIntf, "$lte": toIntf}}
 
+	if rangeCond.Operator == "not between" {
+		resultStr = bson.M{colNameStr: bson.M{"$lt": fromIntf, "$gt": toIntf}}
+	}
+
 	return resultStr, nil
 }
 

@@ -197,7 +197,6 @@ Response example for the first query:
 - [ ] Generate PDF documentation from the existing `*.md` files
 - [ ] Generate a direct link to the saved dashboard
 - [ ] Data sources access based on user groups permissions
-- [ ] Implement other SQL features, like `NOT BETWEEN`
 - [ ] API can return an image instead of JSON
 - [ ] Option to show partial results when limit is triggered
 - [ ] Data source plugins:

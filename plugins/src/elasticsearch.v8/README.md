@@ -27,8 +27,3 @@ Only `username/password` or `key` can be used at once.
 
 - Go package supports specific Elasticsearch major version only,
   so version number is included in a plugin's name
-
-
-## TODO
-
-- [ ] Implement 'NOT BETWEEN' in SQL

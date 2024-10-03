@@ -32,6 +32,7 @@ func TestConvert(t *testing.T) {
 		{`SELECT * WHERE name LIKE 's%'`, `primitive.M{"name":primitive.M{"$regex":primitive.Regex{Pattern:"s.*", Options:"i"}}}`, `nil`, 0, 1},
 		{`SELECT * WHERE name NOT LIKE 's%'`, `primitive.M{"name":primitive.M{"$not":primitive.M{"$regex":primitive.Regex{Pattern:"s.*", Options:"i"}}}}`, `nil`, 0, 1},
 		{`SELECT * WHERE size BETWEEN 100 AND 300`, `primitive.M{"size":primitive.M{"$gte":100, "$lte":300}}`, `nil`, 0, 1},
+		{`SELECT * WHERE size NOT BETWEEN 1 AND 10`, `primitive.M{"size":primitive.M{"$gt":10, "$lt":1}}`, `nil`, 0, 1},
 		{`SELECT * WHERE size IN (100,300)`, `primitive.M{"size":primitive.M{"$in":primitive.A{100, 300}}}`, `nil`, 0, 1},
 		{`SELECT * WHERE size NOT IN (100,300)`, `primitive.M{"size":primitive.M{"$nin":primitive.A{100, 300}}}`, `nil`, 0, 1},
 		{`select * where name='sarah' and age!=40 and (country='LV' or country='AU') limit 1`, `primitive.M{"$and":primitive.A{primitive.M{"$and":primitive.A{primitive.M{"name":"sarah"}, primitive.M{"age":primitive.M{"$ne":40}}}}, primitive.M{"$or":primitive.A{primitive.M{"country":"LV"}, primitive.M{"country":"AU"}}}}}`, `nil`, 0, 1},

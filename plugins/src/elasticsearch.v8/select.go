@@ -264,6 +264,11 @@ func handleSelectWhereBetweenExpr(expr *sqlparser.Expr, topLevel bool) (string, 
 
 	// Build resulting query
 	resultStr := fmt.Sprintf(`{"range" : {"%v" : {"from" : %#v, "to" : %#v}}}`, colNameStr, fromIntf, toIntf)
+
+	if rangeCond.Operator == "not between" {
+		resultStr = fmt.Sprintf(`{"bool" : {"must_not" : {"range" : {"%v" : {"from" : %#v, "to" : %#v}}}}}`, colNameStr, fromIntf, toIntf)
+	}
+
 	if topLevel {
 		resultStr = fmt.Sprintf(`{"bool" : {"must" : [%v]}}`, resultStr)
 	}

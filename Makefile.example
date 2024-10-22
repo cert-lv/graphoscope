@@ -184,6 +184,7 @@ plugins-local:
 	go build -buildmode=plugin -ldflags="-w" -o plugins/sources/abuseipdb.so         plugins/src/abuseipdb/*.go
 	go build -buildmode=plugin -ldflags="-w" -o plugins/sources/hashlookup.so        plugins/src/hashlookup/*.go
 	go build -buildmode=plugin -ldflags="-w" -o plugins/sources/circl_passive_ssl.so plugins/src/circl_passive_ssl/*.go
+	go build -buildmode=plugin -ldflags="-w" -o plugins/sources/phishtank.so         plugins/src/phishtank/*.go
 	CGO_CFLAGS="-g -O2 -Wno-return-local-addr" go build -buildmode=plugin -ldflags="-w" -o plugins/sources/sqlite.so plugins/src/sqlite/*.go
 
 	go build -buildmode=plugin -ldflags="-w" -o plugins/processors/taxonomy.so       plugins/src/taxonomy/*.go
@@ -207,6 +208,7 @@ test:
 	go test plugins/src/abuseipdb/*.go
 	go test plugins/src/hashlookup/*.go
 	go test plugins/src/circl_passive_ssl/*.go
+	go test plugins/src/phishtank/*.go
 	CGO_CFLAGS="-g -O2 -Wno-return-local-addr" go test plugins/src/sqlite/*.go
 
 	go test plugins/src/taxonomy/*.go

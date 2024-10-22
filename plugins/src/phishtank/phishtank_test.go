@@ -19,13 +19,16 @@ func TestConvert(t *testing.T) {
 		sql       string
 		converted [][2]string
 	}{
-		{`SELECT * WHERE ipAddress='10.10.10.10' LIMIT 5,1`, [][2]string{
-			[2]string{"ipAddress", "10.10.10.10"},
+		{`SELECT * WHERE url='http://example.com'`, [][2]string{
+			[2]string{"url", "http://example.com"},
+			[2]string{"url", "http://example.com/"},
 		}},
-		{`SELECT * WHERE ipAddress='8.8.8.8' or domain='google.com'`, [][2]string{
-			[2]string{"ipAddress", "8.8.8.8"},
+		{`SELECT * WHERE domain='example.com'`, [][2]string{
+			[2]string{"url", "https://example.com/"},
+			[2]string{"url", "https://example.com"},
+			[2]string{"url", "http://example.com/"},
+			[2]string{"url", "http://example.com"},
 		}},
-		{`SELECT * WHERE ip='10.10.10.10' LIMIT 5,1`, [][2]string{}},
 	}
 
 	for _, table := range tables {

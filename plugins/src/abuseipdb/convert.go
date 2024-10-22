@@ -25,10 +25,14 @@ func (p *plugin) convert(sel *sqlparser.Select) ([][2]string, error) {
 		return nil, err
 	}
 
-	for i, field := range fields {
+	i := 0
+	for _, field := range fields {
 		if field[0] != "ipAddress" {
 			fields = append(fields[:i], fields[i+1:]...)
+			i -= 1
 		}
+
+		i += 1
 	}
 
 	return fields, nil

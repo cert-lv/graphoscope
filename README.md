@@ -89,6 +89,7 @@ Available plugins are in [plugins/src](plugins/src):
 - Hashlookup
 - CIRCL Passive SSL
 - MISP
+- Phishtank
 
 3rd party compiled `*.so` plugins should be placed in [plugins/sources](plugins/sources) directory.
 
@@ -194,7 +195,6 @@ Response example for the first query:
 - [ ] In `graph.js` remove custom zoom limiting
       when https://github.com/visjs/vis-network/pull/629 or similar is merged & new version released
 - [ ] Edges groups styling. **TODO** from `search.js`. Implement https://github.com/visjs/vis-network/issues/1229
-- [ ] Generate PDF documentation from the existing `*.md` files
 - [ ] Generate a direct link to the saved dashboard
 - [ ] Data sources access based on user groups permissions
 - [ ] API can return an image instead of JSON
@@ -210,7 +210,6 @@ Response example for the first query:
   - [ ] Shodan
   - [ ] General TCP
   - [ ] ipinfo.io
-  - [ ] phishtank.org
 - [ ] Processor plugins:
   - [ ] Filter
 - [ ] Output plugins:

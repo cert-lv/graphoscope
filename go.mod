@@ -24,8 +24,8 @@ require (
 	github.com/rs/zerolog v1.33.0
 	github.com/umpc/go-sortedmap v0.0.0-20180422175548-64ab94c482f4
 	github.com/yukithm/json2csv v0.1.2
-	go.mongodb.org/mongo-driver v1.17.0
-	golang.org/x/crypto v0.27.0
+	go.mongodb.org/mongo-driver v1.17.1
+	golang.org/x/crypto v0.28.0
 	golang.org/x/sync v0.8.0
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
 	gopkg.in/yaml.v3 v3.0.1
@@ -48,7 +48,7 @@ require (
 	github.com/jackc/pgtype v1.14.3 // indirect
 	github.com/jackc/puddle v1.3.0 // indirect
 	github.com/juju/errors v1.0.0 // indirect
-	github.com/klauspost/compress v1.17.9 // indirect
+	github.com/klauspost/compress v1.17.11 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mattn/go-runewidth v0.0.16 // indirect
@@ -66,7 +66,7 @@ require (
 	go.opentelemetry.io/otel v1.24.0 // indirect
 	go.opentelemetry.io/otel/metric v1.24.0 // indirect
 	go.opentelemetry.io/otel/trace v1.24.0 // indirect
-	golang.org/x/sys v0.25.0 // indirect
-	golang.org/x/term v0.24.0 // indirect
-	golang.org/x/text v0.18.0 // indirect
+	golang.org/x/sys v0.26.0 // indirect
+	golang.org/x/term v0.25.0 // indirect
+	golang.org/x/text v0.19.0 // indirect
 )

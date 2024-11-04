@@ -40,6 +40,7 @@ RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/abuseipdb.so
 RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/hashlookup.so        plugins/src/hashlookup/*.go
 RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/circl_passive_ssl.so plugins/src/circl_passive_ssl/*.go
 RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/phishtank.so         plugins/src/phishtank/*.go
+RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/ipinfo.so            plugins/src/ipinfo/*.go
 RUN CGO_CFLAGS="-g -O2 -Wno-return-local-addr" go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/sqlite.so plugins/src/sqlite/*.go
 
 RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/processors/taxonomy.so       plugins/src/taxonomy/*.go

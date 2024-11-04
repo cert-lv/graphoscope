@@ -90,6 +90,7 @@ Available plugins are in [plugins/src](plugins/src):
 - CIRCL Passive SSL
 - MISP
 - Phishtank
+- Ipinfo.io
 
 3rd party compiled `*.so` plugins should be placed in [plugins/sources](plugins/sources) directory.
 
@@ -209,7 +210,6 @@ Response example for the first query:
   - [ ] VirusTotal
   - [ ] Shodan
   - [ ] General TCP
-  - [ ] ipinfo.io
 - [ ] Processor plugins:
   - [ ] Filter
 - [ ] Output plugins:

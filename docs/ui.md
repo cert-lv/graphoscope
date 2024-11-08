@@ -58,7 +58,7 @@ Note that larger time period causes larger background data sources load!
 
 Sometimes you want to save the specific state of the window or requested data, to be able to open it later. By default service will remember your last used filters.
 
-`7` contains all saved dashboards. Both personal and shared. Select from the dropdown and press `Load` or `Delete` to remove the unnecessary one.
+`7` contains all saved dashboards. Both personal and shared. Select from the dropdown and press `Load` or `Delete` to remove the unnecessary one. When loading - user is redirected to the unique URL for a direct access to the dashboard.
 
 `8` allows the user to save a new dashboard. Type in a unique name, set the `Share` checkbox if you want it to be publicly available and press the `Save` button.
 

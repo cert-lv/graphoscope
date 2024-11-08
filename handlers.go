@@ -13,6 +13,9 @@ import (
  * as a dynamic content
  */
 type TemplateData struct {
+	// List of filters for the current dashboard
+	Filters []map[string]*Filter
+
 	// A list of connected data sources,
 	// will be used to generate sources dropdowns
 	Collectors map[string]pdk.SourcePlugin
@@ -99,7 +102,7 @@ func renderTemplate(w http.ResponseWriter, tmpl string, data *TemplateData, func
  * Serve main '/' web page
  */
 func indexHandler(w http.ResponseWriter, r *http.Request) {
-	if r.RequestURI != "/" {
+	if r.RequestURI != "/" && r.RequestURI[0:12] != "/?dashboard=" {
 		return
 	}
 
@@ -138,13 +141,25 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 		account.Admin = true
 	}
 
-	// Get account from a database
+	// Get shared dashboards from a database
 	shared, err := db.getSharedDashboards()
 	if err != nil {
 		log.Error().
 			Str("ip", ip).
 			Str("username", username).
 			Msg("Can't get shared dashboards: " + err.Error())
+	}
+
+	// Check if dashboard is accessed directly by URL
+	filters := account.Filters
+
+	dashboard := r.URL.Query().Get("dashboard")
+	if dashboard != "" {
+		if d, ok := account.Dashboards[dashboard]; ok {
+			filters = d.Filters
+		} else if s, ok := shared[dashboard]; ok {
+			filters = s.Filters
+		}
 	}
 
 	// Get Web UI settings
@@ -162,6 +177,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	// Collect dynamic data
 	templateData := &TemplateData{
 		Account:        account,
+		Filters:        filters,
 		Collectors:     collectors,
 		NonGlobalExist: nonGlobalExist,
 		Shared:         shared,

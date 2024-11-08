@@ -1,6 +1,6 @@
 [
-    "04.01.2023",
+    "08.11.2024",
 
-    "An option to <strong>export</strong>/<strong>import</strong> graph's visible data (in Web GUI only, not into a database)",
-    "Field names <strong>autocomplete</strong> now takes into account a chosen data source. Press <strong>Tab</strong> with empty value to show all the possible fields",
+    "Saved dashboard can be accessed directly by URL",
+    "Latest plugins: <strong>ipinfo.io</strong>, <strong>phishtank.org</strong>",
 ]

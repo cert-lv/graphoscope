@@ -162,10 +162,15 @@ class Filters {
     }
 
     /*
-     * Save all user's filters
+     * Save all user's filters.
+     * Skip loaded dashboard's impact
      */
     save() {
-        this.application.websocket.send('filters', JSON.stringify([this.greenFilters, this.redFilters]));
+        const urlParams = new URLSearchParams(window.location.search);
+
+        if (urlParams.get('dashboard') === null) {
+            this.application.websocket.send('filters', JSON.stringify([this.greenFilters, this.redFilters]));
+        }
     }
 
     /*

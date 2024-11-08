@@ -38,6 +38,7 @@ At the end of `IP address -> Institution -> Contact person's email -> Password` 
 - Get **node & edge details** by clicking on them
 - **Pie-chart statistics** when the amount of requested data exceeds the limit
 - **Save & restore** dashboards, private or shared with a team
+- **Dashboard URL** can be used for a direct access
 - **Export/import** all graph visible data
 - Display the **amount of visible nodes** grouped by type
 - **Group node neighbors** of specific types into the clusters
@@ -196,10 +197,10 @@ Response example for the first query:
 - [ ] In `graph.js` remove custom zoom limiting
       when https://github.com/visjs/vis-network/pull/629 or similar is merged & new version released
 - [ ] Edges groups styling. **TODO** from `search.js`. Implement https://github.com/visjs/vis-network/issues/1229
-- [ ] Generate a direct link to the saved dashboard
 - [ ] Data sources access based on user groups permissions
 - [ ] API can return an image instead of JSON
 - [ ] Option to show partial results when limit is triggered
+- [ ] Data sources dropdown should inform whether SQL is supported and datetime range is ignored
 - [ ] Data source plugins:
   - [ ] RTIR
   - [ ] MS SQL

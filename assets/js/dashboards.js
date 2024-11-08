@@ -18,6 +18,9 @@ class Dashboards {
         // Show shared dashboards header in a dropdown
         // only when such dashboards exist
         this.toggleSharedHeader();
+
+        // Sync loaded (if) dashboard parameters
+        this.isLoaded();
     }
 
     /*
@@ -83,21 +86,33 @@ class Dashboards {
         // Skip if none is selected
         if (!option) return;
 
-        const ds = (option.dataset.shared === 'true') ? SHARED[name] : DASHBOARDS[name],
-              ts = ds.datetime.split('..');
+        location.replace('/?dashboard=' + encodeURIComponent(name));
+    }
 
-        // Remove all existing graph elements
-        this.application.graph.clearAll();
+    /*
+     * Check if dashboard is loaded
+     */
+    isLoaded() {
+        const urlParams = new URLSearchParams(window.location.search),
+              name = urlParams.get('dashboard');
 
-        // Restore saved filters
-        FILTERS = ds.filters;
-        this.application.filters.restore();
-        this.application.graph.position();
+        if (name !== null) {
+            const option = this.dashboards.dropdown('get item', name)[0];
 
-        // Restore datetime range
-        this.application.calendar.rangeStart.calendar('set date', new Date(ts[0]));
-        this.application.calendar.rangeEnd.calendar(  'set date', new Date(ts[1]));
-        this.application.calendar.setDatetimeRangeStr();
+            // Skip if none is selected
+            if (!option) return;
+
+            const ds = (option.dataset.shared === 'true') ? SHARED[name] : DASHBOARDS[name],
+                  ts = ds.datetime.split('..');
+
+            // Restore dropdown value
+            this.dashboards.dropdown('set exactly', name);
+
+            // Restore datetime range
+            this.application.calendar.rangeStart.calendar('set date', new Date(ts[0]));
+            this.application.calendar.rangeEnd.calendar(  'set date', new Date(ts[1]));
+            this.application.calendar.setDatetimeRangeStr();
+        }
     }
 
     /*

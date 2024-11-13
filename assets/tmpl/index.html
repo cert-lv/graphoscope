@@ -8,7 +8,7 @@
         <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
 
         <link href="assets/css/semantic-2.8.6.min.css"                rel="stylesheet" type="text/css" />
-        <link href="assets/css/font-awesome.min.css?v={{ .Version }}" rel="stylesheet" type="text/css" />
+        <link href="assets/css/fontawesome.min.css?v={{ .Version }}"  rel="stylesheet" type="text/css" />
         <link href="assets/css/c3.min.css?v={{ .Version }}"           rel="stylesheet" type="text/css" />
         <link href="assets/css/common.css?v={{ .Version }}"           rel="stylesheet" type="text/css" />
         <link href="assets/css/index.css?v={{ .Version }}"            rel="stylesheet" type="text/css" />
@@ -91,9 +91,12 @@
                             </div>
 
                             {{ range .Collectors }}
+                                <!-- Icons from Fomantic UI -->
                                 {{ if eq .Conf.InGlobal true }}
                                 <div class="item" data-value="{{ .Conf.Name }}">
                                     <i class="{{ .Conf.Icon }} icon"></i> {{ .Conf.Label }}
+                                    {{ if eq .Conf.IncludeDatetime false }}<i class="calendar minus outline icon dblimit" title="Datetime range is ignored"></i>{{ end }}
+                                    {{ if eq .Conf.SupportsSQL false }}<i class="code icon dblimit" title="SQL not supported"></i>{{ end }}
                                 </div>
                                 {{ end }}
                             {{ end }}
@@ -105,6 +108,8 @@
                                     {{ if eq .Conf.InGlobal false }}
                                     <div class="item" data-value="{{ .Conf.Name }}">
                                         <i class="{{ .Conf.Icon }} icon"></i> {{ .Conf.Label }}
+                                        {{ if eq .Conf.IncludeDatetime false }}<i class="calendar minus outline icon dblimit" title="Datetime range is ignored"></i>{{ end }}
+                                        {{ if eq .Conf.SupportsSQL false }}<i class="code icon dblimit" title="SQL not supported"></i>{{ end }}
                                     </div>
                                     {{ end }}
                                 {{ end }}

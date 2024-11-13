@@ -94,7 +94,6 @@
 .five.fields > .field {
     float: left;
     margin-right: 10px;
-    width: 195px;
 }
 .ui.daterange.button {
     width: 100%;
@@ -103,6 +102,12 @@
 }
 .five.fields > .field:nth-child(2) {
     width: 400px;
+}
+.five.fields > .field:nth-child(3) {
+    width: 105px;
+}
+.five.fields > .field:nth-child(4) {
+    width: 200px;
 }
 .five.fields > .field:last-child {
     margin-right: 0;

@@ -1,6 +1,7 @@
 [
-    "08.11.2024",
+    "13.11.2024",
 
     "Saved dashboard can be accessed directly by URL",
-    "Latest plugins: <strong>ipinfo.io</strong>, <strong>phishtank.org</strong>",
+    "Data sources dropdown shows which sources <strong>do not support SQL or datetime range</strong>",
+    "Latest plugins: <strong>ipinfo.io</strong>, <strong>phishtank.org</strong>"
 ]

@@ -200,7 +200,6 @@ Response example for the first query:
 - [ ] Data sources access based on user groups permissions
 - [ ] API can return an image instead of JSON
 - [ ] Option to show partial results when limit is triggered
-- [ ] Data sources dropdown should inform whether SQL is supported and datetime range is ignored
 - [ ] Data source plugins:
   - [ ] RTIR
   - [ ] MS SQL

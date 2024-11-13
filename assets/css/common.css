@@ -276,6 +276,10 @@ span.ui.orange.text {
     border-color: #ccc !important;
 }
 
+.ui.selection.source.dropdown {
+    min-width: 20em;
+}
+
 /* This looks bad when because of not enough space a dropdown is opened UP */
 /*
 .ui.selection.active.dropdown .menu,
@@ -315,6 +319,19 @@ span.ui.orange.text {
 .ui.source.dropdown .menu > .item i,
 .ui.menu .item i {
     color: #bbbfbf;
+}
+
+.ui.source.dropdown .menu > .item i.dblimit {
+    float: right;
+    margin-right: 0;
+    color: #cbcfcf;
+}
+
+.ui.source.dropdown .menu > .item i.code {
+    margin-right: 3px;
+}
+.ui.source.dropdown .menu > .item i.calendar.minus {
+    margin-left: 2px;
 }
 
 /*

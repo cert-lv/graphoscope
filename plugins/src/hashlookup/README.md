@@ -16,6 +16,11 @@ Or use the Makefile command:
 `make plugins-local`
 
 
+# Limitations
+
+Does not support complex SQL queries and datetime range selection.
+
+
 # Access details
 
 Source YAML definition's `access` fields:
@@ -23,8 +28,9 @@ Source YAML definition's `access` fields:
 - **apiKey**: optional hashlookup API key
 
 
-# Example definition file
+# Definition file example
 
+Replace API key with your own:
 ```yaml
 name: hashlookup
 label: Hashlookup

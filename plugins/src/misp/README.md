@@ -31,6 +31,11 @@ Compile with:
 go build -buildmode=plugin -ldflags="-w" -o misp.so ./*.go
 ```
 
+# Limitations
+
+Does not support complex SQL queries.
+
+
 # Access details
 
 Source YAML definition's `access` fields:
@@ -42,10 +47,10 @@ Source YAML definition's `access` fields:
 - **keyPath**: key file path
 
 
-# YAML example
+# Definition file example
 
-As MISP has a very large amount of different attribute types, graph relations are generated on the fly, no need to put them all in a YAML config. So it is enough to start with:
-```
+As MISP has a very large amount of different attribute types, graph relations are generated on the fly, no need to put them all in a YAML config. So it is enough to start with, replace API key with your own:
+```yaml
 name: misp
 label: MISP
 icon: share square

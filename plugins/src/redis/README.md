@@ -16,6 +16,11 @@ The easiest workaround is to exclude Redis DB from the `global` namespace
 and query it independently, to execute needed queries one by one.
 
 
+# Limitations
+
+Does not support complex SQL queries and datetime range selection.
+
+
 # Access details
 
 Source YAML definition's `access` fields:

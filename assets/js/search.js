@@ -116,6 +116,7 @@ class Search {
                          'size BETWEEN 0 AND 15&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
                          '<span class="grey_fg">// Search for sizes between the given values</span></br>' +
                          'source.institution.name<>\'SIA "Example"\'&nbsp;&nbsp;<span class="grey_fg">// Exclude results by field value</span></br>' +
+                         'query=\'country:LV product:nginx\'&nbsp;&nbsp;<span class="grey_fg">// Non-SQL complex query for sources like Shodan</span></br>' +
 
                          '</br>' +
 

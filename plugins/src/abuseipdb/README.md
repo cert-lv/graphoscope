@@ -26,9 +26,55 @@ Compile with:
 go build -buildmode=plugin -ldflags="-w" -o abuseipdb.so ./*.go
 ```
 
+# Limitations
+
+Does not support complex SQL queries and datetime range selection.
+
+
 # Access details
 
 Source YAML definition's `access` fields:
 - **url**: HTTPS access point, `https://api.abuseipdb.com/api/v2/check` at the moment
 - **maxAgeInDays**: how far back in time we go to fetch reports, max 365
 - **key**: unique API key
+
+
+# Definition file example
+
+Replace API key with your own:
+```yaml
+name: abuseipdb
+label: AbuseIPDB
+icon: clipboard list
+
+plugin: abuseipdb
+inGlobal: true
+includeDatetime: false
+supportsSQL: false
+
+access:
+    url: https://api.abuseipdb.com/api/v2/check
+    maxAgeInDays: 180
+    key: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+queryFields:
+    - ip
+
+replaceFields:
+    ip: ipAddress
+
+
+relations:
+  -
+    from:
+        id: domain
+        group: domain
+        search: domain
+
+    to:
+        id: ipAddress
+        group: ip
+        search: ip
+        attributes: [ "countryCode", "countryName", "hostnames", "isPublic", "isWhitelisted", "isp", "usageType", "totalReports", "lastReportedAt" ]
+
+```

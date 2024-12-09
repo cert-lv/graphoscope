@@ -15,6 +15,11 @@ Compile with:
 go build -buildmode=plugin -ldflags="-w" -o circl_passive_ssl.so ./*.go
 ```
 
+# Limitations
+
+Does not support complex SQL queries and datetime range selection.
+
+
 # Access details
 
 Source YAML definition's `access` fields:

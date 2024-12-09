@@ -197,7 +197,9 @@ func InterfaceSliceContains(slice []interface{}, val interface{}) bool {
 func CreateRelations(source *Source, entry map[string]interface{}, unique map[string]bool, counter *int, mx *sync.Mutex, results *[]map[string]interface{}) {
 	// Go through all the predefined relations and collect unique entries
 	for _, relation := range source.Relations {
-		if entry[relation.From.ID] != nil && entry[relation.To.ID] != nil {
+		if entry[relation.From.ID] != nil && entry[relation.To.ID] != nil &&
+			entry[relation.From.ID] != "" && entry[relation.To.ID] != "" {
+
 			mx.Lock()
 
 			// Use "Printf(...%v..." instead of "entry[relation.From.ID].(string)"

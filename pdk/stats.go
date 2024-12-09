@@ -1,6 +1,7 @@
 package pdk
 
 import (
+	"fmt"
 	"sync"
 
 	"github.com/umpc/go-sortedmap"
@@ -35,7 +36,7 @@ func NewStats() *Stats {
 func (s *Stats) Update(entry map[string]interface{}, key string) {
 	// Skip if value is missing
 	value := entry[key]
-	if value == nil {
+	if value == nil || fmt.Sprint(value) == "" {
 		return
 	}
 
@@ -80,7 +81,7 @@ func (s *Stats) ToJSON(source string) (map[string]interface{}, error) {
 			for rec := range iterCh.Records() {
 				//fmt.Printf("%+v\n", rec)
 
-				group[rec.Key.(string)] = rec.Val.(int)
+				group[fmt.Sprint(rec.Key)] = rec.Val.(int)
 
 				// We want Top 10 here and started from i == 1
 				if i > 9 {

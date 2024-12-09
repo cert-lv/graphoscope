@@ -25,7 +25,159 @@ Compile with:
 go build -buildmode=plugin -ldflags="-w" -o pastelyzer.so ./*.go
 ```
 
+# Limitations
+
+Does not support complex SQL queries and datetime range selection.
+
+
 # Access details
 
 Source YAML definition's `access` fields:
 - **url**: HTTP access point, for example - `http://localhost:7000`
+
+
+# Definition file example
+
+```yaml
+name: pastelyzer
+label: Pastelyzer
+icon: copy outline
+
+plugin: pastelyzer
+inGlobal: true
+includeDatetime: false
+supportsSQL: false
+
+access:
+    url: http://127.0.0.1:7000
+
+queryFields:
+    - source
+    - cc-number
+    - credential
+    - domain
+    - email
+    - ip
+    - onion
+    - sha1
+    - any
+
+statsFields:
+  - ip
+  - domain
+  - type
+
+
+relations:
+  -
+    from:
+        id: domain
+        group: domain
+        search: domain
+
+    to:
+        id: source
+        group: paste
+        search: source
+
+    edge:
+        label: was published
+
+  -
+    from:
+        id: ip
+        group: ip
+        search: ip
+
+    to:
+        id: source
+        group: paste
+        search: source
+
+    edge:
+        label: was published
+
+  -
+    from:
+        id: address
+        group: ip
+        search: ip
+
+    to:
+        id: source
+        group: paste
+        search: source
+
+    edge:
+        label: was published
+
+  -
+    from:
+        id: cc-number
+        group: cc-number
+        search: cc-number
+
+    to:
+        id: source
+        group: paste
+        search: source
+
+    edge:
+        label: was published
+
+  -
+    from:
+        id: credential
+        group: credentials
+        search: credential
+
+    to:
+        id: source
+        group: paste
+        search: source
+
+    edge:
+        label: was published
+
+  -
+    from:
+        id: email
+        group: email
+        search: email
+
+    to:
+        id: source
+        group: paste
+        search: source
+
+    edge:
+        label: was published
+
+  -
+    from:
+        id: onion
+        group: onion
+        search: onion
+
+    to:
+        id: source
+        group: paste
+        search: source
+
+    edge:
+        label: was published
+
+  -
+    from:
+        id: sha1
+        group: sha1
+        search: sha1
+
+    to:
+        id: source
+        group: paste
+        search: source
+
+    edge:
+        label: was published
+```

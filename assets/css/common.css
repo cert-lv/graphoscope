@@ -321,16 +321,23 @@ span.ui.orange.text {
     color: #bbbfbf;
 }
 
+.ui.dropdown>.text {
+    width: 100%;
+}
+
+.ui.source.dropdown .text > i.dblimit,
 .ui.source.dropdown .menu > .item i.dblimit {
     float: right;
     margin-right: 0;
     color: #cbcfcf;
 }
 
-.ui.source.dropdown .menu > .item i.code {
+.ui.source.dropdown .text > i.code.dblimit,
+.ui.source.dropdown .menu > .item i.code.dblimit {
     margin-right: 3px;
 }
-.ui.source.dropdown .menu > .item i.calendar.minus {
+.ui.source.dropdown .text > i.calendar.minus.dblimit,
+.ui.source.dropdown .menu > .item i.calendar.minus.dblimit {
     margin-left: 2px;
 }
 

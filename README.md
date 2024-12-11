@@ -201,7 +201,6 @@ Response example for the first query:
 - [ ] Data sources access based on user groups permissions
 - [ ] API can return an image instead of JSON
 - [ ] Option to show partial results when limit is triggered
-- [ ] Wrong selection rectangle coords in graph fullscreen mode
 - [ ] A checkbox to cache graph state when saving a dashboard
 - [ ] Data source plugins:
   - [ ] RTIR

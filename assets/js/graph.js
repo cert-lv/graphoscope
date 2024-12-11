@@ -752,12 +752,21 @@ class Graph {
         // When mousedown, save the initial rectangle state
         this.container.addEventListener('mousedown', function({ which, pageX, pageY }) {
             if (which === RIGHT_CLICK) {
-                Object.assign(DOMRect, {
-                    startX: pageX - this.offsetLeft - 10,
-                    startY: pageY - this.offsetTop  - 10 - topMargin,
-                    endX:   pageX - this.offsetLeft - 10,
-                    endY:   pageY - this.offsetTop  - 10 - topMargin
-                });
+                if (this.style.position === 'fixed') {
+                    Object.assign(DOMRect, {
+                        startX: pageX,
+                        startY: pageY,
+                        endX:   pageX,
+                        endY:   pageY
+                    });
+                } else {
+                    Object.assign(DOMRect, {
+                        startX: pageX - this.offsetLeft - 10,
+                        startY: pageY - this.offsetTop  - 10 - topMargin,
+                        endX:   pageX - this.offsetLeft - 10,
+                        endY:   pageY - this.offsetTop  - 10 - topMargin
+                    });
+                }
 
                 const id = graph.network.getNodeAt({
                     x: pageX - this.offsetLeft - 10,
@@ -777,10 +786,17 @@ class Graph {
                     drag = false;
                     graph.network.redraw();
                 } else {
-                    Object.assign(DOMRect, {
-                        endX: pageX - this.offsetLeft - 10,
-                        endY: pageY - this.offsetTop  - 10 - topMargin
-                    });
+                    if (this.style.position === 'fixed') {
+                        Object.assign(DOMRect, {
+                            endX: pageX,
+                            endY: pageY
+                        });
+                    } else {
+                        Object.assign(DOMRect, {
+                            endX: pageX - this.offsetLeft - 10,
+                            endY: pageY - this.offsetTop  - 10 - topMargin
+                        });
+                    }
 
                     graph.network.redraw();
                 }

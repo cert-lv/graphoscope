@@ -16,7 +16,7 @@ YAML definition's `data` fields:
 - **taxonomy**: mapping to use. If node/edge's **field** is equal to the "key" - insert a new relation with "value" as a new node
 
 Mapping example:
-```
+```yaml
 taxonomy:
     field_value_1: taxonomy_group
     field_value_2: taxonomy_group

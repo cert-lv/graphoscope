@@ -20,7 +20,7 @@ where:
     - `ReplaceAllString` receives graph field value and replacement
 
 List of replacements example:
-```
+```yaml
 modify:
     - field: field_name
       regex: a(x*)b

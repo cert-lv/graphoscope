@@ -40,6 +40,10 @@ More info in the `Search` documentation section.
 
 `global` is a special keyword to request all allowed data sources. In the `Administration` documentation section it will be explained, that some sources can be extremely slow, so to prevent every single request being slow - some data sources are excluded from the `global` space.
 
+Two informative icons on the right side:
+- `SQL not supported` - means this data source accepts basic query only, most likely `field=value`,
+- `Datetime range is ignored` - means selected date range does not affect search results.
+
 `5` contains some additional actions:
 
 - The search button

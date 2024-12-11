@@ -32,8 +32,3 @@ The **mongo-go-driver** contains four object types:
 - **bson.M**: An unordered map. It is the same as D, except it does not preserve order
 - **bson.A**: A BSON array
 - **bson.E**: A single element inside a D
-
-
-## TODO
-
-- [ ] Implement 'NOT BETWEEN' in SQL

@@ -47,9 +47,15 @@ class Charts {
         // Clear previous charts
         this.clear();
 
-        this.header.innerHTML = '<strong>' + data.source.toUpperCase() + '</strong> has too many results, ' +
-                                'add filters manually or use the charts (based on limited data) to reduce the amount of returned data. ' +
-                                'Or close the charts to see the possible data from the other sources';
+        // Skip modifying the query when source doesn't support SQL
+        const se = document.querySelectorAll('div.item[data-value="' + data.source + '"]')[0],
+              issql = se.getElementsByClassName('code icon').length === 0;
+
+        this.header.innerHTML = '<strong>' + data.source.toUpperCase() + '</strong> returns too many results. ';
+        if (issql)
+            this.header.innerHTML += 'Add filters manually or use the charts (based on limited data) to reduce the amount of returned data. ';
+        this.header.innerHTML += 'Close the charts to see the possible data from the other sources';
+
         this.container.style.display = 'block';
 
         for (var field in data) {
@@ -58,7 +64,7 @@ class Charts {
         }
 
         // Right click context menu
-        this.setupContext();
+        this.setupContext(issql);
     }
 
     /*
@@ -136,25 +142,27 @@ class Charts {
     /*
      * Setup right click context menu
      */
-    setupContext() {
+    setupContext(issql) {
         d3.select('#charts').selectAll('.c3-shape')
             .on('contextmenu', (d, i) => {
 
-                this.expandingField =  d3.event.target.ownerSVGElement.parentNode.id;
-                this.expandingQuery =  d3.event.target.ownerSVGElement.parentNode.parentNode.getAttribute('data-query');
-                this.expandingFilter = d3.event.target.ownerSVGElement.parentNode.parentNode.getAttribute('data-filter');
-                this.expandingValue =  d.data.id;
+                if (issql) {
+                    this.expandingField =  d3.event.target.ownerSVGElement.parentNode.id;
+                    this.expandingQuery =  d3.event.target.ownerSVGElement.parentNode.parentNode.getAttribute('data-query');
+                    this.expandingFilter = d3.event.target.ownerSVGElement.parentNode.parentNode.getAttribute('data-filter');
+                    this.expandingValue =  d.data.id;
 
-                const browserHeight = window.innerHeight || window.clientHeight;
+                    const browserHeight = window.innerHeight || window.clientHeight;
 
-                // Prevent menu be out of the screen's visible space
-                if (d3.event.clientY + this.menu.offsetHeight < browserHeight)
-                    this.menu.style.top = d3.event.clientY + 'px';
-                else
-                    this.menu.style.top = browserHeight - this.menu.offsetHeight - 10 + 'px';
+                    // Prevent menu be out of the screen's visible space
+                    if (d3.event.clientY + this.menu.offsetHeight < browserHeight)
+                        this.menu.style.top = d3.event.clientY + 'px';
+                    else
+                        this.menu.style.top = browserHeight - this.menu.offsetHeight - 10 + 'px';
 
-                this.menu.style.left = d3.event.clientX + 'px';
-                this.menu.style.visibility = 'visible';
+                    this.menu.style.left = d3.event.clientX + 'px';
+                    this.menu.style.visibility = 'visible';
+                }
 
                 d3.event.preventDefault();
         });

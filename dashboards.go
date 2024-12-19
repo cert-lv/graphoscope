@@ -115,12 +115,12 @@ func (a *Account) saveDashboardHandler(data string) {
 				Msg("Shared dashboard is saved: " + dashboard.Name)
 
 		} else {
-			a.send("error", "Shared dashboard name is already reserver.", "Can't save dashboard!")
+			a.send("error", "Shared dashboard name is already reserved.", "Can't save dashboard!")
 
 			log.Info().
 				Str("ip", a.Session.IP).
 				Str("username", a.Username).
-				Msg("Shared dashboard name is already reserver: " + dashboard.Name)
+				Msg("Shared dashboard name is already reserved: " + dashboard.Name)
 		}
 
 		/*
@@ -130,12 +130,12 @@ func (a *Account) saveDashboardHandler(data string) {
 		// Check whether already exists first
 		_, exists := a.Dashboards[dashboard.Name]
 		if exists {
-			a.send("error", "Dashboard name is already reserver.", "Can't save dashboard!")
+			a.send("error", "Dashboard name is already reserved.", "Can't save dashboard!")
 
 			log.Info().
 				Str("ip", a.Session.IP).
 				Str("username", a.Username).
-				Msg("Dashboard name is already reserver: " + dashboard.Name)
+				Msg("Dashboard name is already reserved: " + dashboard.Name)
 
 		} else {
 			a.Dashboards[dashboard.Name] = dashboard

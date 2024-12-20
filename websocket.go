@@ -254,7 +254,7 @@ func (a *Account) sqlHandler(sql string) {
 	source := match[1]
 
 	// Query data sources for a new data
-	response := querySources(source, sql, a.Options.Debug, a.Username)
+	response := querySources(source, sql, a.Options.ShowLimited, a.Options.Debug, a.Username)
 
 	// Get users initial query
 	sql = reDatetimeLimit.ReplaceAllString(sql, "")
@@ -299,7 +299,7 @@ func (a *Account) commonHandler(data string, datetime string) {
 			nodes = append(nodes, field[1][:len(field[1])-1])
 
 			// Query data sources for a new data
-			result := querySources("global", "FROM global WHERE ("+query+") AND datetime BETWEEN "+datetime, a.Options.Debug, a.Username)
+			result := querySources("global", "FROM global WHERE ("+query+") AND datetime BETWEEN "+datetime, a.Options.ShowLimited, a.Options.Debug, a.Username)
 			results = append(results, result.Relations)
 
 			if result.Error != "" {

@@ -11,7 +11,8 @@
 11. [Direct API usage](#direct-api-usage)
 12. [Limit the amount of returned data](#limit-the-amount-of-returned-data)
 13. [Order of returned data](#order-of-returned-data)
-14. [Output format](#output-format)
+14. [Show partial search results](#show-partial-search-results)
+15. [Output format](#output-format)
 
 
 ![datasources](assets/img/datasources.png)
@@ -198,6 +199,17 @@ However, `LIMIT` is not a total amount of graph nodes or edges - it goes to the 
 ## Order of returned data
 
 Direct queries also can include `ORDER BY field` or `ORDER BY field DESC`. The default sorting method is alphabetical. However, `DESC` can be used for displaying rows in descending order.
+
+
+## Show partial search results
+
+When search results limit exceeded - partial results can be displayed. By default only statistics charts are displayed to update the query when possible. But in some cases you may want to see partial results too.
+
+Example in API query:
+```sh
+curl -XGET 'https://server/api?uuid=09e545f2-3986-493c-983a-e39d310f695a&show_limited=true&sql=FROM+people+WHERE+age>30'
+```
+... where `show_limited=true` parameter enables or disables partial results.
 
 
 ## Output format

@@ -54,7 +54,7 @@ class Charts {
         this.header.innerHTML = '<strong>' + data.source.toUpperCase() + '</strong> returns too many results. ';
         if (issql)
             this.header.innerHTML += 'Add filters manually or use the charts (based on limited data) to reduce the amount of returned data. ';
-        this.header.innerHTML += 'Close the charts to see the possible data from the other sources';
+        this.header.innerHTML += 'Close the charts to see the possible limited data';
 
         this.container.style.display = 'block';
 

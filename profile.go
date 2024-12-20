@@ -97,7 +97,18 @@ func (a *Account) optionsHandler(data string) {
 		return
 	}
 
-	debug, err := strconv.ParseBool(parts[2])
+	showLimited, err := strconv.ParseBool(parts[2])
+	if err != nil {
+		log.Error().
+			Str("ip", a.Session.IP).
+			Str("username", a.Username).
+			Msg("Can't parse showLimited value: " + err.Error())
+
+		a.send("error", "Invalid <strong>showLimited</strong> value given, boolean expected.", "Can't save!")
+		return
+	}
+
+	debug, err := strconv.ParseBool(parts[3])
 	if err != nil {
 		log.Error().
 			Str("ip", a.Session.IP).
@@ -112,6 +123,7 @@ func (a *Account) optionsHandler(data string) {
 	options := &Options{
 		StabilizationTime: stabilization,
 		Limit:             limit,
+		ShowLimited:       showLimited,
 		Debug:             debug,
 	}
 

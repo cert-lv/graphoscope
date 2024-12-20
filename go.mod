@@ -21,7 +21,7 @@ require (
 	github.com/mithrandie/csvq-driver v1.7.0
 	github.com/ns3777k/go-shodan/v4 v4.2.0
 	github.com/olekukonko/tablewriter v0.0.5
-	github.com/redis/go-redis/v9 v9.5.3
+	github.com/redis/go-redis/v9 v9.7.0
 	github.com/rs/zerolog v1.33.0
 	github.com/umpc/go-sortedmap v0.0.0-20180422175548-64ab94c482f4
 	github.com/yukithm/json2csv v0.1.2

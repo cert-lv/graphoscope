@@ -1,7 +1,6 @@
 [
-    "13.11.2024",
+    "20.12.2024",
 
-    "Saved dashboard can be accessed directly by URL",
-    "Data sources dropdown shows which sources <strong>do not support SQL or datetime range</strong>",
-    "Latest plugins: <strong>ipinfo.io</strong>, <strong>phishtank.org</strong>"
+    "An option to show partial search results when limit exceeded",
+    "Latest plugin: <strong>Shodan</strong>"
 ]

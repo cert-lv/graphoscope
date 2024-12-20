@@ -200,7 +200,6 @@ Response example for the first query:
 - [ ] Edges groups styling. **TODO** from `search.js`. Implement https://github.com/visjs/vis-network/issues/1229
 - [ ] Data sources access based on user groups permissions
 - [ ] API can return an image instead of JSON
-- [ ] Option to show partial results when limit is triggered
 - [ ] Data source plugins:
   - [ ] RTIR
   - [ ] MS SQL

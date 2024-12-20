@@ -322,7 +322,7 @@ func (a *Account) processUploads(filename string, upload *Upload) error {
 			upload.Source, strings.TrimSpace(line), upload.StartTime, upload.EndTime)
 
 		// Query data sources for a new relations data
-		response := querySources(upload.Source, sql, a.Options.Debug, a.Username)
+		response := querySources(upload.Source, sql, a.Options.ShowLimited, a.Options.Debug, a.Username)
 
 		if len(response.Relations) != 0 {
 			rRelations += "\n\nIndicator: " + line + "\n\n"

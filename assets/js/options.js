@@ -37,6 +37,7 @@ class Options {
     save() {
         const options = document.getElementById('stabilization').value + ',' +
                         document.getElementById('limit').value + ',' +
+                        $('.ui.checkbox.show_limited').checkbox('is checked') + ',' +
                         $('.ui.checkbox.debug').checkbox('is checked');
 
         // Send to the server

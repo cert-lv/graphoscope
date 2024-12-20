@@ -176,7 +176,7 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 				return nil, nil, debug, err
 			}
 
-			return nil, top, debug, nil
+			return results, top, debug, nil
 		}
 
 		// Update stats

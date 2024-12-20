@@ -7,10 +7,10 @@
 
         <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
 
-        <link href="assets/css/semantic-2.8.6.min.css"                rel="stylesheet" type="text/css" />
-        <link href="assets/css/font-awesome.min.css?v={{ .Version }}" rel="stylesheet" type="text/css" />
-        <link href="assets/css/common.css?v={{ .Version }}"           rel="stylesheet" type="text/css" />
-        <link href="assets/css/profile.css?v={{ .Version }}"          rel="stylesheet" type="text/css" />
+        <link href="assets/css/semantic-2.8.6.min.css"               rel="stylesheet" type="text/css" />
+        <link href="assets/css/fontawesome.min.css?v={{ .Version }}" rel="stylesheet" type="text/css" />
+        <link href="assets/css/common.css?v={{ .Version }}"          rel="stylesheet" type="text/css" />
+        <link href="assets/css/profile.css?v={{ .Version }}"         rel="stylesheet" type="text/css" />
 
         <script type="text/javascript" src="assets/js/jquery-3.4.1.min.js"></script>
         <script type="text/javascript" src="assets/js/semantic-2.8.6.min.js"></script>
@@ -87,6 +87,22 @@
                     <div class="column">
                         <div class="ui input">
                             <input type="text" value="{{ .Account.Options.Limit }}" id="limit" spellcheck="false">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row short">
+                    <p>Whether to show partial search results when limit exceeded. By default only statistics charts are displayed to update the query when possible. But in some cases you may want to see partial results too.</p>
+                </div>
+
+                <div class="row short">
+                    <div class="column">
+                        <span>Show limited results:</span>
+                    </div>
+                    <div class="column">
+                        <div class="ui toggle checkbox show_limited">
+                            <input type="checkbox" {{ if .Account.Options.ShowLimited }}checked{{ end }}>
+                            <label></label>
                         </div>
                     </div>
                 </div>

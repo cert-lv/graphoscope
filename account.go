@@ -91,6 +91,9 @@ type Options struct {
 	// Will be a part of each SQL query, set to 0 to disable
 	Limit int `bson:"limit"`
 
+	// Whether to show partial search results when limit exceeded
+	ShowLimited bool `bson:"showLimited"`
+
 	// Whether to display queries debug info
 	Debug bool `bson:"debug"`
 }

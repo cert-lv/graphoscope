@@ -22,6 +22,9 @@
     margin-top: 9px;
     position: absolute;
 }
+.ui.toggle.checkbox {
+    margin-top: 9px;
+}
 
 .ui.grid>.row.username {
     padding-bottom: 2rem;

@@ -34,6 +34,7 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 	//   - SQL request
 	uuid := r.FormValue("uuid")
 	format := r.FormValue("format")
+	showLimited := false
 	includeDebug := false
 	sql := r.FormValue("sql")
 
@@ -67,6 +68,11 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Show partial results when limit exceeded
+	if r.FormValue("show_limited") == "true" {
+		showLimited = true
+	}
+
 	// Disable debug info by default
 	if r.FormValue("debug") == "true" {
 		includeDebug = true
@@ -88,7 +94,7 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 	source := match[1]
 
 	// Query data sources for the new relations
-	response = querySources(source, sql, includeDebug, account.Username)
+	response = querySources(source, sql, showLimited, includeDebug, account.Username)
 
 	if len(response.Stats) != 0 {
 		if response.Error != "" {
@@ -106,7 +112,7 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 /*
  * Query all the requested data sources
  */
-func querySources(source, sql string, includeDebug bool, username string) *APIresponse {
+func querySources(source, sql string, showLimited, includeDebug bool, username string) *APIresponse {
 
 	// Response to send back
 	response := &APIresponse{
@@ -173,7 +179,10 @@ func querySources(source, sql string, includeDebug bool, username string) *APIre
 					}
 
 					response.Lock()
-					response.Relations = append(response.Relations, result...)
+
+					if stat == nil || (stat != nil && showLimited) {
+						response.Relations = append(response.Relations, result...)
+					}
 
 					if includeDebug {
 						response.Debug[collector.Conf().Name] = debug

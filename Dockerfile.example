@@ -3,7 +3,7 @@
 ################################################################################
 
 # Golang alpine, version must match main service's version
-FROM golang:1.22.2-alpine AS plugins-builder
+FROM golang:1.25.1-alpine AS plugins-builder
 
 # Install git + SSL ca certificates.
 # Git is required for fetching the dependencies.
@@ -42,6 +42,7 @@ RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/circl_passiv
 RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/phishtank.so         plugins/src/phishtank/*.go
 RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/ipinfo.so            plugins/src/ipinfo/*.go
 RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/shodan.so            plugins/src/shodan/*.go
+RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/recorded_future.so   plugins/src/recorded_future/*.go
 RUN CGO_CFLAGS="-g -O2 -Wno-return-local-addr" go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/sqlite.so plugins/src/sqlite/*.go
 
 RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/processors/taxonomy.so       plugins/src/taxonomy/*.go
@@ -53,7 +54,7 @@ RUN mkdir /go/plugins/outputs
 ################################################################################
 #                     STEP 2. Build the executable binary                      #
 ################################################################################
-FROM golang:1.22.2-alpine
+FROM golang:1.25.1-alpine
 
 # Install git + SSL ca certificates.
 # Git is required for fetching the dependencies.

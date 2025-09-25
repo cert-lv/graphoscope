@@ -86,6 +86,19 @@
             "border": "#ca2"
         }
     },
+    "hash": {
+        "shape": "icon",
+        "icon": {
+          "face": "Icons",
+          "weight": "bold",
+          "code": "\uf0fd",
+          "size": "30",
+          "color": "#f65"
+        },
+        "font": {
+            "color": "#833"
+        }
+    },
     "md5": {
         "shape": "icon",
         "icon": {

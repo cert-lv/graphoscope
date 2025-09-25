@@ -186,8 +186,9 @@ func formatTo(data interface{}, format string) (string, error) {
 
 		// Clear CSV data from buffer to render a table
 		buf.Reset()
+
 		table := tablewriter.NewWriter(buf)
-		table.SetHeader(rows[0])
+		table.Header(rows[0])
 
 		for i := 1; i < len(rows); i++ {
 			row := rows[i]

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/blastrain/vitess-sqlparser/sqlparser"
@@ -46,7 +45,6 @@ func TestConvert(t *testing.T) {
 		}
 
 		// Executed by the plugin
-		fmt.Println(1, p.source)
 		result, err := p.convert(stmt)
 		if err != nil {
 			t.Errorf("Can't convert \"%s\": %s", table.sql, err.Error())

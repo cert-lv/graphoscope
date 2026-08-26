@@ -226,7 +226,7 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 
 		err := json.Unmarshal(hit.Source_, &entry)
 		if err != nil {
-			return nil, nil, debug, fmt.Errorf("Failed to unmarshal hit %s: %s", hit.Id_, err.Error())
+			return nil, nil, debug, fmt.Errorf("Failed to unmarshal hit %v: %s", hit.Id_, err.Error())
 		}
 
 		// Update stats

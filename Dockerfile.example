@@ -3,76 +3,80 @@
 ################################################################################
 
 # Golang alpine, version must match main service's version
-FROM golang:1.25.1-alpine AS plugins-builder
+FROM docker.io/golang:1.25.1-alpine AS plugins-builder
 
 # Install git + SSL ca certificates.
 # Git is required for fetching the dependencies.
 # Ca-certificates are required to call HTTPS endpoints
-RUN apk update && apk add --no-cache gcc libc-dev git ca-certificates && update-ca-certificates
+RUN apk add --no-cache gcc libc-dev git ca-certificates && \
+    update-ca-certificates
 
 WORKDIR $GOPATH/src/github.com/cert-lv/graphoscope
 
-COPY pdk     ./pdk
-COPY plugins ./plugins
-COPY go.mod  ./
-COPY go.sum  ./
-
 # Fetch dependencies
-RUN go get -d ./pdk/...
-RUN go get -d ./plugins/src/...
+COPY go.mod go.sum ./
+RUN go mod download
 
+COPY pdk ./pdk
+COPY plugins ./plugins
+
+# Setup output folders and build flags.
 # CGO_ENABLED=1 is required for the Golang plugins
+RUN mkdir -p /go/plugins/sources /go/plugins/outputs
 ENV CGO_ENABLED=1 GOOS=linux GOARCH=amd64
 
-# Build plugins
-RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/elasticsearch.v7.so  plugins/src/elasticsearch.v7/*.go
-RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/elasticsearch.v8.so  plugins/src/elasticsearch.v8/*.go
-RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/http.so              plugins/src/http/*.go
-RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/rest.so              plugins/src/rest/*.go
-RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/mongodb.so           plugins/src/mongodb/*.go
-RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/postgresql.so        plugins/src/postgresql/*.go
-RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/redis.so             plugins/src/redis/*.go
-RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/mysql.so             plugins/src/mysql/*.go
-RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/file-csv.so          plugins/src/file/csv/*.go
-RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/misp.so              plugins/src/misp/*.go
-RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/pastelyzer.so        plugins/src/pastelyzer/*.go
-RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/abuseipdb.so         plugins/src/abuseipdb/*.go
-RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/hashlookup.so        plugins/src/hashlookup/*.go
-RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/circl_passive_ssl.so plugins/src/circl_passive_ssl/*.go
-RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/phishtank.so         plugins/src/phishtank/*.go
-RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/ipinfo.so            plugins/src/ipinfo/*.go
-RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/shodan.so            plugins/src/shodan/*.go
-RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/recorded_future.so   plugins/src/recorded_future/*.go
-RUN CGO_CFLAGS="-g -O2 -Wno-return-local-addr" go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/sqlite.so plugins/src/sqlite/*.go
+# Build plugins in parallel where possible.
+# Special handling for sqlite (custom CGO_CFLAGS)
+RUN CGO_CFLAGS="-g -O2 -Wno-return-local-addr" go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/sqlite.so ./plugins/src/sqlite
 
-RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/processors/taxonomy.so       plugins/src/taxonomy/*.go
-RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/processors/modify.so         plugins/src/modify/*.go
+# Standard plugins sources build
+RUN go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/elasticsearch.v7.so  ./plugins/src/elasticsearch.v7 & \
+    go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/elasticsearch.v8.so  ./plugins/src/elasticsearch.v8 & \
+    go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/elasticsearch.v9.so  ./plugins/src/elasticsearch.v9 & \
+    go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/http.so              ./plugins/src/http & \
+    go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/rest.so              ./plugins/src/rest & \
+    go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/mongodb.so           ./plugins/src/mongodb & \
+    go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/postgresql.so        ./plugins/src/postgresql & \
+    go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/redis.so             ./plugins/src/redis & \
+    go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/mysql.so             ./plugins/src/mysql & \
+    go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/file-csv.so          ./plugins/src/file & \
+    go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/misp.so              ./plugins/src/misp & \
+    go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/pastelyzer.so        ./plugins/src/pastelyzer & \
+    go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/abuseipdb.so         ./plugins/src/abuseipdb & \
+    go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/hashlookup.so        ./plugins/src/hashlookup & \
+    go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/circl_passive_ssl.so ./plugins/src/circl_passive_ssl & \
+    go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/phishtank.so         ./plugins/src/phishtank & \
+    go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/ipinfo.so            ./plugins/src/ipinfo & \
+    go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/shodan.so            ./plugins/src/shodan & \
+    go build -buildmode=plugin -ldflags="-w" -o /go/plugins/sources/recorded_future.so   ./plugins/src/recorded_future & \
 
-RUN mkdir /go/plugins/outputs
+    go build -buildmode=plugin -ldflags="-w" -o /go/plugins/processors/taxonomy.so       ./plugins/src/taxonomy & \
+    go build -buildmode=plugin -ldflags="-w" -o /go/plugins/processors/modify.so         ./plugins/src/modify & \
+    wait
 
 
 ################################################################################
 #                     STEP 2. Build the executable binary                      #
 ################################################################################
-FROM golang:1.25.1-alpine
+FROM docker.io/golang:1.25.1-alpine AS service-builder
 
 # Install git + SSL ca certificates.
 # Git is required for fetching the dependencies.
 # ca-certificates is required to call HTTPS endpoints
-RUN apk update && apk add --no-cache gcc libc-dev git ca-certificates && update-ca-certificates
+RUN apk add --no-cache gcc libc-dev git ca-certificates && \
+    update-ca-certificates
 
 WORKDIR $GOPATH/src/github.com/cert-lv/graphoscope
 
+# Fetch dependencies
+COPY go.mod go.sum ./
+RUN go mod download
+
 COPY *.go ./
 COPY pdk ./pdk
-COPY go.mod ./
-COPY go.sum ./
-
-# Fetch dependencies
-RUN go get -d .
 
 # CGO_ENABLED=1 is required for the Golang plugins
 ENV CGO_ENABLED=1 GOOS=linux GOARCH=amd64
 
 # Build the binary
-RUN go build -ldflags="-w -s" -a -o /go/graphoscope .
+RUN go build -ldflags="-w -s" -o /go/graphoscope .

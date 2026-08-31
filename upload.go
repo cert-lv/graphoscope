@@ -572,12 +572,43 @@ func downloadHandler(w http.ResponseWriter, r *http.Request) {
 	file := r.FormValue("file")
 
 	// Validate file name
-	if strings.Contains(file, "..") || strings.Contains(file, "/") {
+	if file == "" || strings.Contains(file, "..") || strings.ContainsAny(file, "/\\\x00") {
 		log.Error().
 			Str("ip", ip).
 			Str("username", username).
 			Str("filename", file).
 			Msg("Unexpected processed file requested to download")
+		http.NotFound(w, r)
+		return
+	}
+
+	// Authorization: a signed-in user may only fetch files that exist in
+	// THEIR own Uploads.Out list. Without this check any signed-in user
+	// could enumerate / download any other user's processed report by
+	// guessing the timestamp-prefixed filename.
+	account, err := db.getAccount(username)
+	if err != nil {
+		log.Error().
+			Str("ip", ip).
+			Str("username", username).
+			Msg("Can't get account to authorize download: " + err.Error())
+		http.NotFound(w, r)
+		return
+	}
+	owns := false
+	for _, f := range account.Uploads.Out {
+		if f == file {
+			owns = true
+			break
+		}
+	}
+	if !owns {
+		log.Error().
+			Str("ip", ip).
+			Str("username", username).
+			Str("filename", file).
+			Msg("Unauthorized download attempt: file not in user's downloads list")
+		http.NotFound(w, r)
 		return
 	}
 

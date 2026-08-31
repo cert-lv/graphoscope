@@ -101,8 +101,12 @@ func (a *Account) listen() {
 	a.Session.Done = make(chan bool)
 	defer func() {
 		close(a.Session.Done)
+		// Hold the same mutex used by send() so a concurrent writer
+		// can't dereference Websocket between the Close and the nil-out.
+		a.Session.WebsocketMutex.Lock()
 		a.Session.Websocket.Close()
 		a.Session.Websocket = nil
+		a.Session.WebsocketMutex.Unlock()
 		delete(online, a.Username)
 	}()
 
@@ -479,6 +483,13 @@ func (a *Account) notesSaveHandler(id, notes string) {
  * Receives all the values for the Message structure
  */
 func (a *Account) send(tp, data, extra string) {
+	// Bail out before touching a.Session.* if the user is offline.
+	// processUploads / addNotification can call this from a background
+	// goroutine after the WebSocket was already torn down.
+	if a.Session == nil {
+		return
+	}
+
 	m := &Message{
 		Type:  tp,
 		Data:  data,
@@ -494,18 +505,23 @@ func (a *Account) send(tp, data, extra string) {
 		return
 	}
 
-	if a.Session != nil {
-		// Connections support one concurrent reader and one concurrent writer
-		a.Session.WebsocketMutex.Lock()
-		defer a.Session.WebsocketMutex.Unlock()
+	// Connections support one concurrent reader and one concurrent writer
+	a.Session.WebsocketMutex.Lock()
+	defer a.Session.WebsocketMutex.Unlock()
 
-		err = a.Session.Websocket.WriteMessage(websocket.TextMessage, bytes)
-		if err != nil {
-			log.Error().
-				Str("ip", a.Session.IP).
-				Str("username", a.Username).
-				Msg("Can't write to the Websocket: " + err.Error())
-		}
+	// listen()'s deferred teardown sets Websocket to nil while holding the
+	// same mutex; re-check under the lock to avoid a nil dereference in
+	// WriteMessage when the client disconnects mid-processing.
+	if a.Session.Websocket == nil {
+		return
+	}
+
+	err = a.Session.Websocket.WriteMessage(websocket.TextMessage, bytes)
+	if err != nil {
+		log.Error().
+			Str("ip", a.Session.IP).
+			Str("username", a.Username).
+			Msg("Can't write to the Websocket: " + err.Error())
 	}
 }
 

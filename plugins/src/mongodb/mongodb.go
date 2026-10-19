@@ -11,9 +11,9 @@ import (
 	"github.com/cert-lv/graphoscope/pdk"
 	"github.com/umpc/go-sortedmap"
 	"github.com/umpc/go-sortedmap/desc"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/v2/bson"
+	"go.mongodb.org/mongo-driver/v2/mongo"
+	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
 
 /*
@@ -55,7 +55,7 @@ func (p *plugin) Setup(source *pdk.Source, limit int) error {
 	defer cancel()
 
 	// Connect to MongoDB
-	client, err := mongo.Connect(ctx, clientOptions)
+	client, err := mongo.Connect(clientOptions)
 	if err != nil {
 		return err
 	}
@@ -165,7 +165,13 @@ func (p *plugin) Search(stmt *sqlparser.Select) ([]map[string]interface{}, map[s
 	if err != nil {
 		return nil, nil, nil, err
 	}
-	optsBase64, err := json.Marshal(opts)
+	findOpts := &options.FindOptions{}
+	for _, fn := range opts.List() {
+		if err := fn(findOpts); err != nil {
+			return nil, nil, nil, err
+		}
+	}
+	optsBase64, err := json.Marshal(findOpts)
 	if err != nil {
 		return nil, nil, nil, err
 	}

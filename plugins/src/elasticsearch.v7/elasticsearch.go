@@ -6,9 +6,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net"
 	"net/http"
+	"os"
 	"regexp"
 	"strings"
 	"sync"
@@ -40,7 +40,7 @@ func (p *plugin) Setup(source *pdk.Source, limit int) error {
 	}
 
 	// Read the CA from file
-	cert, err := ioutil.ReadFile(source.Access["ca"])
+	cert, err := os.ReadFile(source.Access["ca"])
 	if err != nil {
 		fmt.Errorf("Unable to read CA from %q: %s", source.Access["ca"], err)
 	}

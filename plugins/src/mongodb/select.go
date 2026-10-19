@@ -8,8 +8,7 @@ import (
 	"strings"
 
 	"github.com/blastrain/vitess-sqlparser/sqlparser"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
 /*
@@ -117,13 +116,13 @@ func handleSelectWhereComparisonExpr(expr *sqlparser.Expr, topLevel bool, parent
 		rightStr = strings.Replace(rightStr, `.`, `\.`, -1)
 		rightStr = strings.Replace(rightStr, `%`, `.*`, -1)
 
-		resultStr = bson.M{colNameStr: bson.M{"$regex": primitive.Regex{Pattern: rightStr, Options: "i"}}}
+		resultStr = bson.M{colNameStr: bson.M{"$regex": bson.Regex{Pattern: rightStr, Options: "i"}}}
 	case "not like":
 		rightStr := rightIntf.(string)
 		rightStr = strings.Replace(rightStr, `.`, `\.`, -1)
 		rightStr = strings.Replace(rightStr, `%`, `.*`, -1)
 
-		resultStr = bson.M{colNameStr: bson.M{"$not": bson.M{"$regex": primitive.Regex{Pattern: rightStr, Options: "i"}}}}
+		resultStr = bson.M{colNameStr: bson.M{"$not": bson.M{"$regex": bson.Regex{Pattern: rightStr, Options: "i"}}}}
 	}
 
 	return resultStr, nil

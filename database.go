@@ -9,9 +9,9 @@ import (
 	"strings"
 	"time"
 
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/v2/bson"
+	"go.mongodb.org/mongo-driver/v2/mongo"
+	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
 
 var (
@@ -74,7 +74,7 @@ func setupDatabase() error {
 		Password:   config.Database.Password,
 	}
 
-	client, err := mongo.NewClient(options.Client().
+	client, err := mongo.Connect(options.Client().
 		SetAuth(credential).
 		ApplyURI(config.Database.URL))
 	if err != nil {
@@ -83,11 +83,6 @@ func setupDatabase() error {
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(config.Database.Timeout)*time.Second)
 	defer cancel()
-
-	err = client.Connect(ctx)
-	if err != nil {
-		return fmt.Errorf("Can't connect to the database: " + err.Error())
-	}
 
 	// Check the connection
 	err = client.Ping(ctx, nil)
@@ -425,10 +420,7 @@ func (d *Database) setNotes(id, value string) error {
 		filter := bson.M{"_id": id}
 		update := bson.M{"$set": note}
 
-		upsert := true
-		opts := &options.UpdateOptions{
-			Upsert: &upsert,
-		}
+		opts := options.UpdateOne().SetUpsert(true)
 
 		ctx, cancel := d.newContext()
 		defer cancel()
@@ -509,10 +501,7 @@ func (d *Database) setCache(query string, relations []map[string]interface{}, st
 	filter := bson.M{"_id": reDatetimeLimit.ReplaceAllString(query, "$1..$2..$3$4")}
 	update := bson.M{"$set": cache}
 
-	upsert := true
-	opts := &options.UpdateOptions{
-		Upsert: &upsert,
-	}
+	opts := options.UpdateOne().SetUpsert(true)
 
 	// Sometimes identical operations happen concurrently and
 	// the same MongoDB key may appear again, so use "UpdateOne" instead of "InsertOne"
@@ -538,7 +527,7 @@ func (d *Database) setCacheTTL() {
 	ctx, cancel := d.newContext()
 	defer cancel()
 
-	_, err := d.Cache.Indexes().DropAll(ctx)
+	err := d.Cache.Indexes().DropAll(ctx)
 	if err != nil {
 		// Ignore namespace not found errors
 		commandErr, ok := err.(mongo.CommandError)
@@ -555,18 +544,18 @@ func (d *Database) setCacheTTL() {
 
 	// Create a new index
 	if config.Database.CacheTTL != 0 {
-		opts := options.CreateIndexes().SetMaxTime(time.Duration(config.Database.Timeout) * time.Second)
+		indexOpts := options.Index().SetExpireAfterSeconds(config.Database.CacheTTL)
 
 		index := mongo.IndexModel{
 			Keys: bson.M{
 				"ts": 1,
 			},
-			Options: &options.IndexOptions{
-				ExpireAfterSeconds: &config.Database.CacheTTL,
-			},
+			Options: indexOpts,
 		}
 
-		_, err = d.Cache.Indexes().CreateOne(ctx, index, opts)
+		createOpts := options.CreateIndexes()
+
+		_, err = d.Cache.Indexes().CreateOne(ctx, index, createOpts)
 		if err != nil {
 			log.Error().Msg("Can't create cache coll's index: " + err.Error())
 		} else {
@@ -587,10 +576,7 @@ func (d *Database) setGraphSettings(opt *GraphSettings) error {
 	filter := bson.M{"_id": "graph"}
 	update := bson.M{"$set": opt}
 
-	upsert := true
-	opts := &options.UpdateOptions{
-		Upsert: &upsert,
-	}
+	opts := options.UpdateOne().SetUpsert(true)
 
 	ctx, cancel := d.newContext()
 	defer cancel()

@@ -7,8 +7,8 @@ import (
 	"sync"
 
 	"github.com/gorilla/websocket"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/v2/bson"
+	"go.mongodb.org/mongo-driver/v2/mongo"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -63,7 +63,7 @@ func setupSessions() error {
 	ctx, cancel := db.newContext()
 	defer cancel()
 
-	_, err := db.Sessions.Indexes().DropAll(ctx)
+	err := db.Sessions.Indexes().DropAll(ctx)
 	if err != nil {
 		// Ignore namespace not found errors
 		commandErr, ok := err.(mongo.CommandError)

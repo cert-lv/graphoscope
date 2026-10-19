@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/cert-lv/graphoscope/pdk"
-	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
 /*
@@ -10,7 +10,7 @@ import (
  */
 var (
 	Name    = "mongodb"
-	Version = "1.0.6"
+	Version = "1.0.7"
 	Plugin  plugin
 )
 

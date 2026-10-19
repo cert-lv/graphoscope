@@ -10,14 +10,14 @@ import (
 	"strings"
 
 	"github.com/blastrain/vitess-sqlparser/sqlparser"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/v2/bson"
+	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
 
 /*
  * Convert SQL statement to the MongoDB filter & options
  */
-func (p *plugin) convert(sel *sqlparser.Select, fields []string) (bson.M, *options.FindOptions, error) {
+func (p *plugin) convert(sel *sqlparser.Select, fields []string) (bson.M, *options.FindOptionsBuilder, error) {
 
 	// Handle WHERE.
 	// Top level node pass in an empty interface
@@ -43,7 +43,7 @@ func (p *plugin) convert(sel *sqlparser.Select, fields []string) (bson.M, *optio
 	}
 
 	// Pass these options to the Find method
-	options := options.Find().SetProjection(projection)
+	opts := options.Find().SetProjection(projection)
 
 	// Offset & Rowcount validation is done by the core service
 	if sel.Limit != nil {
@@ -51,15 +51,15 @@ func (p *plugin) convert(sel *sqlparser.Select, fields []string) (bson.M, *optio
 		if sel.Limit.Offset != nil {
 			offset := sqlparser.String(sel.Limit.Offset)
 			queryFrom, _ := strconv.ParseInt(offset, 10, 64)
-			options.SetSkip(queryFrom)
+			opts.SetSkip(queryFrom)
 		} else {
-			options.SetSkip(0)
+			opts.SetSkip(0)
 		}
 
 		// Handle limit
 		rowcount := sqlparser.String(sel.Limit.Rowcount)
 		querySize, _ := strconv.ParseInt(rowcount, 10, 64)
-		options.SetLimit(querySize)
+		opts.SetLimit(querySize)
 	}
 
 	// Handle ORDER BY
@@ -74,8 +74,8 @@ func (p *plugin) convert(sel *sqlparser.Select, fields []string) (bson.M, *optio
 	}
 
 	if len(orderByArr) > 0 {
-		options.SetSort(orderByArr)
+		opts.SetSort(orderByArr)
 	}
 
-	return filter, options, nil
+	return filter, opts, nil
 }

@@ -102,7 +102,9 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get account from the online list
+	onlineMu.RLock()
 	account, ok := online[username]
+	onlineMu.RUnlock()
 	if !ok {
 		log.Error().
 			Str("ip", ip).

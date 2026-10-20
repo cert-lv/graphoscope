@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"runtime/debug"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -20,7 +21,8 @@ var (
 	pingPeriod = 60 * time.Second
 
 	// Online users for the faster access
-	online = make(map[string]*Account)
+	onlineMu sync.RWMutex
+	online   = make(map[string]*Account)
 )
 
 /*
@@ -88,7 +90,9 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 		ResponseWriter: w,
 	}
 
+	onlineMu.Lock()
 	online[username] = account
+	onlineMu.Unlock()
 
 	// Listen for the incoming Websocket messages in a loop
 	go account.listen()
@@ -102,12 +106,15 @@ func (a *Account) listen() {
 	defer func() {
 		close(a.Session.Done)
 		// Hold the same mutex used by send() so a concurrent writer
-		// can't dereference Websocket between the Close and the nil-out.
+		// can't dereference Websocket between the Close and the nil-out
 		a.Session.WebsocketMutex.Lock()
 		a.Session.Websocket.Close()
 		a.Session.Websocket = nil
 		a.Session.WebsocketMutex.Unlock()
+
+		onlineMu.Lock()
 		delete(online, a.Username)
+		onlineMu.Unlock()
 	}()
 
 	go a.ping()
@@ -485,7 +492,7 @@ func (a *Account) notesSaveHandler(id, notes string) {
 func (a *Account) send(tp, data, extra string) {
 	// Bail out before touching a.Session.* if the user is offline.
 	// processUploads / addNotification can call this from a background
-	// goroutine after the WebSocket was already torn down.
+	// goroutine after the WebSocket was already torn down
 	if a.Session == nil {
 		return
 	}
@@ -511,7 +518,7 @@ func (a *Account) send(tp, data, extra string) {
 
 	// listen()'s deferred teardown sets Websocket to nil while holding the
 	// same mutex; re-check under the lock to avoid a nil dereference in
-	// WriteMessage when the client disconnects mid-processing.
+	// WriteMessage when the client disconnects mid-processing
 	if a.Session.Websocket == nil {
 		return
 	}
@@ -559,6 +566,7 @@ func broadcast(tp, data, extra string) {
 		return
 	}
 
+	onlineMu.RLock()
 	for _, account := range online {
 		if account.Session != nil {
 			// Connections support one concurrent reader and one concurrent writer
@@ -575,4 +583,5 @@ func broadcast(tp, data, extra string) {
 			account.Session.WebsocketMutex.Unlock()
 		}
 	}
+	onlineMu.RUnlock()
 }

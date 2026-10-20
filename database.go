@@ -288,7 +288,7 @@ func (d *Database) deleteAccount(username string) error {
 
 /*
  * Delete user session by its username
- * when user signs out or is deleted.
+ * when user signs out or is deleted
  */
 func (d *Database) deleteSession(username string, w http.ResponseWriter, r *http.Request) error {
 	// Delete from a database
@@ -324,9 +324,11 @@ func (d *Database) deleteSession(username string, w http.ResponseWriter, r *http
 	}
 
 	// Close Websocket connection if exists
+	onlineMu.RLock()
 	if account, exists := online[username]; exists {
 		account.Session.Websocket.Close()
 	}
+	onlineMu.RUnlock()
 
 	return nil
 }

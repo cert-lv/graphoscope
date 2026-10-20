@@ -7,7 +7,7 @@
  *     - some structures merged
  *     - don't print debugging info to the stderr, use logger instead
  *
- * Don't use "log.SetOutput(ioutil.Discard)" to hide printing
+ * Don't use "log.SetOutput(io.Discard)" to hide printing
  * to the stderr, because it also hides panic errors in other places
  */
 

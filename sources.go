@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"plugin"
 	"reflect"
@@ -43,7 +42,7 @@ func loadPlugins() error {
 	// Load several types of plugins
 	for _, group := range []string{"sources", "processors", "outputs"} {
 
-		files, err := ioutil.ReadDir(config.Plugins + "/" + group)
+		files, err := os.ReadDir(config.Plugins + "/" + group)
 		if err != nil {
 			return fmt.Errorf("Can't read from '%s' directory: %s", config.Plugins+"/"+group, err.Error())
 		}
@@ -123,7 +122,7 @@ func setupCollectors() error {
 	// Clear old content
 	collectors = make(map[string]pdk.SourcePlugin)
 
-	files, err := ioutil.ReadDir(config.Definitions + "/sources")
+	files, err := os.ReadDir(config.Definitions + "/sources")
 	if err != nil {
 		return fmt.Errorf("Can't read directory '%s': %s", config.Definitions+"/sources", err.Error())
 	}
@@ -232,7 +231,7 @@ func setupProcessors() error {
 	// Clear old content
 	processors = []pdk.ProcessorPlugin{}
 
-	files, err := ioutil.ReadDir(config.Definitions + "/processors")
+	files, err := os.ReadDir(config.Definitions + "/processors")
 	if err != nil {
 		return fmt.Errorf("Can't read directory '%s': %s", config.Definitions+"/processors", err.Error())
 	}

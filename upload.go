@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net"
 	"net/http"
 	"os"
@@ -404,7 +403,7 @@ func (a *Account) processUploads(filename string, upload *Upload) error {
 	}
 
 	// Write results to the file
-	err = ioutil.WriteFile(config.Upload.Path+"/processed/"+filename, []byte(report), 0600)
+	err = os.WriteFile(config.Upload.Path+"/processed/"+filename, []byte(report), 0600)
 	if err != nil {
 		return fmt.Errorf("Can't save processed upload results: " + err.Error())
 	}
@@ -556,13 +555,7 @@ func downloadHandler(w http.ResponseWriter, r *http.Request) {
 	// Check whether user is signed in
 	username, err := sessions.exists(w, r)
 	if err != nil {
-		_, e := w.Write([]byte("Can't validate user. Check server logs for more info!"))
-		if e != nil {
-			log.Error().
-				Str("ip", ip).
-				Msg("Can't send error: " + e.Error())
-		}
-
+		http.Error(w, "Can't validate user. Check server logs for more info!", http.StatusUnauthorized)
 		log.Error().
 			Str("ip", ip).
 			Msg(err.Error())
@@ -573,26 +566,24 @@ func downloadHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Validate file name
 	if file == "" || strings.Contains(file, "..") || strings.ContainsAny(file, "/\\\x00") {
+		http.NotFound(w, r)
 		log.Error().
 			Str("ip", ip).
 			Str("username", username).
 			Str("filename", file).
 			Msg("Unexpected processed file requested to download")
-		http.NotFound(w, r)
 		return
 	}
 
 	// Authorization: a signed-in user may only fetch files that exist in
-	// THEIR own Uploads.Out list. Without this check any signed-in user
-	// could enumerate / download any other user's processed report by
-	// guessing the timestamp-prefixed filename.
+	// THEIR own Uploads.Out list
 	account, err := db.getAccount(username)
 	if err != nil {
+		http.NotFound(w, r)
 		log.Error().
 			Str("ip", ip).
 			Str("username", username).
 			Msg("Can't get account to authorize download: " + err.Error())
-		http.NotFound(w, r)
 		return
 	}
 	owns := false
@@ -603,12 +594,12 @@ func downloadHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	if !owns {
+		http.NotFound(w, r)
 		log.Error().
 			Str("ip", ip).
 			Str("username", username).
 			Str("filename", file).
 			Msg("Unauthorized download attempt: file not in user's downloads list")
-		http.NotFound(w, r)
 		return
 	}
 
@@ -684,7 +675,7 @@ func deleteUploadResults() {
 		}
 
 		// Check the file system just in case some old files are stuck
-		files, _ := ioutil.ReadDir(config.Upload.Path + "/processed/")
+		files, _ := os.ReadDir(config.Upload.Path + "/processed/")
 		for _, file := range files {
 			if !file.IsDir() {
 				filename := file.Name()

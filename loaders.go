@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"regexp"
 
@@ -20,7 +19,7 @@ var (
  * Return content of the requested file by its path
  */
 func loadFileIntoString(path string) (string, error) {
-	file, err := ioutil.ReadFile(path)
+	file, err := os.ReadFile(path)
 	if err != nil {
 		return "", err
 	}

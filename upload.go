@@ -8,6 +8,7 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
@@ -17,6 +18,13 @@ import (
 var (
 	// Regex to validate a datetime value
 	reDatetime = regexp.MustCompile(`^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$`)
+
+	// Allow-list for user-supplied upload filenames.
+	// Letters, digits and a small set of safe punctuation. Rejecting everything
+	// else closes the stored-XSS vector (filenames are rendered via innerHTML in
+	// notifications.js / user-actions.js) and prevents path-traversal /
+	// HTML/quote/control-char injection at the source.
+	reSafeFilename = regexp.MustCompile(`^[A-Za-z0-9 ._-]{1,200}$`)
 )
 
 /*
@@ -134,6 +142,27 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 			Str("ip", ip).
 			Str("username", username).
 			Msg("Can't detect uploaded file: " + err.Error())
+		return
+	}
+
+	// Strip any path components and validate the remaining basename against a
+	// strict allow-list. The same string later flows into innerHTML on the
+	// Web GUI (notifications.js, user-actions.js); rejecting bad characters
+	// here neutralises stored XSS at the source.
+	header.Filename = filepath.Base(header.Filename)
+	if !reSafeFilename.MatchString(header.Filename) {
+		msg := "Invalid filename: only letters, digits, space, '.', '_', '-' allowed (max 200 chars)"
+		if _, e := w.Write([]byte(msg)); e != nil {
+			log.Error().
+				Str("ip", ip).
+				Str("username", username).
+				Msg("Can't send error: " + e.Error())
+		}
+		log.Error().
+			Str("ip", ip).
+			Str("username", username).
+			Str("filename", header.Filename).
+			Msg("Rejected upload with unsafe filename")
 		return
 	}
 

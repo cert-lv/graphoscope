@@ -281,6 +281,17 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Start processing the uploaded file
 	go func() {
+		defer func() {
+			if r := recover(); r != nil {
+				log.Error().
+					Interface("panic", r).
+					Msg("Recovered from panic in uploadHandler goroutine")
+
+				// Ensure cleanup happens even if a panic occurred
+				account.cleanUploads(prefix + "-" + header.Filename)
+			}
+		}()
+
 		err = account.processUploads(prefix+"-"+header.Filename, upload)
 		if err != nil {
 			log.Error().

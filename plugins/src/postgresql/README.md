@@ -95,7 +95,7 @@ relations:
 
 Test with a query:
 ```sh
-curl -XGET 'https://localhost:443/api?uuid=auth-key&sql=FROM+pgtest+WHERE+email+like+%27a%25%27'
+curl -XGET 'https://localhost:443/api?uuid=auth-key&sql=FROM+pgcoll+WHERE+email+like+%27a%25%27'
 ```
 
 # TODO

@@ -10,8 +10,8 @@ import (
 
 	"github.com/blastrain/vitess-sqlparser/sqlparser"
 	"github.com/cert-lv/graphoscope/pdk"
-	"github.com/georgysavva/scany/pgxscan"
-	"github.com/jackc/pgx/v4/pgxpool"
+	"github.com/georgysavva/scany/v2/pgxscan"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/umpc/go-sortedmap"
 	"github.com/umpc/go-sortedmap/desc"
 )
@@ -50,7 +50,6 @@ func (p *plugin) Setup(source *pdk.Source, limit int) error {
 	}
 
 	//config.TLSConfig.ServerName = "localhost"
-	config.ConnConfig.PreferSimpleProtocol = true
 	config.MaxConns = 32
 
 	// Be able to cancel too long execution
@@ -58,7 +57,7 @@ func (p *plugin) Setup(source *pdk.Source, limit int) error {
 	defer cancel()
 
 	// Connect to the database
-	conn, err := pgxpool.ConnectConfig(ctx, config)
+	conn, err := pgxpool.NewWithConfig(ctx, config)
 	if err != nil {
 		return err
 	}
